@@ -1,4 +1,4 @@
-import { LangType } from '@/types/LangType';
+import { LangType } from '@/lib/types/LangType';
 import { getDictionary } from '../dictionaries';
 
 export default async function Test2({ params }: { params: Promise<{ lang: LangType }> }) {

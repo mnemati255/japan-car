@@ -1,7 +1,7 @@
 'use client';
 
-import { DictType } from '@/types/DictType';
-import { LangType } from '@/types/LangType';
+import { DictType } from '@/lib/types/DictType';
+import { LangType } from '@/lib/types/LangType';
 import React, { createContext, useContext } from 'react';
 
 interface LangContextType {

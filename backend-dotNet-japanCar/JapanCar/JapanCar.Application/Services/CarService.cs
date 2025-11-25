@@ -20,7 +20,7 @@ namespace JapanCar.Application.Services
 
         public async Task<IEnumerable<CarDto>> GetAllCars()
         {
-            var cars = await _unitOfWork.CarRepository.GetAllCars();
+            var cars = await _unitOfWork.CarRepository.GetAll();
             return cars.Select(x => new CarDto
             {
                 ColorName = x.Color.ColorName,

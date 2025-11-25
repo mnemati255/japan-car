@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Common\JapanCar.Common.csproj" />
     <ProjectReference Include="..\JapanCar.Application\JapanCar.Application.csproj" />
   </ItemGroup>
 

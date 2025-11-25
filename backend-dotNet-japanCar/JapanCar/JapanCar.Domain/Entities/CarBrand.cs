@@ -29,15 +29,10 @@ namespace JapanCar.Domain.Entities
         public DateTime? ModifiedDate { get; set; }
 
         /// <summary>
-        /// ایجاد شده توسط
-        /// </summary>
-        public int? CreatedBy { get; set; }
-
-        /// <summary>
         /// ویرایش شده توسط
         /// </summary>
         public int? ModifiedBy { get; set; }
 
-        public virtual ICollection<CarModel> CarModels { get; set; } = new List<CarModel>();
+        public ICollection<CarModel> CarModels { get; set; } = new List<CarModel>();
     }
 }

@@ -9,6 +9,6 @@ namespace JapanCar.Application.Interfaces
 {
     public interface ICarRepository
     {
-        Task<IEnumerable<Car>> GetAllCars();
+        Task<IEnumerable<Car>> GetAll();
     }
 }

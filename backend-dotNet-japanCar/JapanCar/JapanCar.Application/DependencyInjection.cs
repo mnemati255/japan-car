@@ -13,6 +13,7 @@ namespace JapanCar.Application
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             services.AddScoped<CarService>();
+            services.AddScoped<UserService>();
 
             return services;
         }

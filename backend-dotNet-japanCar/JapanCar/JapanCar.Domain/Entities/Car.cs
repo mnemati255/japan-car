@@ -18,10 +18,14 @@ namespace JapanCar.Domain.Entities
         /// </summary>
         public int ModelId { get; set; }
 
+        public CarModel Model { get; set; } = null!;
+
         /// <summary>
         /// شناسه رنگ خودرو
         /// </summary>
         public int ColorId { get; set; }
+
+        public CarColor Color { get; set; } = null!;
 
         /// <summary>
         /// شماره شاسی
@@ -59,11 +63,6 @@ namespace JapanCar.Domain.Entities
         public string? UsageStatus { get; set; }
 
         /// <summary>
-        /// تاریخ ایجاد
-        /// </summary>
-        public DateTime CreatedDate { get; set; }
-
-        /// <summary>
         /// تاریخ ویرایش
         /// </summary>
         public DateTime? ModifiedDate { get; set; }
@@ -77,9 +76,5 @@ namespace JapanCar.Domain.Entities
         /// ویرایش شده توسط
         /// </summary>
         public int? ModifiedBy { get; set; }
-
-        public virtual CarColor Color { get; set; } = null!;
-
-        public virtual CarModel Model { get; set; } = null!;
     }
 }

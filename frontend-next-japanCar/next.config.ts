@@ -12,12 +12,12 @@ const nextConfig: NextConfig = {
     ],
   },
   env: {
-    API_URL: 'http://185.231.115.136:1000/api',
-    ASSETS_URL: 'http://185.231.115.136:1000/car-images',
-    // API_URL:
-    //   process.env.NODE_ENV == 'development'
-    //     ? 'http://localhost:23341/api'
-    //     : 'http://185.231.115.136:1000',
+    // API_URL: 'http://185.231.115.136:1000/api',
+    // ASSETS_URL: 'http://185.231.115.136:1000/car-images',
+    API_URL:
+      process.env.NODE_ENV == 'development'
+        ? 'http://localhost:23341/api'
+        : 'http://185.231.115.136:1000',
   },
 };
 export default nextConfig;

@@ -53,12 +53,8 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<UserRole> UserRoles { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            optionsBuilder.UseSqlServer("Name=DefaultConnection");
-        }
-    }
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=185.231.115.136;User Id=sa;Password=NewPassword@1;Database=JapanCarDB;TrustServerCertificate=true;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -66,9 +62,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.AuctionId).HasName("PK__Auctions__51004A4CBF5ED6CA");
 
-            entity.Property(e => e.AuctionId)
-                .ValueGeneratedNever()
-                .HasComment("شناسه حراج");
+            entity.Property(e => e.AuctionId).HasComment("شناسه حراج");
             entity.Property(e => e.AuctionDate).HasComment("تاریخ برگزاری حراج");
             entity.Property(e => e.AuctionFee)
                 .HasComment("کارمزد حراج")
@@ -100,9 +94,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.CarId).HasName("PK__Cars__68A0342E1EC2C699");
 
-            entity.Property(e => e.CarId)
-                .ValueGeneratedNever()
-                .HasComment("شناسه خودرو");
+            entity.Property(e => e.CarId).HasComment("شناسه خودرو");
             entity.Property(e => e.ChassisNumber)
                 .HasMaxLength(100)
                 .HasComment("شماره شاسی");
@@ -153,9 +145,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.CarAuctionId).HasName("PK__CarAucti__9022063488849333");
 
-            entity.Property(e => e.CarAuctionId)
-                .ValueGeneratedNever()
-                .HasComment("شناسه حراج خودرو");
+            entity.Property(e => e.CarAuctionId).HasComment("شناسه حراج خودرو");
             entity.Property(e => e.AuctionId).HasComment("شناسه حراج");
             entity.Property(e => e.CarId).HasComment("شناسه خودرو");
             entity.Property(e => e.CreatedBy).HasComment("ایجاد شده توسط");
@@ -200,9 +190,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.BrandId).HasName("PK__CarBrand__DAD4F05E5FE11156");
 
-            entity.Property(e => e.BrandId)
-                .ValueGeneratedNever()
-                .HasComment("شناسه برند خودرو");
+            entity.Property(e => e.BrandId).HasComment("شناسه برند خودرو");
             entity.Property(e => e.BrandName)
                 .HasMaxLength(200)
                 .HasComment("نام برند خودرو");
@@ -229,9 +217,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.ColorId).HasName("PK__CarColor__8DA7674DCC0D73B3");
 
-            entity.Property(e => e.ColorId)
-                .ValueGeneratedNever()
-                .HasComment("شناسه رنگ خودرو");
+            entity.Property(e => e.ColorId).HasComment("شناسه رنگ خودرو");
             entity.Property(e => e.ColorName)
                 .HasMaxLength(100)
                 .HasComment("نام رنگ خودرو");
@@ -258,9 +244,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.ImageId).HasName("PK__CarImage__7516F70CEB8EB161");
 
-            entity.Property(e => e.ImageId)
-                .ValueGeneratedNever()
-                .HasComment("شناسه تصویر خودرو");
+            entity.Property(e => e.ImageId).HasComment("شناسه تصویر خودرو");
             entity.Property(e => e.CarId).HasComment("شناسه خودرو");
             entity.Property(e => e.CreatedBy).HasComment("ایجاد شده توسط");
             entity.Property(e => e.CreatedDate)
@@ -296,9 +280,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.ModelId).HasName("PK__CarModel__E8D7A12C30C66C23");
 
-            entity.Property(e => e.ModelId)
-                .ValueGeneratedNever()
-                .HasComment("شناسه مدل خودرو");
+            entity.Property(e => e.ModelId).HasComment("شناسه مدل خودرو");
             entity.Property(e => e.BrandId).HasComment("شناسه برند خودرو");
             entity.Property(e => e.CreatedBy).HasComment("ایجاد شده توسط");
             entity.Property(e => e.CreatedDate)
@@ -333,9 +315,7 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("CarRepairHistory");
 
-            entity.Property(e => e.RepairId)
-                .ValueGeneratedNever()
-                .HasComment("شناسه تعمیر");
+            entity.Property(e => e.RepairId).HasComment("شناسه تعمیر");
             entity.Property(e => e.CarId).HasComment("شناسه خودرو");
             entity.Property(e => e.CreatedBy).HasComment("ایجاد شده توسط");
             entity.Property(e => e.CreatedDate)
@@ -388,9 +368,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.CustomerId).HasName("PK__Customer__A4AE64D86BB68BC9");
 
-            entity.Property(e => e.CustomerId)
-                .ValueGeneratedNever()
-                .HasComment("شناسه مشتری");
+            entity.Property(e => e.CustomerId).HasComment("شناسه مشتری");
             entity.Property(e => e.Address)
                 .HasMaxLength(1000)
                 .HasComment("آدرس مشتری");
@@ -434,9 +412,7 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("GenericTranslation");
 
-            entity.Property(e => e.TranslationId)
-                .ValueGeneratedNever()
-                .HasComment("شناسه ترجمه");
+            entity.Property(e => e.TranslationId).HasComment("شناسه ترجمه");
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasComment("تاریخ ایجاد")
@@ -464,9 +440,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.LanguageId).HasName("PK__Language__B93855AB9868BF22");
 
-            entity.Property(e => e.LanguageId)
-                .ValueGeneratedNever()
-                .HasComment("شناسه زبان");
+            entity.Property(e => e.LanguageId).HasComment("شناسه زبان");
             entity.Property(e => e.Code)
                 .HasMaxLength(20)
                 .HasComment("کد زبان");
@@ -486,9 +460,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.MechanicId).HasName("PK__Mechanic__6B040DF15A87087C");
 
-            entity.Property(e => e.MechanicId)
-                .ValueGeneratedNever()
-                .HasComment("شناسه مکانیک");
+            entity.Property(e => e.MechanicId).HasComment("شناسه مکانیک");
             entity.Property(e => e.Contact)
                 .HasMaxLength(200)
                 .HasComment("اطلاعات تماس");
@@ -518,9 +490,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.PartId).HasName("PK__Part__7C3F0D5062CB50D8");
 
-            entity.Property(e => e.PartId)
-                .ValueGeneratedNever()
-                .HasComment("شناسه قطعه");
+            entity.Property(e => e.PartId).HasComment("شناسه قطعه");
             entity.Property(e => e.CreatedBy).HasComment("کاربر ایجاد کننده");
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
@@ -551,9 +521,11 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.PermissionId).HasName("PK__Permissi__EFA6FB2F5CE7709E");
 
-            entity.Property(e => e.PermissionId)
-                .ValueGeneratedNever()
-                .HasComment("شناسه دسترسی");
+            entity.Property(e => e.PermissionId).HasComment("شناسه دسترسی");
+            entity.Property(e => e.Code)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasComment("کد دسترسی");
             entity.Property(e => e.CreatedBy).HasComment("کاربر ایجاد کننده");
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
@@ -583,9 +555,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.RoleId).HasName("PK__Roles__8AFACE1A6CFD4231");
 
-            entity.Property(e => e.RoleId)
-                .ValueGeneratedNever()
-                .HasComment("شناسه نقش");
+            entity.Property(e => e.RoleId).HasComment("شناسه نقش");
             entity.Property(e => e.CreatedBy).HasComment("کاربر ایجاد کننده");
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
@@ -615,9 +585,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.RolePermissionId).HasName("PK__RolePerm__120F46BAC2DD8B6C");
 
-            entity.Property(e => e.RolePermissionId)
-                .ValueGeneratedNever()
-                .HasComment("شناسه دسترسی نقش");
+            entity.Property(e => e.RolePermissionId).HasComment("شناسه دسترسی نقش");
             entity.Property(e => e.CreatedBy).HasComment("کاربر ایجاد کننده");
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
@@ -653,9 +621,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.UserId).HasName("PK__Users__1788CC4C095B0997");
 
-            entity.Property(e => e.UserId)
-                .ValueGeneratedNever()
-                .HasComment("شناسه کاربر");
+            entity.Property(e => e.UserId).HasComment("شناسه کاربر");
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasComment("تاریخ ایجاد")
@@ -681,9 +647,7 @@ public partial class AppDbContext : DbContext
         {
             entity.HasKey(e => e.UserRoleId).HasName("PK__UserRole__3D978A358D8B027F");
 
-            entity.Property(e => e.UserRoleId)
-                .ValueGeneratedNever()
-                .HasComment("شناسه نقش کاربر");
+            entity.Property(e => e.UserRoleId).HasComment("شناسه نقش کاربر");
             entity.Property(e => e.CreatedBy).HasComment("کاربر ایجاد کننده");
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")

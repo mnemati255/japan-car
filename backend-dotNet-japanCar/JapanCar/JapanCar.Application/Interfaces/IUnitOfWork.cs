@@ -10,6 +10,7 @@ namespace JapanCar.Application.Interfaces
     public interface IUnitOfWork:IDisposable
     {
         ICarRepository CarRepository { get; }
+        IUserRepository UserRepository { get; }
         Task<int> CompleteAsync();
     }
 }

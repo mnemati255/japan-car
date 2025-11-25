@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Lato } from 'next/font/google';
 import '../../assets/styles/globals.css';
 import { LangContextProvider } from '@/contexts/LangContext';
-import { LangType } from '@/types/LangType';
+import { LangType } from '@/lib/types/LangType';
 import { getDictionary } from './dictionaries';
 import Footer from '@/components/layout/Footer';
 

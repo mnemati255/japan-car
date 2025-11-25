@@ -16,6 +16,11 @@ public partial class Permission
     public string PermissionName { get; set; } = null!;
 
     /// <summary>
+    /// کد دسترسی
+    /// </summary>
+    public string Code { get; set; } = null!;
+
+    /// <summary>
     /// توضیحات دسترسی
     /// </summary>
     public string? Description { get; set; }

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import CarService from '@/services/car-service';
+import CarService from '@/lib/services/car-service';
 import Image from 'next/image';
 import { Zap, Shield, Rocket, Target } from 'lucide-react';
 

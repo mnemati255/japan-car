@@ -14,9 +14,11 @@ export default function PanelLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main>
+      <main className='w-full'>
         <SidebarTrigger />
-        {children}
+        <div className='p-6'>
+          {children}
+        </div>
       </main>
     </SidebarProvider>
   );

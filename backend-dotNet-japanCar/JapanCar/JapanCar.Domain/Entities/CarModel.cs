@@ -24,11 +24,6 @@ namespace JapanCar.Domain.Entities
         public string ModelName { get; set; } = null!;
 
         /// <summary>
-        /// تاریخ ایجاد
-        /// </summary>
-        public DateTime CreatedDate { get; set; }
-
-        /// <summary>
         /// تاریخ ویرایش
         /// </summary>
         public DateTime? ModifiedDate { get; set; }
@@ -43,8 +38,8 @@ namespace JapanCar.Domain.Entities
         /// </summary>
         public int? ModifiedBy { get; set; }
 
-        public virtual CarBrand Brand { get; set; } = null!;
+        public CarBrand Brand { get; set; } = null!;
 
-        public virtual ICollection<Car> Cars { get; set; } = new List<Car>();
+        public ICollection<Car> Cars { get; set; } = new List<Car>();
     }
 }

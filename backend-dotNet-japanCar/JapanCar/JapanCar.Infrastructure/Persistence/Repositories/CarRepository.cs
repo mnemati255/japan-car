@@ -1,5 +1,5 @@
 ﻿using JapanCar.Application.Interfaces;
-using JapanCar.Infrastructure.Persistence.Models;
+using JapanCar.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -18,18 +18,18 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Domain.Entities.Car>> GetAllCars()
+        public async Task<IEnumerable<Car>> GetAll()
         {
             return await _context.Cars
                 .Include(x => x.Model)
                 .ThenInclude(x => x.Brand)
                 .Include(x => x.Color)
-                .Select(e => new Domain.Entities.Car
+                .Select(e => new Car
                 {
                     Mileage = e.Mileage,
                     Year = e.Year,
-                    Color = new Domain.Entities.CarColor { ColorName = e.Color.ColorName },
-                    Model = new Domain.Entities.CarModel { ModelName = e.Model.ModelName, Brand = new Domain.Entities.CarBrand { BrandName = e.Model.Brand.BrandName } },
+                    Color = new CarColor { ColorName = e.Color.ColorName },
+                    Model = new CarModel { ModelName = e.Model.ModelName, Brand = new Domain.Entities.CarBrand { BrandName = e.Model.Brand.BrandName } },
                 }).ToListAsync();
         }
     }
