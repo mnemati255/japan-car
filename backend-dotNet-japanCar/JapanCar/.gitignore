@@ -1,0 +1,105 @@
+## -----------------------------
+## .NET Core / ASP.NET Core API
+## -----------------------------
+
+# Build results
+**/bin/
+**/obj/
+**/out/
+
+# Publish folder
+**/publish/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio settings
+.vs/
+**/.vs/
+
+# Visual Studio Code settings
+.vscode/
+.history/
+*.code-workspace
+
+# Rider settings
+.idea/
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.tlog
+*.vspscc
+*.vssscc
+
+# Backup & test artifacts
+*.bak
+*.swp
+*.dbmdl
+*.bak
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+*.testsettings
+*.vsmdi
+
+# NuGet packages
+*.nupkg
+*.snupkg
+**/packages/
+
+# Entity Framework migrations cache
+*.db
+*.sqlite
+*.mdf
+*.ldf
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Resharper & JetBrains tools
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Azure
+*.publishsettings
+*.azurePubxml
+*.azurePubxml.user
+
+# IIS / web
+iisexpress/
+wwwroot/dist/
+wwwroot/lib/
+
+# Docker
+**/Dockerfile.*
+**/docker-compose.*
+**/docker-compose.override.yml
+
+# Secrets
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.local.json
+secrets.json
+
+# OS-specific
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs
+logs/
+*.log
+log.txt
+
+# Others
+*.env
+.env.*
+node_modules/
