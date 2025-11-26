@@ -1,5 +1,4 @@
-﻿using Common.Exceptions;
-using JapanCar.Application.Interfaces;
+﻿using JapanCar.Application.Interfaces;
 using JapanCar.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,108 +13,135 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Permission>> GetAllPermissions()
+        public async Task<IEnumerable<UserEntity>> GetAllUsers()
         {
-            return await _context.Permissions
-                .Select(x => new Permission
-                {
-                    PermissionId = x.PermissionId,
-                    Code = x.Code,
-                    PermissionName = x.PermissionName,
-                })
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Role>> GetAllRoles()
-        {
-            var roles = await _context.Roles.ToListAsync();
-
-            return roles.Select(x => new Role
+            var users = await _context.Users.ToListAsync();
+            
+            return users.Select(x => new UserEntity
             {
-                RoleId = x.RoleId,
-                RoleName = x.RoleName,
-                Description = x.Description,
+                UserId = x.UserId,
+                Email = x.Email,
+                UserName = x.UserName,
+                IsActive = x.IsActive,
             });
         }
 
-        public async Task<Role> GetRoleById(int id)
+
+        public async Task<UserEntity?> GetUserById(int id)
         {
-            var role = await _context.Roles
-                .Where(x => x.RoleId == id)
-                .Include(x => x.RolePermissions)
+            var user = await _context.Users
+                .Where(x => x.UserId == id)
+                .Include(x => x.UserRoleUsers)
                 .FirstOrDefaultAsync();
 
-            if (role == null)
-                throw new AppException("Not found", System.Net.HttpStatusCode.NotFound);
+            if (user == null)
+                return null;
 
-            return new Role
+            return new UserEntity
             {
-                RoleId = role.RoleId,
-                RoleName = role.RoleName,
-                Description = role.Description,
-                PermissionIds = role.RolePermissions.Select(x => x.PermissionId).ToList()
+                UserId = user.UserId,
+                Email = user.Email,
+                IsActive = user.IsActive,
+                UserName = user.UserName,
+                RoleIds = user.UserRoleUsers.Select(x => x.RoleId).ToList()
             };
         }
 
-        public async Task CreateRole(Role role)
+
+        public async Task<UserEntity?> GetUserByUserName(string userName)
         {
-            var entity = new Models.Role
+            var user = await _context.Users
+                .Where(x => x.UserName.Equals(userName))
+                .Include(x => x.UserRoleUsers)
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+                return null;
+
+            return new UserEntity
             {
-                RoleName = role.RoleName,
-                Description = role.Description,
+                UserId = user.UserId,
+                Email = user.Email,
+                IsActive = user.IsActive,
+                UserName = user.UserName,
+                RoleIds = user.UserRoleUsers.Select(x => x.RoleId).ToList()
+            };
+        }
+
+
+        public async Task CreateUser(UserEntity user)
+        {
+            var entity = new Models.User
+            {
+                UserName = user.UserName,
+                Email = user.Email,
+                PasswordHash = user.PasswordHash,
+                IsActive = user.IsActive
             };
 
-            if (role.PermissionIds.Any())
+            if (user.RoleIds.Any())
             {
-                entity.RolePermissions = role.PermissionIds.Select(pid => new Models.RolePermission
+                entity.UserRoleUsers = user.RoleIds.Select(rid => new Models.UserRole
                 {
-                    PermissionId = pid
+                    RoleId = rid,
                 }).ToList();
             }
 
-            _context.Roles.Add(entity);
+            _context.Users.Add(entity);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateRole(int id, Role role)
+
+        public async Task<bool> UpdateUser(int id, UserEntity user)
         {
-            var entity = await _context.Roles
-                .Where(x => x.RoleId == id)
-                .Include(x => x.RolePermissions)
+            var entity = await _context.Users
+                .Where(x => x.UserId == id)
+                .Include(x => x.UserRoleUsers)
                 .FirstOrDefaultAsync();
 
             if (entity == null)
-                throw new Exception("Not found");
+                return false;
 
-            _context.RolePermissions.RemoveRange(entity.RolePermissions);
+            _context.UserRoles.RemoveRange(entity.UserRoleUsers);
 
-            entity.RoleName = role.RoleName;
-            entity.Description = role.Description;
-            entity.RolePermissions = role.PermissionIds.Select(pid => new Models.RolePermission
+            entity.Email = user.Email;
+            entity.ModifiedDate = DateTime.Now;
+            entity.UserRoleUsers = user.RoleIds.Select(rid => new Models.UserRole
             {
-                RoleId = pid,
-                PermissionId = pid
+                RoleId = rid,
             }).ToList();
 
-            _context.Roles.Update(entity);
             await _context.SaveChangesAsync();
+            return true;
         }
 
-        public async Task DeleteRole(int id)
+
+        public async Task<bool> DeleteUser(int id)
         {
-            var entity = await _context.Roles
-                .Where(x => x.RoleId == id)
-                .Include(x => x.RolePermissions)
+            var entity = await _context.Users
+                .Where(x => x.UserId == id)
+                .Include(x => x.UserRoleUsers)
                 .FirstOrDefaultAsync();
 
             if (entity == null)
-                throw new Exception("Not found");
+                return false;
 
-            _context.RolePermissions.RemoveRange(entity.RolePermissions);
+            _context.UserRoles.RemoveRange(entity.UserRoleUsers);
 
-            _context.Roles.Remove(entity);
+            _context.Users.Remove(entity);
 
             await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> ExistsUserWithRole(int roleId)
+        {
+            var exists = await (from u in _context.Users
+                                join ur in _context.UserRoles on u.UserId equals ur.UserId
+                                where ur.RoleId == roleId
+                                select u).AnyAsync();
+            return exists;
         }
     }
 }

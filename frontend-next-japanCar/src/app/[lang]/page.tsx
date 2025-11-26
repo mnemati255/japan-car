@@ -40,14 +40,7 @@ const features = [
 ];
 
 export default async function Home() {
-  const { status, data: cars } = await CarService.getAllCars();
-  if (status != 200) {
-    return (
-      <div>
-        <p className="text-red-500">ERROR</p>
-      </div>
-    );
-  }
+  const response = await CarService.getAllCars();
 
   return (
     <div>
@@ -108,31 +101,34 @@ export default async function Home() {
         <h1 className="mt-24 mb-12 text-center font-bold text-2xl md:text-3xl px-4">
           Latest inventory information
         </h1>
-        <div className="mx-auto max-w-7xl">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {cars.map((x: any, index: number) => (
-              <div
-                key={index}
-                className="rounded-2xl shadow-[0px_7px_29px_0px_rgba(100,100,111,0.2)]"
-              >
-                <Image
-                  src={`${process.env.ASSETS_URL}/${index + 1}.jpg`}
-                  width={200}
-                  height={200}
-                  alt=""
-                  className="rounded-t-2xl w-full"
-                />
-                <div className="p-5 space-y-2">
-                  <p>
-                    {x.modelName} {x.year}
-                  </p>
-                  <p>{x.colorName}</p>
-                  <p>{x.mileage} mile</p>
+
+        {response && response.status == 200 && (
+          <div className="mx-auto max-w-7xl">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {response.data.map((x: any, index: number) => (
+                <div
+                  key={index}
+                  className="rounded-2xl shadow-[0px_7px_29px_0px_rgba(100,100,111,0.2)]"
+                >
+                  <Image
+                    src={`${process.env.ASSETS_URL}/${index + 1}.jpg`}
+                    width={200}
+                    height={200}
+                    alt=""
+                    className="rounded-t-2xl w-full"
+                  />
+                  <div className="p-5 space-y-2">
+                    <p>
+                      {x.modelName} {x.year}
+                    </p>
+                    <p>{x.colorName}</p>
+                    <p>{x.mileage} mile</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

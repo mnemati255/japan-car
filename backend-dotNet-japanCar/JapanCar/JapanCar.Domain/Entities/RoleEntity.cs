@@ -6,27 +6,27 @@ using System.Threading.Tasks;
 
 namespace JapanCar.Domain.Entities
 {
-    public class Permission
+    public class RoleEntity
     {
         /// <summary>
-        /// شناسه دسترسی
+        /// شناسه نقش
         /// </summary>
-        public int PermissionId { get; set; }
+        public int RoleId { get; set; }
 
         /// <summary>
-        /// نام دسترسی
+        /// نام نقش
         /// </summary>
-        public string PermissionName { get; set; } = null!;
+        public string RoleName { get; set; } = null!;
 
         /// <summary>
-        /// کد دسترسی
-        /// </summary>
-        public string Code { get; set; } = null!;
-
-        /// <summary>
-        /// توضیحات دسترسی
+        /// توضیحات نقش
         /// </summary>
         public string? Description { get; set; }
+
+        /// <summary>
+        /// لیست شناسه دسترسی‌ها
+        /// </summary>
+        public List<int> PermissionIds { get; set; } = [];
 
         /// <summary>
         /// تاریخ ویرایش

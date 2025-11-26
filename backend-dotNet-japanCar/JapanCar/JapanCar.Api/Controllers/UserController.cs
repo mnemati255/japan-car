@@ -1,4 +1,5 @@
-﻿using JapanCar.Application.DTOs;
+﻿using JapanCar.Api.Filters;
+using JapanCar.Application.DTOs;
 using JapanCar.Application.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,45 +17,45 @@ namespace JapanCar.Api.Controllers
             _userService = userService;
         }
 
-        [HttpGet("permissions")]
-        public async Task<IActionResult> GetAllPermissions()
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllUsers()
         {
-            var result = await _userService.GetAllPermissions();
+            var result = await _userService.GetAllUsers();
             return Ok(result);
         }
 
-        [HttpGet("roles")]
-        public async Task<IActionResult> GetAllRoles()
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserById(int id)
         {
-            var result = await _userService.GetAllRoles();
+            var result = await _userService.GetUserById(id);
             return Ok(result);
         }
 
-        [HttpGet("role/{id}")]
-        public async Task<IActionResult> GetRoleById(int id)
-        {
-            var result = await _userService.GetRoleById(id);
-            return Ok(result);
-        }
 
-        [HttpPost("role")]
-        public async Task<IActionResult> CreateRole(RoleDto dto)
+        [HttpPost]
+        [ServiceFilter(typeof(ValidateDtoFilter<UserDto>))]
+        public async Task<IActionResult> CreateUser(UserDto dto)
         {
-            await _userService.CreateRole(dto);
+            await _userService.CreateUser(dto);
             return Ok();
         }
 
-        [HttpPut("role/{id}")]
-        public async Task<IActionResult> UpdateRole(int id, RoleDto dto)
+
+        [HttpPut("{id}")]
+        [ServiceFilter(typeof(ValidateDtoFilter<UserDto>))]
+        public async Task<IActionResult> UpdateUser(int id, UserDto dto)
         {
-            await _userService.UpdateRole(id, dto);
+            await _userService.UpdateUser(id, dto);
             return Ok();
         }
 
-        [HttpDelete("role/{id}")]
-        public async Task<IActionResult> DeleteRole(int id)
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
         {
-            await _userService.DeleteRole(id);
+            await _userService.DeleteUser(id);
             return Ok();
         }
     }

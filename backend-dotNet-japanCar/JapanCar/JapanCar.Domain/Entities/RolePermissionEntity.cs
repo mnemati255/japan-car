@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JapanCar.Domain.Entities
 {
-    public class RolePermission
+    public class RolePermissionEntity
     {
         /// <summary>
         /// شناسه دسترسی نقش
@@ -38,6 +38,6 @@ namespace JapanCar.Domain.Entities
         /// </summary>
         public int? ModifiedBy { get; set; }
 
-        public Role Role { get; set; } = null!;
+        public RoleEntity Role { get; set; } = null!;
     }
 }

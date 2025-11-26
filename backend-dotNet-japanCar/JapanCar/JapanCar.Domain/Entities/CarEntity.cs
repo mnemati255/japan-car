@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JapanCar.Domain.Entities
 {
-    public class Car
+    public class CarEntity
     {
         /// <summary>
         /// شناسه خودرو
@@ -18,14 +18,14 @@ namespace JapanCar.Domain.Entities
         /// </summary>
         public int ModelId { get; set; }
 
-        public CarModel Model { get; set; } = null!;
+        public CarModelEntity Model { get; set; } = null!;
 
         /// <summary>
         /// شناسه رنگ خودرو
         /// </summary>
         public int ColorId { get; set; }
 
-        public CarColor Color { get; set; } = null!;
+        public CarColorEntity Color { get; set; } = null!;
 
         /// <summary>
         /// شماره شاسی

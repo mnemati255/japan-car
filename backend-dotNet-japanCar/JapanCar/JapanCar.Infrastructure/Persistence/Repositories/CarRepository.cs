@@ -18,18 +18,18 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Car>> GetAll()
+        public async Task<IEnumerable<CarEntity>> GetAll()
         {
             return await _context.Cars
                 .Include(x => x.Model)
                 .ThenInclude(x => x.Brand)
                 .Include(x => x.Color)
-                .Select(e => new Car
+                .Select(e => new CarEntity
                 {
                     Mileage = e.Mileage,
                     Year = e.Year,
-                    Color = new CarColor { ColorName = e.Color.ColorName },
-                    Model = new CarModel { ModelName = e.Model.ModelName, Brand = new Domain.Entities.CarBrand { BrandName = e.Model.Brand.BrandName } },
+                    Color = new CarColorEntity { ColorName = e.Color.ColorName },
+                    Model = new CarModelEntity { ModelName = e.Model.ModelName, Brand = new Domain.Entities.CarBrandEntity { BrandName = e.Model.Brand.BrandName } },
                 }).ToListAsync();
         }
     }

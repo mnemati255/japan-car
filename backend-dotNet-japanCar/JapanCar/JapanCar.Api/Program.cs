@@ -1,5 +1,7 @@
+using JapanCar.Api.Filters;
 using JapanCar.Api.Middlewares;
 using JapanCar.Application;
+using JapanCar.Application.DTOs;
 using JapanCar.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,12 +24,13 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddScoped(typeof(ValidateDtoFilter<>));
+
 // Infrustructure DI
 builder.Services.AddInfrastructure(builder.Configuration);
 
 // Application DI
 builder.Services.AddApplication();
-
 
 
 

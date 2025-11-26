@@ -4,11 +4,16 @@ namespace JapanCar.Application.Interfaces
 {
     public interface IUserRepository
     {
-        Task<IEnumerable<Permission>> GetAllPermissions();
-        Task<IEnumerable<Role>> GetAllRoles();
-        Task<Role> GetRoleById(int id);
-        Task CreateRole(Role role);
-        Task UpdateRole(int id, Role role);
-        Task DeleteRole(int id);
+        Task<IEnumerable<UserEntity>> GetAllUsers();
+        Task<UserEntity?> GetUserById(int id);
+        Task<UserEntity?> GetUserByUserName(string userName);
+        Task CreateUser(UserEntity user);
+        Task<bool> UpdateUser(int id, UserEntity user);
+        Task<bool> DeleteUser(int id);
+
+        /// <summary>
+        /// آیا کاربری با این نقش وجود دارد؟
+        /// </summary>
+        Task<bool> ExistsUserWithRole(int roleId);
     }
 }

@@ -9,7 +9,7 @@ export default function GlobalToast() {
 
   useEffect(() => {
     if (message) {
-      toast[type](message);
+      toast[type](message, { style: { whiteSpace: 'pre-line' } });
       clearToast();
     }
   }, [clearToast, message, type]);

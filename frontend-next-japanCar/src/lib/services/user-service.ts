@@ -1,29 +1,22 @@
 import http from '../configs/axios-config';
-import { IPermission } from '../interfaces/permission';
-import { IRole } from '../interfaces/role';
+import { IUser } from '../interfaces/user';
 
 class UserService {
-  getRoles = async (): Promise<IRole[]> => {
-    const res = await http.get<IRole[]>('/user/roles');
+  getUsers = async (): Promise<IUser[]> => {
+    const res = await http.get<IUser[]>('/user');
     return res.data;
   };
 
-  getPermissions = async (): Promise<IPermission[]> => {
-    const res = await http.get<IPermission[]>('/user/permissions');
+  getUserById = async (id: number) => {
+    const res = await http.get<IUser>(`/user/${id}`);
     return res.data;
   };
 
-  getRoleById = async (id: number) => {
-    const res = await http.get<IRole>(`/user/role/${id}`);
-    return res.data;
-  };
+  createUser = async (model: IUser) => await http.post('/user', model);
 
-  createRole = async (model: IRole) => await http.post('/user/role', model);
+  updateUser = async (id: number, model: IUser) => await http.put(`/user/${id}`, model);
 
-  updateRole = async (id: number, model: IRole) =>
-    await http.put(`/user/role/${id}`, model);
-
-  deleteRole = async (id: number) => await http.delete(`/user/role/${id}`);
+  deleteUser = async (id: number) => await http.delete(`/user/${id}`);
 }
 
 const userService = new UserService();

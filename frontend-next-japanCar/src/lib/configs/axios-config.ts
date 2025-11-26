@@ -49,9 +49,13 @@ apiClient.interceptors.response.use(
         if (response.data) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const dt: any = response.data;
-          console.log(22, dt);
-          const { Message, message } = Array.isArray(dt) ? dt[0] : dt;
-          useToastStore.getState().setToast('error', Message || message);
+          console.log(11, dt)
+          if (Array.isArray(dt)) {
+            useToastStore.getState().setToast('error', dt.join('\n'));
+          } else {
+            const { Message, message } = dt;
+            useToastStore.getState().setToast('error', Message || message);
+          }
         } else {
           useToastStore
             .getState()

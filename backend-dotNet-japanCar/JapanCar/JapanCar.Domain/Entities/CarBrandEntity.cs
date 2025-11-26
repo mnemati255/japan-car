@@ -6,17 +6,17 @@ using System.Threading.Tasks;
 
 namespace JapanCar.Domain.Entities
 {
-    public class CarColor
+    public class CarBrandEntity
     {
         /// <summary>
-        /// شناسه رنگ خودرو
+        /// شناسه برند خودرو
         /// </summary>
-        public int ColorId { get; set; }
+        public int BrandId { get; set; }
 
         /// <summary>
-        /// نام رنگ خودرو
+        /// نام برند خودرو
         /// </summary>
-        public string ColorName { get; set; } = null!;
+        public string BrandName { get; set; } = null!;
 
         /// <summary>
         /// تاریخ ایجاد
@@ -33,6 +33,6 @@ namespace JapanCar.Domain.Entities
         /// </summary>
         public int? ModifiedBy { get; set; }
 
-        public ICollection<Car> Cars { get; set; } = new List<Car>();
+        public ICollection<CarModelEntity> CarModels { get; set; } = new List<CarModelEntity>();
     }
 }

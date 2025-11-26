@@ -1,27 +1,32 @@
 ﻿using JapanCar.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Linq.Expressions;
 
 namespace JapanCar.Infrastructure.Persistence.Repositories
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         private readonly AppDbContext _context;
-        private readonly DbSet<T> _dbSet;
 
         public GenericRepository(AppDbContext context)
         {
             _context = context;
-            _dbSet = _context.Set<T>();
         }
 
-        public async Task<List<T>> GetAllAsync()
+        public async Task<List<T>> FindAsync(Expression<Func<T, bool>>? where = null)
         {
-            return await _dbSet.ToListAsync();
+            IQueryable<T> query = _context.Set<T>();
+
+            if(where != null)
+                query = query.Where(where);
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<T?> FindById(int id)
+        {
+            var dbSet = _context.Set<T>();
+            return await dbSet.FindAsync(id);
         }
     }
 }

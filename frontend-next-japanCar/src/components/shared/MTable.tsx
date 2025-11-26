@@ -11,7 +11,8 @@ import { Button } from '../ui/button';
 
 type Column<T> = {
   header: string | ReactNode;
-  accessor: string | ((row: T) => ReactNode);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  accessor: string | ((row: T) => ReactNode) | any;
   width?: string;
 };
 
@@ -36,7 +37,12 @@ export function MTable<T>({
   emptyMessage = 'No data found',
   className,
 }: Props<T>) {
-  if (!data || data.length === 0) return <p className="text-gray-500">{emptyMessage}</p>;
+  if (!data || data.length === 0)
+    return (
+      <div className="mt-8 min-h-40 rounded-lg border-2 border-dashed flex justify-center items-center">
+        {emptyMessage}
+      </div>
+    );
 
   return (
     <UiTable className={className}>

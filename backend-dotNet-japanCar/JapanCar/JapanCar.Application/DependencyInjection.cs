@@ -1,4 +1,6 @@
-﻿using JapanCar.Application.Services;
+﻿using FluentValidation;
+using JapanCar.Application.DTOs;
+using JapanCar.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -14,6 +16,10 @@ namespace JapanCar.Application
         {
             services.AddScoped<CarService>();
             services.AddScoped<UserService>();
+            services.AddScoped<RoleService>();
+
+            services.AddScoped<IValidator<RoleDto>, RoleDtoValidator>();
+            services.AddScoped<IValidator<UserDto>, UserDtoValidator>();
 
             return services;
         }

@@ -1,3 +1,5 @@
+'use client';
+
 import { ChevronRight } from 'lucide-react';
 
 import {
@@ -11,6 +13,7 @@ import {
 } from '@/components/ui/sidebar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 // Menu items.
 const items = [
@@ -18,20 +21,24 @@ const items = [
     title: 'Users Management',
     baseHref: 'users-management',
     children: [
-      { title: 'User', href: 'users' },
+      { title: 'Users', href: 'users' },
       { title: 'Roles', href: 'roles' },
     ],
   },
   {
     title: 'Cars',
-    href: '#',
+    href: 'cars',
   },
 ];
 
 export default function AppSidebar() {
+  // Variables
+  const pathname = usePathname();
+  console.log(pathname);
+
   return (
     <Sidebar>
-      <SidebarContent className="pt-12 pb-2">
+      <SidebarContent className="pt-12 pb-2 px-2">
         <SidebarMenu>
           {items.map((item, index) =>
             item.children ? (
@@ -45,22 +52,39 @@ export default function AppSidebar() {
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <SidebarMenuSub>
-                      {item.children.map((child, index2) => (
-                        <SidebarMenuSubItem key={index2}>
-                          <Link href={`/panel/${item.baseHref}/${child.href}`}>
-                            <SidebarMenuButton>{child.title}</SidebarMenuButton>
-                          </Link>
-                        </SidebarMenuSubItem>
-                      ))}
+                      {item.children.map((child, index2) => {
+                        const href = `/panel/${item.baseHref}/${child.href}`;
+                        return (
+                          <SidebarMenuSubItem key={index2}>
+                            <Link href={href}>
+                              <SidebarMenuButton
+                                className={`${
+                                  pathname.includes(href)
+                                    ? 'bg-gray-200 hover:bg-gray-200!'
+                                    : ''
+                                }`}
+                              >
+                                {child.title}
+                              </SidebarMenuButton>
+                            </Link>
+                          </SidebarMenuSubItem>
+                        );
+                      })}
                     </SidebarMenuSub>
                   </CollapsibleContent>
                 </SidebarMenuItem>
               </Collapsible>
             ) : (
               <SidebarMenuItem key={index}>
-                <SidebarMenuButton asChild>
-                  <a href={item.href}>{item.title}</a>
-                </SidebarMenuButton>
+                <Link href={`/panel/${item.href}`}>
+                  <SidebarMenuButton
+                    className={`${
+                      pathname.includes(item.href) ? 'bg-gray-200 hover:bg-gray-200!' : ''
+                    }`}
+                  >
+                    {item.title}
+                  </SidebarMenuButton>
+                </Link>
               </SidebarMenuItem>
             )
           )}

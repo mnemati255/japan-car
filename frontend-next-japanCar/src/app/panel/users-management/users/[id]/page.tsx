@@ -13,74 +13,86 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import useSWR from 'swr';
-import roleService from '@/lib/services/role-service';
+import userService from '@/lib/services/user-service';
 import Loading from '@/components/layout/Loading';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-
-const schema = z.object({
-  roleName: z.string().min(1, { error: messages.required() }),
-  description: z.string().nullable().optional(),
-  permissionIds: z.array(z.number()).min(1, { error: messages.requiredAtLeast() }),
-});
+import roleService from '@/lib/services/role-service';
 
 export default function RolePage() {
   // Varialbes
   const router = useRouter();
   const params = useParams();
+  const isEdit = params.id && +params.id > 0;
+  console.log(params.id);
+  const schema = z.object({
+    userName: z.string().min(1, { error: messages.required() }),
+    password: isEdit
+      ? z.string().min(0)
+      : z
+          .string()
+          .min(1, { error: messages.required() })
+          .length(6, { error: messages.minLength(6) }),
+    email: z.email().nullable().optional(),
+    roleIds: z.array(z.number()).min(1, { error: messages.requiredAtLeast() }),
+    isActive: z.boolean(),
+  });
 
   // Get data
   const fetchAll = async () => {
-    const permissions = await roleService.getPermissions();
-    const role =
-      params.id && +params.id > 0 ? await roleService.getRoleById(+params.id) : null;
-    return [permissions, role] as const;
+    const roles = await roleService.getRoles();
+    const user =
+      params.id && +params.id > 0 ? await userService.getUserById(+params.id) : null;
+    return [roles, user] as const;
   };
   const { data, isLoading, error } = useSWR(
     params.id ? `data-${params.id}` : 'data-add',
     fetchAll
   );
-  const permissions = data?.[0];
-  const role = data?.[1];
+  const roles = data?.[0];
+  const user = data?.[1];
 
   // Define form
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
-      roleName: role ? role.roleName : '',
-      description: role ? role.description : null,
-      permissionIds: [],
+      userName: '',
+      password: '',
+      email: null,
+      roleIds: [],
+      isActive: true,
     },
   });
 
   // Initial form
   useEffect(() => {
-    if (role) {
+    if (user) {
       form.reset({
-        roleName: role.roleName,
-        description: role.description,
-        permissionIds: role.permissionIds,
+        userName: user.userName,
+        password: '',
+        email: user.email,
+        roleIds: user.roleIds,
+        isActive: user.isActive,
       });
     }
-  }, [role, form]);
+  }, [user, form]);
 
   // Functions
   async function onSubmit(values: z.infer<typeof schema>) {
     try {
       if (params.id && +params.id === 0) {
-        const { status } = await roleService.createRole(values);
+        const { status } = await userService.createUser(values);
         if (status === 200) {
           router.back();
         }
       } else {
-        const { status } = await roleService.updateRole(+params.id!, values);
+        const { status } = await userService.updateUser(+params.id!, values);
         if (status === 200) {
-          router.push('/panel/users-management/roles');
+          router.back();
         }
       }
     } catch (error) {
@@ -101,11 +113,11 @@ export default function RolePage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
-            name="roleName"
+            name="userName"
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Role name</FormLabel>
+                <FormLabel>User name</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -115,46 +127,76 @@ export default function RolePage() {
           ></FormField>
 
           <FormField
-            name="description"
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input {...field} type="password" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          ></FormField>
+
+          <FormField
+            name="email"
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Description</FormLabel>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Textarea {...field} value={field.value ?? ''} />
+                  <Input {...field} value={field.value ?? ''} />
                 </FormControl>
               </FormItem>
             )}
           ></FormField>
 
           <FormField
-            name="permissionIds"
+            control={form.control}
+            name="isActive"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex gap-4">
+                  <FormLabel>Is active?</FormLabel>
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={(checked) => field.onChange(checked)}
+                    />
+                  </FormControl>
+                </div>
+              </FormItem>
+            )}
+          ></FormField>
+
+          <FormField
+            name="roleIds"
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <p>Permissions:</p>
+                <p>Roles:</p>
                 <div className="space-y-3 mt-4">
-                  {permissions?.map((item) => {
-                    const isChecked = (field.value || []).includes(item.permissionId);
+                  {roles?.map((item) => {
+                    const isChecked = (field.value || []).includes(item.roleId!);
                     return (
-                      <div key={item.permissionId} className="flex items-center gap-3">
+                      <div key={item.roleId} className="flex items-center gap-3">
                         <Checkbox
-                          id={`${item.permissionId}`}
-                          value={item.permissionId}
+                          id={`${item.roleId}`}
+                          value={item.roleId}
                           checked={isChecked}
                           onCheckedChange={(checked) => {
                             if (checked) {
-                              field.onChange([...field.value, item.permissionId]);
+                              field.onChange([...field.value, item.roleId]);
                             } else {
                               field.onChange(
-                                field.value.filter((v: number) => v !== item.permissionId)
+                                field.value.filter((v: number) => v !== item.roleId)
                               );
                             }
                           }}
                         />
-                        <Label htmlFor={`${item.permissionId}`}>
-                          {item.permissionName}
-                        </Label>
+                        <Label htmlFor={`${item.roleId}`}>{item.roleName}</Label>
                       </div>
                     );
                   })}

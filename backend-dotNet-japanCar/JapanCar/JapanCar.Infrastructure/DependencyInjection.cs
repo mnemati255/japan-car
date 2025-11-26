@@ -1,13 +1,10 @@
 ﻿using JapanCar.Application.Interfaces;
+using JapanCar.Application.Interfaces.Security;
 using JapanCar.Infrastructure.Persistence;
+using JapanCar.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JapanCar.Infrastructure
 {
@@ -21,6 +18,7 @@ namespace JapanCar.Infrastructure
             });
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IPasswordHasher, PasswordHasherAdapter>();
 
             return services;
         }

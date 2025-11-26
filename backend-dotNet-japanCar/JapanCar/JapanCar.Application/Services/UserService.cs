@@ -1,80 +1,92 @@
-﻿using JapanCar.Application.DTOs;
+﻿using Common.Exceptions;
+using JapanCar.Application.DTOs;
 using JapanCar.Application.Interfaces;
+using JapanCar.Application.Interfaces.Security;
 using JapanCar.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net;
 
 namespace JapanCar.Application.Services
 {
     public class UserService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IPasswordHasher _passwordHasher;
 
-        public UserService(IUnitOfWork unitOfWork)
+        public UserService(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher)
         {
             _unitOfWork = unitOfWork;
+            _passwordHasher = passwordHasher;
         }
 
-        public async Task<IEnumerable<PermissionDto>> GetAllPermissions()
+        public async Task<IEnumerable<UserDto>> GetAllUsers()
         {
-            var cars = await _unitOfWork.UserRepository.GetAllPermissions();
-            return cars.Select(x => new PermissionDto
+            var users = await _unitOfWork.UserRepository.GetAllUsers();
+
+            return users.Select(x => new UserDto
             {
-                Code = x.Code,
-                PermissionId = x.PermissionId,
-                PermissionName = x.PermissionName,
+                UserId = x.UserId,
+                Email = x.Email,
+                UserName = x.UserName,
+                IsActive = x.IsActive
             });
         }
 
-        public async Task<IEnumerable<RoleDto>> GetAllRoles()
+        public async Task<UserDto> GetUserById(int id)
         {
-            var roles = await _unitOfWork.UserRepository.GetAllRoles();
-            return roles.Select(x => new RoleDto
-            {
-                RoleId = x.RoleId,
-                RoleName = x.RoleName,
-                Description = x.Description,
-            });
-        }
+            var user = await _unitOfWork.UserRepository.GetUserById(id);
 
-        public async Task<RoleDto> GetRoleById(int id)
-        {
-            var role = await _unitOfWork.UserRepository.GetRoleById(id);
-            return new RoleDto
+            if(user == null)
+                throw new AppException("Not found", HttpStatusCode.NotFound);
+
+            return new UserDto
             {
-                RoleId = role.RoleId,
-                RoleName = role.RoleName,
-                Description = role.Description,
-                PermissionIds = role.PermissionIds
+                UserId = user.UserId,
+                UserName= user.UserName,
+                Email = user.Email,
+                IsActive = user.IsActive,
+                RoleIds = user.RoleIds
             };
         }
 
-        public async Task CreateRole(RoleDto dto)
+        public async Task CreateUser(UserDto dto)
         {
-            await _unitOfWork.UserRepository.CreateRole(new Role
+            if (string.IsNullOrEmpty(dto.Password))
+                throw new AppException("Password is required.", HttpStatusCode.BadRequest);
+
+            var user = await _unitOfWork.UserRepository.GetUserByUserName(dto.UserName);
+            if(user != null)
+                throw new AppException("UserName is duplicated.", HttpStatusCode.Conflict);
+
+            await _unitOfWork.UserRepository.CreateUser(new UserEntity
             {
-                RoleName = dto.RoleName,
-                Description = dto.Description,
-                PermissionIds = dto.PermissionIds
+                Email = dto.Email,
+                UserName = dto.UserName,
+                PasswordHash = _passwordHasher.HashPassword(dto.Password),
+                IsActive = true,
+                RoleIds = dto.RoleIds
             });
         }
 
-        public async Task UpdateRole(int id, RoleDto dto)
+        public async Task UpdateUser(int id, UserDto dto)
         {
-            await _unitOfWork.UserRepository.UpdateRole(id, new Role
+            var result = await _unitOfWork.UserRepository.UpdateUser(id, new UserEntity
             {
-                RoleName = dto.RoleName,
-                Description = dto.Description,
-                PermissionIds = dto.PermissionIds
+                Email= dto.Email,
+                IsActive = dto.IsActive,
+                ModifiedDate = DateTime.Now,
+                RoleIds = dto.RoleIds
             });
+
+            if(!result)
+                throw new AppException("Not found", HttpStatusCode.NotFound);
         }
 
-        public async Task DeleteRole(int id)
+        public async Task DeleteUser(int id)
         {
-            await _unitOfWork.UserRepository.DeleteRole(id);
+            var result = await _unitOfWork.UserRepository.DeleteUser(id);
+
+            if (!result)
+                throw new AppException("Not found", HttpStatusCode.NotFound);
         }
     }
 }

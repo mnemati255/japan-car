@@ -7,10 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Common\JapanCar.Common.csproj" />
     <ProjectReference Include="..\JapanCar.Domain\JapanCar.Domain.csproj" />
   </ItemGroup>
 

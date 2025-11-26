@@ -6,27 +6,22 @@ using System.Threading.Tasks;
 
 namespace JapanCar.Domain.Entities
 {
-    public class Role
+    public class CarModelEntity
     {
         /// <summary>
-        /// شناسه نقش
+        /// شناسه مدل خودرو
         /// </summary>
-        public int RoleId { get; set; }
+        public int ModelId { get; set; }
 
         /// <summary>
-        /// نام نقش
+        /// شناسه برند خودرو
         /// </summary>
-        public string RoleName { get; set; } = null!;
+        public int BrandId { get; set; }
 
         /// <summary>
-        /// توضیحات نقش
+        /// نام مدل خودرو
         /// </summary>
-        public string? Description { get; set; }
-
-        /// <summary>
-        /// لیست دسترسی‌ها
-        /// </summary>
-        public List<int> PermissionIds { get; set; } = [];
+        public string ModelName { get; set; } = null!;
 
         /// <summary>
         /// تاریخ ویرایش
@@ -34,13 +29,17 @@ namespace JapanCar.Domain.Entities
         public DateTime? ModifiedDate { get; set; }
 
         /// <summary>
-        /// کاربر ایجاد کننده
+        /// ایجاد شده توسط
         /// </summary>
         public int? CreatedBy { get; set; }
 
         /// <summary>
-        /// کاربر ویرایش کننده
+        /// ویرایش شده توسط
         /// </summary>
         public int? ModifiedBy { get; set; }
+
+        public CarBrandEntity Brand { get; set; } = null!;
+
+        public ICollection<CarEntity> Cars { get; set; } = new List<CarEntity>();
     }
 }
