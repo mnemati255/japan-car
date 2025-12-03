@@ -6,7 +6,7 @@ namespace JapanCar.Application.Interfaces
     {
         Task<IEnumerable<UserEntity>> GetAllUsers();
         Task<UserEntity?> GetUserById(int id);
-        Task<UserEntity?> GetUserByUserName(string userName);
+        Task<UserEntity?> GetUserByUserName(string userName, bool withPassword = false);
         Task CreateUser(UserEntity user);
         Task<bool> UpdateUser(int id, UserEntity user);
         Task<bool> DeleteUser(int id);

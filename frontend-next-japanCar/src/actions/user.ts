@@ -1,0 +1,95 @@
+import { CONFIG } from '@/global-config';
+import axiosInstance, { fetcher } from '@/lib/axios';
+import { IUserItem } from '@/types/user';
+import useSWR, { mutate, SWRConfiguration } from 'swr';
+
+// ----------------------------------------------------------------------
+
+const swrOptions: SWRConfiguration = {
+  revalidateIfStale: false,
+  revalidateOnFocus: false,
+  revalidateOnReconnect: false,
+};
+
+const BASE_URL = `${CONFIG.serverUrl}/user`;
+
+// ----------------------------------------------------------------------
+
+export function useGetUsers() {
+  const url = BASE_URL;
+  const { data, isLoading, error, isValidating } = useSWR<IUserItem[]>(url, fetcher, {
+    ...swrOptions,
+  });
+
+  return {
+    users: data || [],
+    usersLoading: isLoading,
+    usersError: error,
+    usersValidating: isValidating,
+    usersEmpty: !isLoading && !data?.length,
+  };
+}
+
+// ----------------------------------------------------------------------
+
+export function useGetUser(id: number) {
+  const url = `${BASE_URL}/${id}`;
+  const { data, isLoading, error, isValidating } = useSWR<IUserItem>(url, fetcher, {
+    ...swrOptions,
+  });
+
+  return {
+    user: (data as IUserItem) || null,
+    userLoading: isLoading,
+    userError: error,
+    userValidating: isValidating,
+  };
+}
+
+// ----------------------------------------------------------------------
+
+export async function createUser(rowData: IUserItem) {
+  /**
+   * on server
+   */
+  const url = BASE_URL;
+  const response = await axiosInstance.post(url, rowData);
+  if (response && response.status == 200) {
+    /**
+     * in local
+     */
+    mutate(BASE_URL, () => {});
+  }
+}
+
+// ----------------------------------------------------------------------
+
+export async function updateUsere(userId: number, rowData: IUserItem) {
+  /**
+   * on server
+   */
+  const url = `${BASE_URL}/${userId}`;
+  const response = await axiosInstance.put(url, rowData);
+  if (response && response.status == 200) {
+    /**
+     * in local
+     */
+    mutate(BASE_URL, () => {});
+  }
+}
+
+// ----------------------------------------------------------------------
+
+export async function deleteUser(userId: number) {
+  /**
+   * on server
+   */
+  const url = `${BASE_URL}/${userId}`;
+  const response = await axiosInstance.delete(url);
+  if (response && response.status === 200) {
+    /**
+     * in local
+     */
+    mutate(BASE_URL, () => {});
+  }
+}

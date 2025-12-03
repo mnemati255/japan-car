@@ -38,7 +38,7 @@ public partial class Auction
     /// <summary>
     /// ایجاد شده توسط
     /// </summary>
-    public int CreatedBy { get; set; }
+    public int? CreatedBy { get; set; }
 
     /// <summary>
     /// ویرایش شده توسط

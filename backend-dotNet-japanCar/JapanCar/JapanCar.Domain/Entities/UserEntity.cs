@@ -43,5 +43,10 @@ namespace JapanCar.Domain.Entities
         /// لیست شناسه نقش‌ها
         /// </summary>
         public List<int> RoleIds { get; set; } = [];
+
+        /// <summary>
+        /// تاریخ ایجاد
+        /// </summary>
+        public DateTime? CreatedDate { get; set; }
     }
 }

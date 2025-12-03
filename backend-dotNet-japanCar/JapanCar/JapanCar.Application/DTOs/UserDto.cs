@@ -15,6 +15,7 @@ namespace JapanCar.Application.DTOs
         public string? Email { get; set; }
         public bool IsActive { get; set; }
         public List<int> RoleIds { get; set; } = [];
+        public DateTime? CreatedAt { get; set; }
     }
 
     public class UserDtoValidator : AbstractValidator<UserDto>

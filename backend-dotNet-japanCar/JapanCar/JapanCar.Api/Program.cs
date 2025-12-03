@@ -1,8 +1,9 @@
 using JapanCar.Api.Filters;
 using JapanCar.Api.Middlewares;
 using JapanCar.Application;
-using JapanCar.Application.DTOs;
 using JapanCar.Infrastructure;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,14 +17,28 @@ builder.Services.AddCors(options =>
     options.AddPolicy("EnableCors", builder =>
     {
         builder
-        .WithOrigins("http://localhost:3000")
+        .WithOrigins("http://localhost:3000", "http://localhost:3001", "http://185.231.115.136")
         .AllowAnyMethod()
         .AllowAnyHeader()
-        .AllowCredentials()
-        .Build();
+        .AllowCredentials();
     });
 });
 
+// Auth
+builder.Services.AddAuthorization();
+builder.Services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
+{
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey =
+                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]!))
+    };
+});
+
+// 
 builder.Services.AddScoped(typeof(ValidateDtoFilter<>));
 
 // Infrustructure DI
@@ -41,9 +56,10 @@ app.UseSwagger();
 app.UseSwaggerUI();
 //}
 app.UseHttpsRedirection();
+app.UseCors("EnableCors");
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.UseStaticFiles();
-app.UseCors("EnableCors");
 app.UseMiddleware<AppExceptionMiddleware>();
 app.Run();

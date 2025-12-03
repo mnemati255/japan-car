@@ -1,10 +1,12 @@
 ﻿using JapanCar.Api.Filters;
 using JapanCar.Application.DTOs;
 using JapanCar.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JapanCar.Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class RoleController : ControllerBase

@@ -24,6 +24,7 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 RoleId = x.RoleId,
                 RoleName = x.RoleName,
                 Description = x.Description,
+                CreatedDate = x.CreatedDate
             });
         }
 

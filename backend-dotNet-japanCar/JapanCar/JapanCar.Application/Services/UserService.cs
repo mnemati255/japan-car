@@ -27,7 +27,8 @@ namespace JapanCar.Application.Services
                 UserId = x.UserId,
                 Email = x.Email,
                 UserName = x.UserName,
-                IsActive = x.IsActive
+                IsActive = x.IsActive,
+                CreatedAt = x.CreatedDate
             });
         }
 
@@ -69,13 +70,20 @@ namespace JapanCar.Application.Services
 
         public async Task UpdateUser(int id, UserDto dto)
         {
-            var result = await _unitOfWork.UserRepository.UpdateUser(id, new UserEntity
+            var userEntity = new UserEntity
             {
-                Email= dto.Email,
+                Email = dto.Email,
                 IsActive = dto.IsActive,
                 ModifiedDate = DateTime.Now,
-                RoleIds = dto.RoleIds
-            });
+                RoleIds = dto.RoleIds,
+            };
+
+            if (!string.IsNullOrEmpty(dto.Password))
+            {
+                userEntity.PasswordHash = _passwordHasher.HashPassword(dto.Password);
+            }
+
+            var result = await _unitOfWork.UserRepository.UpdateUser(id, userEntity);
 
             if(!result)
                 throw new AppException("Not found", HttpStatusCode.NotFound);

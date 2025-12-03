@@ -36,6 +36,7 @@ namespace JapanCar.Application.Services
                 RoleId = x.RoleId,
                 RoleName = x.RoleName,
                 Description = x.Description,
+                CreatedAt = x.CreatedDate
             });
         }
 

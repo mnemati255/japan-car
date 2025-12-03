@@ -23,6 +23,7 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 Email = x.Email,
                 UserName = x.UserName,
                 IsActive = x.IsActive,
+                CreatedDate = x.CreatedDate
             });
         }
 
@@ -48,7 +49,7 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<UserEntity?> GetUserByUserName(string userName)
+        public async Task<UserEntity?> GetUserByUserName(string userName, bool withPassword = false)
         {
             var user = await _context.Users
                 .Where(x => x.UserName.Equals(userName))
@@ -58,7 +59,7 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
             if (user == null)
                 return null;
 
-            return new UserEntity
+            var result = new UserEntity
             {
                 UserId = user.UserId,
                 Email = user.Email,
@@ -66,6 +67,10 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 UserName = user.UserName,
                 RoleIds = user.UserRoleUsers.Select(x => x.RoleId).ToList()
             };
+
+            if (withPassword) result.PasswordHash = user.PasswordHash;
+
+            return result;
         }
 
 
@@ -106,6 +111,7 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
 
             entity.Email = user.Email;
             entity.ModifiedDate = DateTime.Now;
+            entity.IsActive = user.IsActive;
             entity.UserRoleUsers = user.RoleIds.Select(rid => new Models.UserRole
             {
                 RoleId = rid,
