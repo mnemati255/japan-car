@@ -90,7 +90,11 @@ export const paths = {
     auction: {
       root: `${ROOTS.DASHBOARD}/auction`,
       new: `${ROOTS.DASHBOARD}/auction/new`,
-      edit: (id: number) => `${ROOTS.DASHBOARD}/auction/${id}/edit`,
+      edit: (auctionId: number) => `${ROOTS.DASHBOARD}/auction/${auctionId}/edit`,
+      newCar: (auctionId: number) => `${ROOTS.DASHBOARD}/auction/${auctionId}/car/new`,
+      cars: (auctionId: number) => `${ROOTS.DASHBOARD}/auction/${auctionId}/car`,
+      editCar: (auctionId: number, carId: number) =>
+        `${ROOTS.DASHBOARD}/auction/${auctionId}/car/${carId}/edit`,
     },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,

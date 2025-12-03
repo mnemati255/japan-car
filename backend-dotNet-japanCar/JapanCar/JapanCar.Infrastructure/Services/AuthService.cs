@@ -10,7 +10,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace JapanCar.Infrastructure.Security
+namespace JapanCar.Infrastructure.Services
 {
     public class AuthService : IAuthService
     {

@@ -32,18 +32,9 @@ export function useGetUsers() {
 
 // ----------------------------------------------------------------------
 
-export function useGetUser(id: number) {
-  const url = `${BASE_URL}/${id}`;
-  const { data, isLoading, error, isValidating } = useSWR<IUserItem>(url, fetcher, {
-    ...swrOptions,
-  });
-
-  return {
-    user: (data as IUserItem) || null,
-    userLoading: isLoading,
-    userError: error,
-    userValidating: isValidating,
-  };
+export async function getUserById(id: number) {
+  const res = await axiosInstance.get(`${BASE_URL}/${id}`);
+  return res;
 }
 
 // ----------------------------------------------------------------------

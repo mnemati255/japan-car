@@ -1,20 +1,36 @@
 'use client';
 
 import { paths } from '@/routes/paths';
-
 import { DashboardContent } from '@/layouts/dashboard';
-
 import { CustomBreadcrumbs } from '@/components/custom-breadcrumbs';
 import { RoleCreateEditForm } from '../role-create-edit-form';
 import { IRoleItem } from '@/types/role';
+import { useEffect, useState } from 'react';
+import { getRoleById } from '@/actions/role';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  role?: IRoleItem;
+  roleId?: number;
 };
 
-export function RoleEditView({ role: currentRole }: Props) {
+export function RoleEditView({ roleId }: Props) {
+  const [currentRole, setCurrentRole] = useState<IRoleItem | null>(null);
+
+  useEffect(() => {
+    if (roleId) {
+      const getRole = async () => {
+        const { status, data } = await getRoleById(roleId);
+        if (status === 200) {
+          setCurrentRole(data);
+        }
+      };
+      getRole();
+    }
+  }, [roleId]);
+
+  if (!currentRole) return null;
+
   return (
     <DashboardContent>
       <CustomBreadcrumbs

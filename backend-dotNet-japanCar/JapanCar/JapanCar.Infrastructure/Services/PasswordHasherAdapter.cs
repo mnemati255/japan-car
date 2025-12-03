@@ -1,7 +1,7 @@
 ﻿using JapanCar.Application.Interfaces.Security;
 using Microsoft.AspNetCore.Identity;
 
-namespace JapanCar.Infrastructure.Security
+namespace JapanCar.Infrastructure.Services
 {
     public class PasswordHasherAdapter : IPasswordHasher
     {

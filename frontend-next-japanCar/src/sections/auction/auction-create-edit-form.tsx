@@ -77,7 +77,7 @@ export function AuctionCreateEditForm({ currentAuction }: Props) {
               <Field.Text name="auctionName" label="Name" />
               <Field.DatePicker name="auctionDate" label="Date" />
               <Field.Text
-                name="auctinFee"
+                name="auctionFee"
                 label="Fee"
                 type="number"
                 slotProps={{

@@ -29,7 +29,7 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
 
         public async Task<bool> Delete(int id)
         {
-            var entity = await _context.Auctions.SingleOrDefaultAsync(x=>x.AuctionId == id);
+            var entity = await _context.Auctions.SingleOrDefaultAsync(x => x.AuctionId == id);
             if (entity == null)
                 return false;
 
@@ -63,6 +63,7 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
 
             return new AuctionEntity
             {
+                AuctionId = entity.AuctionId,
                 AuctionName = entity.AuctionName,
                 AuctionDate = entity.AuctionDate,
                 AuctionFee = entity.AuctionFee,

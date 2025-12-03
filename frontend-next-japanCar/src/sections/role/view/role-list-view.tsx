@@ -15,6 +15,7 @@ import { TableHeadCustom } from '@/components/table';
 import { deleteRole, useGetRoles } from '@/actions/role';
 import { RoleTableRow } from '../role-table-row';
 import Loading from '@/app/dashboard/loading';
+import { Scrollbar } from '@/components/scrollbar';
 
 // ----------------------------------------------------------------------
 
@@ -60,18 +61,20 @@ export function RoleListView() {
           <Loading />
         ) : (
           <Card>
-            <Table sx={{ minWidth: 400 }}>
-              <TableHeadCustom headCells={TABLE_HEAD} />
-              <TableBody>
-                {roles.map((row) => (
-                  <RoleTableRow
-                    key={row.roleId!}
-                    row={row}
-                    onDeleteRow={() => handleDeleteRole(row.roleId!)}
-                  />
-                ))}
-              </TableBody>
-            </Table>
+            <Scrollbar sx={{ minHeight: 350 }}>
+              <Table sx={{ minWidth: 500 }}>
+                <TableHeadCustom headCells={TABLE_HEAD} />
+                <TableBody>
+                  {roles.map((row) => (
+                    <RoleTableRow
+                      key={row.roleId!}
+                      row={row}
+                      onDeleteRow={() => handleDeleteRole(row.roleId!)}
+                    />
+                  ))}
+                </TableBody>
+              </Table>
+            </Scrollbar>
           </Card>
         )}
       </DashboardContent>

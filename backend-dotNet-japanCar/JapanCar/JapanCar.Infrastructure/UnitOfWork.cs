@@ -17,6 +17,7 @@ namespace JapanCar.Infrastructure
         public IUserRepository UserRepository {  get; private set; }
         public IRoleRepository RoleRepository {  get; private set; }
         public IAuctionRepository AuctionRepository { get; private set; }
+        public IBaseInfoRepository BaseInfoRepository { get; private set; }
 
 
         public UnitOfWork(AppDbContext context)
@@ -26,6 +27,7 @@ namespace JapanCar.Infrastructure
             UserRepository = new UserRepository(_context);
             RoleRepository = new RoleRepository(_context);
             AuctionRepository = new AuctionRepository(_context);
+            BaseInfoRepository = new BaseInfoRepository(_context);
         }
 
         public async Task<int> CompleteAsync()

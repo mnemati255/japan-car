@@ -24,6 +24,11 @@ namespace JapanCar.Domain.Entities
         public string ModelName { get; set; } = null!;
 
         /// <summary>
+        /// تاریخ ایجاد
+        /// </summary>
+        public DateTime CreatedDate { get; set; }
+
+        /// <summary>
         /// تاریخ ویرایش
         /// </summary>
         public DateTime? ModifiedDate { get; set; }

@@ -1,19 +1,57 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
 namespace JapanCar.Application.DTOs
 {
     public class CarDto
     {
-        public string ModelName { get; set; }
+        public int CarId { get; set; }
 
-        public string ColorName { get; set; }
+        public int AuctionId { get; set; }
+
+        public int ColorId { get; set; }
+
+        public int ModelId { get; set; }
 
         public int Year { get; set; }
 
         public int Mileage { get; set; }
+
+        public int? EngineVolume { get; set; }
+
+        public string? FuelType { get; set; }
+
+        public string? TechnicalTestResult { get; set; }
+
+        public string? UsageStatus { get; set; }
+
+        public decimal PurchasePrice { get; set; }
+
+        public decimal? TaxAmount { get; set; }
+
+        public decimal? FinalPrice { get; set; }
+
+        public string ChasisNumber { get; set; } = null!;
+
+        public string? ModelName { get; set; }
+
+        public string? ColorName { get; set; }
+
+        public string? BrandName { get; set; }
+
+        public DateTime? CreatedAt { get; set; }
+        public string[]? Images { get; set; }
+
+    }
+
+    public class CarDtoValidator : AbstractValidator<CarDto>
+    {
+        public CarDtoValidator()
+        {
+            RuleFor(x => x.ColorId).NotEmpty().WithMessage("Color is required.");
+            RuleFor(x => x.ModelId).NotEmpty().WithMessage("Model is required.");
+            RuleFor(x => x.Year).NotEmpty().WithMessage("Year is required.");
+            RuleFor(x => x.Mileage).NotEmpty().WithMessage("Year is required.");
+            RuleFor(x => x.ChasisNumber).NotEmpty().WithMessage("Year is required.");
+        }
     }
 }

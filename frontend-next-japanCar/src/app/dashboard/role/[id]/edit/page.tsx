@@ -1,9 +1,6 @@
 import type { Metadata } from 'next';
-
 import { CONFIG } from '@/global-config';
-
 import { RoleEditView } from '@/sections/role/view';
-import { getRoleById } from '@/actions/role-ssr';
 
 // ----------------------------------------------------------------------
 
@@ -16,7 +13,5 @@ type Props = {
 export default async function Page({ params }: Props) {
   const { id } = await params;
 
-  const currentRole = await getRoleById(id);
-
-  return <RoleEditView role={currentRole} />;
+  return <RoleEditView roleId={id} />;
 }

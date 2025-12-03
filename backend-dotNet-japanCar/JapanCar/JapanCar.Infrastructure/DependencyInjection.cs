@@ -2,7 +2,7 @@
 using JapanCar.Application.Interfaces.Security;
 using JapanCar.Infrastructure.Configuration;
 using JapanCar.Infrastructure.Persistence;
-using JapanCar.Infrastructure.Security;
+using JapanCar.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

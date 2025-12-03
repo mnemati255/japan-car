@@ -13,6 +13,7 @@ namespace JapanCar.Application.Interfaces
         IUserRepository UserRepository { get; }
         IRoleRepository RoleRepository { get; }
         IAuctionRepository AuctionRepository { get; }
+        IBaseInfoRepository BaseInfoRepository { get; }
         Task<int> CompleteAsync();
     }
 }

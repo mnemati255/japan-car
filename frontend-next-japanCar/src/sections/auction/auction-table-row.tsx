@@ -58,6 +58,11 @@ export function AuctionTableRow({ row, onDeleteRow }: Props) {
 
         <TableCell>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <RouterLink href={paths.dashboard.auction.cars(row.auctionId!)}>
+              <Button variant="outlined" color="info" size="small">
+                Cars
+              </Button>
+            </RouterLink>
             <Tooltip title="Edit" placement="top" arrow>
               <RouterLink href={paths.dashboard.auction.edit(row.auctionId!)}>
                 <IconButton color="warning">

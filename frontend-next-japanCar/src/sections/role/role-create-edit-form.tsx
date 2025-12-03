@@ -56,10 +56,12 @@ export function RoleCreateEditForm({ currentRole }: Props) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      if (!currentRole) await createRole(data);
-      else await updateRole(currentRole.roleId!, data);
-      toast.success(currentRole ? 'Update success!' : 'Create success!');
-      router.push(paths.dashboard.role.root);
+      const api = !currentRole ? createRole(data) : updateRole(currentRole.roleId!, data);
+      const { status } = await api;
+      if (status == 200) {
+        toast.success(currentRole ? 'Update success!' : 'Create success!');
+        router.push(paths.dashboard.role.root);
+      }
     } catch (error) {
       console.error(error);
     }

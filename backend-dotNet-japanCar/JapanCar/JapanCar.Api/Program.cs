@@ -1,6 +1,8 @@
 using JapanCar.Api.Filters;
 using JapanCar.Api.Middlewares;
+using JapanCar.Api.Services;
 using JapanCar.Application;
+using JapanCar.Application.Interfaces;
 using JapanCar.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -46,6 +48,9 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 // Application DI
 builder.Services.AddApplication();
+
+// Api DI
+builder.Services.AddScoped<IFileStorage, FileStorageService>();
 
 
 

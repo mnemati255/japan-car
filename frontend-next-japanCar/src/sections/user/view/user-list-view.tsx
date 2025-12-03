@@ -15,6 +15,7 @@ import { TableHeadCustom } from '@/components/table';
 import Loading from '@/app/dashboard/loading';
 import { deleteUser, useGetUsers } from '@/actions/user';
 import { UserTableRow } from '../user-table-row';
+import { Scrollbar } from '@/components/scrollbar';
 
 // ----------------------------------------------------------------------
 
@@ -62,18 +63,20 @@ export function UserListView() {
           <Loading />
         ) : (
           <Card>
-            <Table sx={{ minWidth: 400 }}>
-              <TableHeadCustom headCells={TABLE_HEAD} />
-              <TableBody>
-                {users.map((row) => (
-                  <UserTableRow
-                    key={row.userId!}
-                    row={row}
-                    onDeleteRow={() => handleDeleteUser(row.userId!)}
-                  />
-                ))}
-              </TableBody>
-            </Table>
+            <Scrollbar sx={{ minHeight: 350 }}>
+              <Table sx={{ minWidth: 700 }}>
+                <TableHeadCustom headCells={TABLE_HEAD} />
+                <TableBody>
+                  {users.map((row) => (
+                    <UserTableRow
+                      key={row.userId!}
+                      row={row}
+                      onDeleteRow={() => handleDeleteUser(row.userId!)}
+                    />
+                  ))}
+                </TableBody>
+              </Table>
+            </Scrollbar>
           </Card>
         )}
       </DashboardContent>

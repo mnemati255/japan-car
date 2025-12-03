@@ -17,6 +17,7 @@ import { AuctionTableRow } from '../auction-table-row';
 import { deleteAuction, useGetAuctions } from '@/actions/auction';
 import { EmptyContent } from '@/components/empty-content';
 import Stack from '@mui/material/Stack';
+import { Scrollbar } from '@/components/scrollbar';
 
 // ----------------------------------------------------------------------
 
@@ -44,18 +45,20 @@ export function AuctionListView() {
   );
 
   const renderTable = () => (
-    <Table sx={{ minWidth: 400 }}>
-      <TableHeadCustom headCells={TABLE_HEAD} />
-      <TableBody>
-        {auctions.map((row) => (
-          <AuctionTableRow
-            key={row.auctionId!}
-            row={row}
-            onDeleteRow={() => handleDeleteAuction(row.auctionId!)}
-          />
-        ))}
-      </TableBody>
-    </Table>
+    <Scrollbar sx={{ minHeight: 350 }}>
+      <Table sx={{ minWidth: 700 }}>
+        <TableHeadCustom headCells={TABLE_HEAD} />
+        <TableBody>
+          {auctions.map((row) => (
+            <AuctionTableRow
+              key={row.auctionId!}
+              row={row}
+              onDeleteRow={() => handleDeleteAuction(row.auctionId!)}
+            />
+          ))}
+        </TableBody>
+      </Table>
+    </Scrollbar>
   );
 
   return (

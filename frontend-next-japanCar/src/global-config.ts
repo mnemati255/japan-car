@@ -1,5 +1,6 @@
 // import { paths } from '@/routes/paths';
 
+import { SWRConfiguration } from 'swr';
 import packageJson from '../package.json';
 import { paths } from './routes/paths';
 
@@ -10,6 +11,7 @@ export type ConfigValue = {
   appVersion: string;
   serverUrl: string;
   assetsDir: string;
+  carsImagesDir: string;
   isStaticExport: boolean;
   auth: {
     method: 'jwt';
@@ -25,6 +27,7 @@ export const CONFIG: ConfigValue = {
   appVersion: packageJson.version,
   serverUrl: process.env.NEXT_PUBLIC_SERVER_URL ?? '',
   assetsDir: process.env.NEXT_PUBLIC_ASSETS_DIR ?? '',
+  carsImagesDir: process.env.NEXT_PUBLIC_CARS_IMAGES_DIR ?? '',
   isStaticExport: JSON.parse(process.env.BUILD_STATIC_EXPORT ?? 'false'),
   /**
    * Auth
@@ -35,4 +38,12 @@ export const CONFIG: ConfigValue = {
     skip: false,
     redirectPath: paths.dashboard.root,
   },
+};
+
+// ----------------------------------------------------------------------
+
+export const swrOptions: SWRConfiguration = {
+  revalidateIfStale: false,
+  revalidateOnFocus: false,
+  revalidateOnReconnect: false,
 };

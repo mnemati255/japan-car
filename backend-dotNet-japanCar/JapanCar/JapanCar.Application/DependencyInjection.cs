@@ -18,10 +18,12 @@ namespace JapanCar.Application
             services.AddScoped<UserService>();
             services.AddScoped<RoleService>();
             services.AddScoped<AuctionService>();
+            services.AddScoped<BaseInfoService>();
 
             services.AddScoped<IValidator<RoleDto>, RoleDtoValidator>();
             services.AddScoped<IValidator<UserDto>, UserDtoValidator>();
             services.AddScoped<IValidator<AuctionDto>, AuctionDtoValidator>();
+            services.AddScoped<IValidator<CarDto>, CarDtoValidator>();
 
             return services;
         }

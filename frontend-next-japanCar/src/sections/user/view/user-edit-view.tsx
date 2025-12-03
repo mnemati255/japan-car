@@ -1,16 +1,12 @@
 'use client';
 
 import type { IUserItem } from '@/types/user';
-
 import { paths } from '@/routes/paths';
-
 import { DashboardContent } from '@/layouts/dashboard';
-
 import { CustomBreadcrumbs } from '@/components/custom-breadcrumbs';
-
 import { UserCreateEditForm } from '../user-create-edit-form';
 import { useEffect, useState } from 'react';
-import { getUserById } from '@/actions/user-ssr';
+import { getUserById } from '@/actions/user';
 
 // ----------------------------------------------------------------------
 

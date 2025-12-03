@@ -32,16 +32,17 @@ export function useGetAuctions() {
 
 // ----------------------------------------------------------------------
 
+export async function getAuctionById(id: number) {
+  const res = await axiosInstance.get(`${BASE_URL}/${id}`);
+  return res;
+}
+
+// ----------------------------------------------------------------------
+
 export async function createAuction(rowData: IAuctionItem) {
-  /**
-   * on server
-   */
   const url = BASE_URL;
   const response = await axiosInstance.post(url, rowData);
   if (response && response.status == 200) {
-    /**
-     * in local
-     */
     mutate(BASE_URL, () => {});
   }
 
@@ -51,15 +52,9 @@ export async function createAuction(rowData: IAuctionItem) {
 // ----------------------------------------------------------------------
 
 export async function updateAuction(userId: number, rowData: IAuctionItem) {
-  /**
-   * on server
-   */
   const url = `${BASE_URL}/${userId}`;
   const response = await axiosInstance.put(url, rowData);
   if (response && response.status == 200) {
-    /**
-     * in local
-     */
     mutate(BASE_URL, () => {});
   }
 
@@ -69,15 +64,9 @@ export async function updateAuction(userId: number, rowData: IAuctionItem) {
 // ----------------------------------------------------------------------
 
 export async function deleteAuction(userId: number) {
-  /**
-   * on server
-   */
   const url = `${BASE_URL}/${userId}`;
   const response = await axiosInstance.delete(url);
   if (response && response.status === 200) {
-    /**
-     * in local
-     */
     mutate(BASE_URL, () => {});
   }
 }

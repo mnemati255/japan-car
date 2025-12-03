@@ -43,6 +43,7 @@ namespace JapanCar.Application.Services
 
             return new AuctionDto
             {
+                AuctionId = auction.AuctionId,
                 AuctionName = auction.AuctionName,
                 AuctionDate = auction.AuctionDate.ToString(),
                 AuctionFee = auction.AuctionFee,

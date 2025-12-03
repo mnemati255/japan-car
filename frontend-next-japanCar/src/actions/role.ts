@@ -1,16 +1,9 @@
-import type { SWRConfiguration } from 'swr';
 import type { IPermissionItem, IRoleItem } from '@/types/role';
 import useSWR, { mutate } from 'swr';
 import axiosInstance, { fetcher } from '@/lib/axios';
-import { CONFIG } from '@/global-config';
+import { CONFIG, swrOptions } from '@/global-config';
 
 // ----------------------------------------------------------------------
-
-const swrOptions: SWRConfiguration = {
-  revalidateIfStale: false,
-  revalidateOnFocus: false,
-  revalidateOnReconnect: false,
-};
 
 const BASE_URL = `${CONFIG.serverUrl}/role`;
 
@@ -54,6 +47,13 @@ export function useGetRoles() {
 
 // ----------------------------------------------------------------------
 
+export async function getRoleById(id: number) {
+  const res = await axiosInstance.get(`${BASE_URL}/${id}`);
+  return res;
+}
+
+// ----------------------------------------------------------------------
+
 export async function createRole(rowData: IRoleItem) {
   /**
    * on server
@@ -66,6 +66,8 @@ export async function createRole(rowData: IRoleItem) {
      */
     mutate(BASE_URL, () => {});
   }
+
+  return response;
 }
 
 // ----------------------------------------------------------------------
@@ -82,6 +84,8 @@ export async function updateRole(roleId: number, rowData: IRoleItem) {
      */
     mutate(BASE_URL, () => {});
   }
+
+  return response;
 }
 
 // ----------------------------------------------------------------------
