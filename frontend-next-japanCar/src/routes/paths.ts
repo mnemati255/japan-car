@@ -106,6 +106,9 @@ export const paths = {
       new: `${ROOTS.DASHBOARD}/role/new`,
       edit: (id: number) => `${ROOTS.DASHBOARD}/role/${id}/edit`,
     },
+    baseInfo: {
+      root: `${ROOTS.DASHBOARD}/baseInfo`,
+    },
     // product: {
     //   root: `${ROOTS.DASHBOARD}/product`,
     //   new: `${ROOTS.DASHBOARD}/product/new`,

@@ -57,7 +57,7 @@ export function AuthSplitLayout({
       leftArea: (
         <>
           {/** @slot Logo */}
-          <Logo />
+          {/* <Logo /> */}
         </>
       ),
       rightArea: (
@@ -100,7 +100,7 @@ export function AuthSplitLayout({
         ...(Array.isArray(slotProps?.main?.sx) ? slotProps.main.sx : [slotProps?.main?.sx]),
       ]}
     >
-      <AuthSplitSection
+      {/* <AuthSplitSection
         layoutQuery={layoutQuery}
         method={CONFIG.auth.method}
         {...slotProps?.section}
@@ -111,7 +111,7 @@ export function AuthSplitLayout({
             icon: `${CONFIG.assetsDir}/assets/icons/platforms/ic-jwt.svg`,
           },
         ]}
-      />
+      /> */}
       <AuthSplitContent layoutQuery={layoutQuery} {...slotProps?.content}>
         {children}
       </AuthSplitContent>

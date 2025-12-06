@@ -46,16 +46,6 @@ public partial class Car
     public string? FuelType { get; set; }
 
     /// <summary>
-    /// نتیجه تست فنی
-    /// </summary>
-    public string? TechnicalTestResult { get; set; }
-
-    /// <summary>
-    /// وضعیت استفاده
-    /// </summary>
-    public string? UsageStatus { get; set; }
-
-    /// <summary>
     /// تاریخ ایجاد
     /// </summary>
     public DateTime CreatedDate { get; set; }

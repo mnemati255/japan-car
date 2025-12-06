@@ -24,8 +24,6 @@ import { Scrollbar } from '@/components/scrollbar';
 
 const TABLE_HEAD: TableHeadCellProps[] = [
   { id: 'modelName', label: 'Model' },
-  { id: 'colorName', label: 'Color' },
-  { id: 'year', label: 'Year' },
   { id: 'purchasePrice', label: 'Purchase price' },
   { id: 'finalPrice', label: 'Final price' },
   { id: 'createdAt', label: 'Date' },
@@ -90,8 +88,8 @@ export function AuctionCarsListView({ auctionId }: Props) {
         backHref={paths.dashboard.auction.root}
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Auction', href: paths.dashboard.auction.root },
-          { name: currentAuction?.auctionName },
+          { name: currentAuction?.auctionName, href: paths.dashboard.auction.root },
+          { name: 'Cars' },
         ]}
         action={
           <Button

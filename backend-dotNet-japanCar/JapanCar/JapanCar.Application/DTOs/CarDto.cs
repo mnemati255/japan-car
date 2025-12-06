@@ -8,6 +8,8 @@ namespace JapanCar.Application.DTOs
 
         public int AuctionId { get; set; }
 
+        public int? BrandId { get; set; }
+
         public int ColorId { get; set; }
 
         public int ModelId { get; set; }
@@ -20,11 +22,11 @@ namespace JapanCar.Application.DTOs
 
         public string? FuelType { get; set; }
 
-        public string? TechnicalTestResult { get; set; }
-
-        public string? UsageStatus { get; set; }
-
         public decimal PurchasePrice { get; set; }
+
+        public decimal? TransportPrice { get; set; }
+
+        public decimal? AuctionPrice { get; set; }
 
         public decimal? TaxAmount { get; set; }
 
@@ -39,6 +41,7 @@ namespace JapanCar.Application.DTOs
         public string? BrandName { get; set; }
 
         public DateTime? CreatedAt { get; set; }
+
         public string[]? Images { get; set; }
 
     }

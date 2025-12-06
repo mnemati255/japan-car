@@ -47,7 +47,7 @@ public partial class Auction
 
     public virtual ICollection<CarAuctionDetail> CarAuctionDetails { get; set; } = new List<CarAuctionDetail>();
 
-    public virtual User CreatedByNavigation { get; set; } = null!;
+    public virtual User? CreatedByNavigation { get; set; }
 
     public virtual User? ModifiedByNavigation { get; set; }
 }

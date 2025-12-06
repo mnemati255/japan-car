@@ -65,7 +65,7 @@ namespace JapanCar.Application.Services
             var result = await _unitOfWork.AuctionRepository.Update(id, new AuctionEntity
             {
                 AuctionName= dto.AuctionName,
-                AuctionDate = DateOnly.Parse(dto.AuctionDate),
+                AuctionDate = DateOnly.Parse(dto.AuctionDate.Split("T")[0]),
                 AuctionFee = dto.AuctionFee,
                 ModifiedDate = DateTime.Now
             });

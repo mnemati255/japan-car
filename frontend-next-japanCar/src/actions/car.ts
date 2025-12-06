@@ -28,8 +28,8 @@ export async function createEditCarForAuction(
   fd.append('dto.dto.ModelId', car.modelId.toString());
   fd.append('dto.dto.PurchasePrice', car.purchasePrice.toString());
   fd.append('dto.dto.TaxAmount', car.taxAmount?.toString() ?? '');
-  fd.append('dto.dto.TechnicalTestResult', car.technicalTestResult ?? '');
-  fd.append('dto.dto.UsageStatus', car.usageStatus ?? '');
+  fd.append('dto.dto.TransportPrice', car.transportPrice?.toString() ?? '');
+  fd.append('dto.dto.AuctionPrice', car.auctionPrice?.toString() ?? '');
   fd.append('dto.dto.Year', car.year.toString());
   car.images.forEach((item) => {
     fd.append('dto.Images', item);

@@ -11,5 +11,7 @@ namespace JapanCar.Application.DTOs
         public int ModelId { get; set; }
         public int BrandId { get; set; }
         public string ModelName { get; set; } = null!;
+        public string? BrandName { get; set; }
+        public DateTime? CreatedAt { get; set; }
     }
 }

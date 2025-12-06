@@ -2,6 +2,11 @@ import type { Dayjs } from 'dayjs';
 
 // ----------------------------------------------------------------------
 
+export interface IGrid<T> {
+  items: T[];
+  totalPage: number;
+}
+
 export type IPaymentCard = {
   id: string;
   cardType: string;

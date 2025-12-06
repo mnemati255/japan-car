@@ -10,6 +10,8 @@ namespace JapanCar.Domain.Entities
     {
         public int CarId { get; set; }
 
+        public int BrandId { get; set; }
+
         public int ModelId { get; set; }
 
         public string ModelName { get; set; } = null!;
@@ -17,6 +19,7 @@ namespace JapanCar.Domain.Entities
         public int ColorId { get; set; }
 
         public string ColorName { get; set; } = null!;
+
         public string BrandName { get; set; } = null!;
 
         public string ChassisNumber { get; set; } = null!;
@@ -29,10 +32,6 @@ namespace JapanCar.Domain.Entities
 
         public string? FuelType { get; set; }
 
-        public string? TechnicalTestResult { get; set; }
-
-        public string? UsageStatus { get; set; }
-
         public DateTime CreatedDate { get; set; }
 
         public DateTime? ModifiedDate { get; set; }
@@ -44,6 +43,10 @@ namespace JapanCar.Domain.Entities
         public int AuctionId { get; set; }
 
         public decimal PurchasePrice { get; set; }
+
+        public decimal? TransportPrice { get; set; }
+
+        public decimal? AuctionPrice { get; set; }
 
         public decimal? TaxAmount { get; set; }
 

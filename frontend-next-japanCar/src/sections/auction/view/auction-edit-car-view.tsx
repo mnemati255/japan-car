@@ -4,8 +4,8 @@ import { paths } from '@/routes/paths';
 import { DashboardContent } from '@/layouts/dashboard';
 import { CustomBreadcrumbs } from '@/components/custom-breadcrumbs';
 import { useEffect, useState } from 'react';
-import { ICar, IColor, IModel } from '@/types/car';
-import { getColors, getModels } from '@/actions/base-info';
+import { IBrand, ICar, IColor } from '@/types/car';
+import { getBrands, getColors } from '@/actions/base-info';
 import { AuctionCreateEditCarForm } from '../auction-create-edit-car-form';
 import { getCarById } from '@/actions/car';
 import { convertUrlToFile } from '@/utils/convert-url-to-file';
@@ -21,17 +21,17 @@ type Props = {
 export function AuctionEditCarView({ auctionId, carId }: Props) {
   const [currentCar, setCurrentCar] = useState<ICar | null>(null);
   const [colors, setColors] = useState<IColor[]>([]);
-  const [models, setModels] = useState<IModel[]>([]);
+  const [brands, setBrands] = useState<IBrand[]>([]);
   const [files, setFiles] = useState<File[]>([]);
 
   useEffect(() => {
     if (auctionId) {
       const getBaseInfo = async () => {
         const { status, data } = await getColors();
-        if (status == 200) setColors(data);
+        if (status == 200) setColors(data.items);
 
-        const { status: status2, data: data2 } = await getModels();
-        if (status2 == 200) setModels(data2);
+        const { status: status2, data: data2 } = await getBrands();
+        if (status2 == 200) setBrands(data2.items);
       };
       const getCar = async () => {
         const { status, data } = await getCarById(carId);
@@ -69,7 +69,7 @@ export function AuctionEditCarView({ auctionId, carId }: Props) {
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'Auction', href: paths.dashboard.auction.root },
           { name: 'Cars', href: paths.dashboard.auction.cars(auctionId) },
-          { name: currentCar?.modelName },
+          { name: `Chasis Num: ${currentCar?.chasisNumber}` },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
@@ -77,7 +77,7 @@ export function AuctionEditCarView({ auctionId, carId }: Props) {
       <AuctionCreateEditCarForm
         currentCar={currentCar}
         colors={colors}
-        models={models}
+        brands={brands}
         auctionId={auctionId}
         files={files}
       />

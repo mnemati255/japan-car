@@ -54,7 +54,7 @@ public partial class AppDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=185.231.115.136;User Id=sa;Password=NewPassword@1;Database=JapanCarDB;TrustServerCertificate=true;");
+        => optionsBuilder.UseSqlServer("Server=185.231.115.136;Database=JapanCarDB;User Id=sa;Password=NewPassword@1;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -82,7 +82,6 @@ public partial class AppDbContext : DbContext
 
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.AuctionCreatedByNavigations)
                 .HasForeignKey(d => d.CreatedBy)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Auctions_CreatedBy");
 
             entity.HasOne(d => d.ModifiedByNavigation).WithMany(p => p.AuctionModifiedByNavigations)
@@ -114,12 +113,6 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.ModifiedDate)
                 .HasComment("تاریخ ویرایش")
                 .HasColumnType("datetime");
-            entity.Property(e => e.TechnicalTestResult)
-                .HasMaxLength(1000)
-                .HasComment("نتیجه تست فنی");
-            entity.Property(e => e.UsageStatus)
-                .HasMaxLength(400)
-                .HasComment("وضعیت استفاده");
             entity.Property(e => e.Year).HasComment("سال ساخت");
 
             entity.HasOne(d => d.Color).WithMany(p => p.Cars)
@@ -147,6 +140,9 @@ public partial class AppDbContext : DbContext
 
             entity.Property(e => e.CarAuctionId).HasComment("شناسه حراج خودرو");
             entity.Property(e => e.AuctionId).HasComment("شناسه حراج");
+            entity.Property(e => e.AuctionPrice)
+                .HasComment("مبلغ مالیات")
+                .HasColumnType("decimal(18, 2)");
             entity.Property(e => e.CarId).HasComment("شناسه خودرو");
             entity.Property(e => e.CreatedBy).HasComment("ایجاد شده توسط");
             entity.Property(e => e.CreatedDate)
@@ -164,6 +160,9 @@ public partial class AppDbContext : DbContext
                 .HasComment("قیمت خرید")
                 .HasColumnType("decimal(18, 2)");
             entity.Property(e => e.TaxAmount)
+                .HasComment("مبلغ مالیات")
+                .HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.TransportPrice)
                 .HasComment("مبلغ مالیات")
                 .HasColumnType("decimal(18, 2)");
 

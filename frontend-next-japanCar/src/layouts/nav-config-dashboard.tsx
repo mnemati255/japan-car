@@ -109,6 +109,11 @@ export const navData: NavSectionProps['data'] = [
           { title: 'Create', path: paths.dashboard.role.new },
         ],
       },
+      {
+        title: 'Base informations',
+        path: paths.dashboard.baseInfo.root,
+        icon: ICONS.menuItem,
+      },
       // {
       //   title: 'Product',
       //   path: paths.dashboard.product.root,

@@ -18,6 +18,9 @@ export type ConfigValue = {
     skip: boolean;
     redirectPath: string;
   };
+  appSettings: {
+    pageSize: number;
+  };
 };
 
 // ----------------------------------------------------------------------
@@ -36,7 +39,10 @@ export const CONFIG: ConfigValue = {
   auth: {
     method: 'jwt',
     skip: false,
-    redirectPath: paths.dashboard.root,
+    redirectPath: paths.dashboard.auction.root,
+  },
+  appSettings: {
+    pageSize: Number(process.env.NEXT_PUBLIC_PAGE_SIZE) ?? 10,
   },
 };
 

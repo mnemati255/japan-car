@@ -22,7 +22,7 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace(paths.dashboard.user.root);
+    router.replace(paths.dashboard.auction.root);
   }, [router]);
 
   return null;

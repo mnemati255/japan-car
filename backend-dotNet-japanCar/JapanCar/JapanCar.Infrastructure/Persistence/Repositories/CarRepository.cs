@@ -33,8 +33,6 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 EngineVolume = car.EngineVolume,
                 FuelType = car.FuelType,
                 Mileage = car.Mileage,
-                TechnicalTestResult = car.TechnicalTestResult,
-                UsageStatus = car.UsageStatus,
             };
 
             foreach (var item in car.ImageUrls)
@@ -51,6 +49,8 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 PurchasePrice = car.PurchasePrice,
                 TaxAmount = car.TaxAmount,
                 FinalPrice = car.FinalPrice,
+                TransportPrice = car.TransportPrice,
+                AuctionPrice = car.AuctionPrice,
             });
 
             _context.Cars.Add(newCar);
@@ -123,7 +123,9 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
 
         public async Task<CarEntity?> GetById(int id, bool withAuctionDetails, bool withImages)
         {
-            var query = _context.Cars.Where(x => x.CarId == id);
+            var query = _context.Cars
+                .Include(x => x.Model)
+                .Where(x => x.CarId == id);
 
             if (withAuctionDetails)
                 query = query.Include(x => x.CarAuctionDetails);
@@ -139,6 +141,7 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
             return new CarEntity
             {
                 CarId = id,
+                BrandId = car.Model.BrandId,
                 ModelId = car.ModelId,
                 ColorId = car.ColorId,
                 Mileage = car.Mileage,
@@ -146,11 +149,11 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 ChassisNumber = car.ChassisNumber,
                 EngineVolume = car.EngineVolume,
                 FuelType = car.FuelType,
-                TechnicalTestResult = car.TechnicalTestResult,
-                UsageStatus = car.UsageStatus,
                 PurchasePrice = car.CarAuctionDetails.Any() ? car.CarAuctionDetails.ToList()[0].PurchasePrice : 0,
                 TaxAmount = car.CarAuctionDetails.Any() ? car.CarAuctionDetails.ToList()[0].TaxAmount : null,
                 FinalPrice = car.CarAuctionDetails.Any() ? car.CarAuctionDetails.ToList()[0].FinalPrice : null,
+                TransportPrice = car.CarAuctionDetails.Any() ? car.CarAuctionDetails.ToList()[0].TransportPrice : null,
+                AuctionPrice = car.CarAuctionDetails.Any() ? car.CarAuctionDetails.ToList()[0].AuctionPrice : null,
                 ImageUrls = car.CarImages.Any() ? car.CarImages.Select(x => x.ImageUrl).ToArray() : []
             };
         }
@@ -173,8 +176,6 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 entity.EngineVolume = car.EngineVolume;
                 entity.FuelType = car.FuelType;
                 entity.Mileage = car.Mileage;
-                entity.TechnicalTestResult = car.TechnicalTestResult;
-                entity.UsageStatus = car.UsageStatus;
 
                 _context.CarAuctionDetails.RemoveRange(entity.CarAuctionDetails);
                 _context.CarImages.RemoveRange(entity.CarImages);
@@ -193,6 +194,8 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                     PurchasePrice = car.PurchasePrice,
                     TaxAmount = car.TaxAmount,
                     FinalPrice = car.FinalPrice,
+                    TransportPrice = car.TransportPrice,
+                    AuctionPrice = car.AuctionPrice
                 });
 
                 await _context.SaveChangesAsync();

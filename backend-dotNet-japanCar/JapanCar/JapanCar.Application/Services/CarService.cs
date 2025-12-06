@@ -46,6 +46,8 @@ namespace JapanCar.Application.Services
                 FinalPrice = x.FinalPrice,
                 PurchasePrice = x.PurchasePrice,
                 TaxAmount = x.TaxAmount,
+                TransportPrice = x.TransportPrice,
+                AuctionPrice = x.AuctionPrice,
                 Year = x.Year,
                 CreatedAt = x.CreatedDate,
                 Images = x.ImageUrls
@@ -69,8 +71,8 @@ namespace JapanCar.Application.Services
                 Mileage = dto.Mileage,
                 PurchasePrice = dto.PurchasePrice,
                 TaxAmount = dto.TaxAmount,
-                TechnicalTestResult = dto.TechnicalTestResult,
-                UsageStatus = dto.UsageStatus,
+                TransportPrice = dto.TransportPrice,
+                AuctionPrice= dto.AuctionPrice,
                 Year = dto.Year,
                 ModelId = dto.ModelId,
             });
@@ -97,9 +99,9 @@ namespace JapanCar.Application.Services
                 ImageUrls = savedNames.ToArray(),
                 Mileage = dto.Mileage,
                 PurchasePrice = dto.PurchasePrice,
+                TransportPrice= dto.TransportPrice,
+                AuctionPrice = dto.AuctionPrice,
                 TaxAmount = dto.TaxAmount,
-                TechnicalTestResult = dto.TechnicalTestResult,
-                UsageStatus = dto.UsageStatus,
                 Year = dto.Year,
                 ModelId = dto.ModelId,
             });
@@ -130,12 +132,15 @@ namespace JapanCar.Application.Services
             {
                 CarId = car.CarId,
                 AuctionId = car.AuctionId,
+                BrandId = car.BrandId,
                 BrandName = car.BrandName,
                 ModelName = car.ModelName,
                 ColorName = car.ColorName,
                 FinalPrice = car.FinalPrice,
                 PurchasePrice = car.PurchasePrice,
                 TaxAmount = car.TaxAmount,
+                TransportPrice = car.TransportPrice,
+                AuctionPrice = car.AuctionPrice,
                 Year = car.Year,
                 CreatedAt = car.CreatedDate,
                 Images = car.ImageUrls,
@@ -145,8 +150,6 @@ namespace JapanCar.Application.Services
                 Mileage = car.Mileage,
                 EngineVolume = car.EngineVolume,
                 FuelType = car.FuelType,
-                TechnicalTestResult = car.TechnicalTestResult,
-                UsageStatus = car.UsageStatus
             };
         }
     }

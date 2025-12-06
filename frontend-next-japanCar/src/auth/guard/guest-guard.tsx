@@ -25,6 +25,7 @@ export function GuestGuard({ children }: GuestGuardProps) {
   const [isChecking, setIsChecking] = useState(true);
 
   const searchParams = useSearchParams();
+  
   const redirectUrl = safeReturnUrl(searchParams.get('returnTo'), CONFIG.auth.redirectPath);
 
   const checkPermissions = async (): Promise<void> => {

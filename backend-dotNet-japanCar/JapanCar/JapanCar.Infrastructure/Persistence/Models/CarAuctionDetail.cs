@@ -28,6 +28,16 @@ public partial class CarAuctionDetail
     /// <summary>
     /// مبلغ مالیات
     /// </summary>
+    public decimal? TransportPrice { get; set; }
+
+    /// <summary>
+    /// مبلغ مالیات
+    /// </summary>
+    public decimal? AuctionPrice { get; set; }
+
+    /// <summary>
+    /// مبلغ مالیات
+    /// </summary>
     public decimal? TaxAmount { get; set; }
 
     /// <summary>

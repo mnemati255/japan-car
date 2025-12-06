@@ -67,13 +67,11 @@ export function AuctionCarTableRow({ row, onDeleteRow }: Props) {
             <Stack>
               <Typography variant="body2">{row.brandName}</Typography>
               <Typography variant="body2" color="textDisabled" mt={0.5}>
-                {row.modelName}-{row.colorName}
+                {row.modelName} {row.year}-{row.colorName}
               </Typography>
             </Stack>
           </Stack>
         </TableCell>
-        <TableCell>{row.colorName}</TableCell>
-        <TableCell>{row.year}</TableCell>
         <TableCell>{fCurrency(row.purchasePrice)}</TableCell>
         <TableCell>{fCurrency(row.finalPrice)}</TableCell>
         <TableCell>{row.createdAt?.split('T')[0]}</TableCell>

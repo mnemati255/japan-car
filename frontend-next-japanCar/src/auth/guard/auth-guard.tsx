@@ -31,7 +31,8 @@ export function AuthGuard({ children }: AuthGuardProps) {
 
   const createRedirectPath = (currentPath: string) => {
     const queryString = new URLSearchParams({ returnTo: pathname }).toString();
-    return `${currentPath}?${queryString}`;
+    // return `${currentPath}?${queryString}`;
+    return `${currentPath}`;
   };
 
   const checkPermissions = async (): Promise<void> => {

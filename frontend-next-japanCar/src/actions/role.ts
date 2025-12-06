@@ -55,15 +55,9 @@ export async function getRoleById(id: number) {
 // ----------------------------------------------------------------------
 
 export async function createRole(rowData: IRoleItem) {
-  /**
-   * on server
-   */
   const url = BASE_URL;
   const response = await axiosInstance.post(url, rowData);
   if (response && response.status == 200) {
-    /**
-     * in local
-     */
     mutate(BASE_URL, () => {});
   }
 
@@ -73,15 +67,9 @@ export async function createRole(rowData: IRoleItem) {
 // ----------------------------------------------------------------------
 
 export async function updateRole(roleId: number, rowData: IRoleItem) {
-  /**
-   * on server
-   */
   const url = `${BASE_URL}/${roleId}`;
   const response = await axiosInstance.put(url, rowData);
   if (response && response.status == 200) {
-    /**
-     * in local
-     */
     mutate(BASE_URL, () => {});
   }
 
@@ -91,15 +79,9 @@ export async function updateRole(roleId: number, rowData: IRoleItem) {
 // ----------------------------------------------------------------------
 
 export async function deleteRole(roleId: number) {
-  /**
-   * on server
-   */
   const url = `${BASE_URL}/${roleId}`;
   const response = await axiosInstance.delete(url);
   if (response && response.status === 200) {
-    /**
-     * in local
-     */
     mutate(BASE_URL, () => {});
   }
 }

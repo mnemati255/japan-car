@@ -11,6 +11,7 @@ import { styled, useTheme } from '@mui/material/styles';
 import { RouterLink } from '@/routes/components';
 
 import { logoClasses } from './classes';
+import Image from 'next/image';
 
 // ----------------------------------------------------------------------
 
@@ -190,25 +191,26 @@ export function Logo({
   );
 
   return (
-    <LogoRoot
-      component={RouterLink}
-      href={href}
-      aria-label="Logo"
-      underline="none"
-      className={mergeClasses([logoClasses.root, className])}
-      sx={[
-        {
-          width: 40,
-          height: 40,
-          ...(!isSingle && { width: 102, height: 36 }),
-          ...(disabled && { pointerEvents: 'none' }),
-        },
-        ...(Array.isArray(sx) ? sx : [sx]),
-      ]}
-      {...other}
-    >
-      {isSingle ? singleLogo : fullLogo}
-    </LogoRoot>
+    <Image src="/assets/images/logo.png" alt="logo" width={90} height={40} />
+    // <LogoRoot
+    //   component={RouterLink}
+    //   href={href}
+    //   aria-label="Logo"
+    //   underline="none"
+    //   className={mergeClasses([logoClasses.root, className])}
+    //   sx={[
+    //     {
+    //       width: 40,
+    //       height: 40,
+    //       ...(!isSingle && { width: 102, height: 36 }),
+    //       ...(disabled && { pointerEvents: 'none' }),
+    //     },
+    //     ...(Array.isArray(sx) ? sx : [sx]),
+    //   ]}
+    //   {...other}
+    // >
+    //   {isSingle ? singleLogo : fullLogo}
+    // </LogoRoot>
   );
 }
 
