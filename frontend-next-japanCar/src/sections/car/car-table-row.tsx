@@ -20,11 +20,12 @@ import Typography from '@mui/material/Typography';
 // ----------------------------------------------------------------------
 
 type Props = {
+  auctionId: number | null;
   row: ICar;
   onDeleteRow: () => Promise<void>;
 };
 
-export function AuctionCarTableRow({ row, onDeleteRow }: Props) {
+export function CarTableRow({ row, onDeleteRow, auctionId }: Props) {
   const confirmDialog = useBoolean();
 
   const [loading, setLoading] = useState(false);
@@ -72,6 +73,7 @@ export function AuctionCarTableRow({ row, onDeleteRow }: Props) {
             </Stack>
           </Stack>
         </TableCell>
+        {!auctionId && <TableCell>{row.auctionName}</TableCell>}
         <TableCell>{fCurrency(row.purchasePrice)}</TableCell>
         <TableCell>{fCurrency(row.finalPrice)}</TableCell>
         <TableCell>{row.createdAt?.split('T')[0]}</TableCell>
@@ -80,7 +82,11 @@ export function AuctionCarTableRow({ row, onDeleteRow }: Props) {
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Tooltip title="Edit" placement="top" arrow>
               <RouterLink
-                href={paths.dashboard.auction.editCar(row.auctionId!, row.carId!)}
+                href={
+                  !auctionId
+                    ? paths.dashboard.car.edit(row.carId!)
+                    : paths.dashboard.auction.editCar(auctionId, row.carId!)
+                }
               >
                 <IconButton color="warning">
                   <Iconify icon="solar:pen-bold" />

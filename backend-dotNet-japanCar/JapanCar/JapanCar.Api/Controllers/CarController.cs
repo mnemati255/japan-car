@@ -23,11 +23,19 @@ namespace JapanCar.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllCars()
+        public async Task<IActionResult> GetAllCars(int? auctionId, [FromQuery] CarFilterDto filterDto)
         {
-            var result = await _carService.GetAllCars();
+            var result = await _carService.GetAllCars(filterDto, auctionId);
             return Ok(result);
         }
+
+
+        //[HttpGet("cars-of-auction/{auctionId}")]
+        //public async Task<IActionResult> GetAllCarsOfAuction(int auctionId, [FromQuery]CarFilterDto filterDto)
+        //{
+        //    var result = await _carService.GetAllCarsOfAuction(auctionId, filterDto);
+        //    return Ok(result);
+        //}
 
 
         [HttpGet("{id}")]
@@ -38,12 +46,6 @@ namespace JapanCar.Api.Controllers
         }
 
 
-        [HttpGet("cars-of-auction/{auctionId}")]
-        public async Task<IActionResult> GetAllCarsOfAuction(int auctionId, [FromQuery]CarFilterDto filterDto)
-        {
-            var result = await _carService.GetAllCarsOfAuction(auctionId, filterDto);
-            return Ok(result);
-        }
 
 
         [HttpPost]

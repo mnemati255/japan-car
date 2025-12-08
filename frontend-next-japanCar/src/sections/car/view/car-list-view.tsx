@@ -13,26 +13,18 @@ import Stack from '@mui/material/Stack';
 import { EmptyContent } from '@/components/empty-content';
 import Loading from '@/app/dashboard/loading';
 import Card from '@mui/material/Card';
-import { deleteCarOfAuction, useGetCarsOfAuction } from '@/actions/car';
+import { deleteCar, useGetCars } from '@/actions/car';
 import Table from '@mui/material/Table';
 import { TableHeadCellProps, TableHeadCustom } from '@/components/table';
 import TableBody from '@mui/material/TableBody';
-import { AuctionCarTableRow } from '../auction-car-table-row';
 import { Scrollbar } from '@/components/scrollbar';
 import Box from '@mui/material/Box';
 import Pagination from '@mui/material/Pagination';
-import AuctionCarSearchDialog from '../auction-car-search-dialog';
 import { useBoolean } from 'minimal-shared/hooks';
+import { CarTableRow } from '../car-table-row';
+import CarSearchDialog from '../car-search-dialog';
 
 // ----------------------------------------------------------------------
-
-const TABLE_HEAD: TableHeadCellProps[] = [
-  { id: 'modelName', label: 'Model' },
-  { id: 'purchasePrice', label: 'Purchase price' },
-  { id: 'finalPrice', label: 'Final price' },
-  { id: 'createdAt', label: 'Date' },
-  { id: 'actions', width: 88 },
-];
 
 const DEFAULT_FILTERS = {
   brandId: '',
@@ -46,20 +38,29 @@ const DEFAULT_FILTERS = {
 // ----------------------------------------------------------------------
 
 type Props = {
-  auctionId: number;
+  auctionId?: number;
 };
 
-export function AuctionCarsListView({ auctionId }: Props) {
+export function CarsListView({ auctionId }: Props) {
+  const TABLE_HEAD: TableHeadCellProps[] = [
+    { id: 'modelName', label: 'Model' },
+    { id: 'purchasePrice', label: 'Purchase price' },
+    { id: 'finalPrice', label: 'Final price' },
+    { id: 'createdAt', label: 'Date' },
+    { id: 'actions', width: 88 },
+  ];
+  if (!auctionId)
+    TABLE_HEAD.splice(1, 0, {
+      id: 'auctionName',
+      label: 'Auction',
+    });
+
   const [currentAuction, setCurrentAuction] = useState<IAuctionItem | null>(null);
   const [page, setPage] = useState(1);
   const searchDialog = useBoolean();
   const [filters, setFilters] = useState<any>(DEFAULT_FILTERS);
 
-  const { cars, totalPage, empty, isLoading } = useGetCarsOfAuction(
-    auctionId,
-    page,
-    filters
-  );
+  const { cars, totalPage, empty, isLoading } = useGetCars(page, filters, auctionId);
 
   useEffect(() => {
     if (auctionId) {
@@ -73,12 +74,12 @@ export function AuctionCarsListView({ auctionId }: Props) {
     }
   }, [auctionId]);
 
-  const handleDeleteCar = useCallback(async (carId: number, auctionId: number) => {
-    await deleteCarOfAuction(carId, auctionId);
+  const handleDeleteCar = useCallback(async (carId: number) => {
+    await deleteCar(carId);
   }, []);
 
   const renderSearchDialog = () => (
-    <AuctionCarSearchDialog
+    <CarSearchDialog
       open={searchDialog.value}
       onClose={searchDialog.onFalse}
       onApplyFilters={(e) => {
@@ -131,10 +132,11 @@ export function AuctionCarsListView({ auctionId }: Props) {
             <TableHeadCustom headCells={TABLE_HEAD} />
             <TableBody>
               {cars.map((row, index) => (
-                <AuctionCarTableRow
+                <CarTableRow
                   key={index}
+                  auctionId={auctionId ?? null}
                   row={row}
-                  onDeleteRow={() => handleDeleteCar(row.carId!, row.auctionId!)}
+                  onDeleteRow={() => handleDeleteCar(row.carId!)}
                 />
               ))}
             </TableBody>
@@ -152,22 +154,30 @@ export function AuctionCarsListView({ auctionId }: Props) {
     </>
   );
 
-  if (!currentAuction) return null;
+  const links = !auctionId
+    ? [{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Cars' }]
+    : [
+        { name: 'Dashboard', href: paths.dashboard.root },
+        { name: currentAuction?.auctionName, href: paths.dashboard.auction.root },
+        { name: 'Cars' },
+      ];
+
+  if (auctionId && !currentAuction) return null;
 
   return (
     <DashboardContent>
       <CustomBreadcrumbs
         heading="Cars"
-        backHref={paths.dashboard.auction.root}
-        links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: currentAuction?.auctionName, href: paths.dashboard.auction.root },
-          { name: 'Cars' },
-        ]}
+        backHref={paths.dashboard.car.root}
+        links={links}
         action={
           <Button
             component={RouterLink}
-            href={paths.dashboard.auction.newCar(auctionId)}
+            href={
+              !auctionId
+                ? paths.dashboard.car.new
+                : paths.dashboard.auction.newCar(auctionId)
+            }
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
           >

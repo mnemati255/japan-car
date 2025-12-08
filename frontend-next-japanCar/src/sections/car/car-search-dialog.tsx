@@ -19,7 +19,7 @@ type Props = {
   filters: any;
 };
 
-export default function AuctionCarSearchDialog({
+export default function CarSearchDialog({
   open,
   onClose,
   onApplyFilters,

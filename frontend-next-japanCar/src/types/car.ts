@@ -19,6 +19,7 @@ export interface ICar {
   modelName?: string;
   brandName?: string;
   colorName?: string;
+  auctionName?: string;
 }
 
 export interface IColor {

@@ -41,7 +41,6 @@ const ICONS = {
   ecommerce: icon('ic-ecommerce'),
   analytics: icon('ic-analytics'),
   dashboard: icon('ic-dashboard'),
-  car: icon('ic-car'),
 };
 
 // ----------------------------------------------------------------------
@@ -58,6 +57,15 @@ export function navData(t: TFunction<any, any>): NavSectionProps['data'] {
           children: [
             { title: t('list'), path: paths.dashboard.auction.root },
             { title: t('create'), path: paths.dashboard.auction.new },
+          ],
+        },
+        {
+          title: t('cars'),
+          path: paths.dashboard.car.root,
+          icon: ICONS.folder,
+          children: [
+            { title: t('list'), path: paths.dashboard.car.root },
+            { title: t('create'), path: paths.dashboard.car.new },
           ],
         },
         {

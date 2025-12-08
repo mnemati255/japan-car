@@ -9,40 +9,37 @@ import { getBrands, getColors } from '@/actions/base-info';
 import { getCarById } from '@/actions/car';
 import { convertUrlToFile } from '@/utils/convert-url-to-file';
 import { CONFIG } from '@/global-config';
-import { CreateEditCarForm } from '@/sections/car/car-create-edit-form';
+import { CreateEditCarForm } from '../car-create-edit-form';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  auctionId: number;
   carId: number;
 };
 
-export function AuctionEditCarView({ auctionId, carId }: Props) {
+export function EditCarView({ carId }: Props) {
   const [currentCar, setCurrentCar] = useState<ICar | null>(null);
   const [colors, setColors] = useState<IColor[]>([]);
   const [brands, setBrands] = useState<IBrand[]>([]);
   const [files, setFiles] = useState<File[]>([]);
 
   useEffect(() => {
-    if (auctionId) {
-      const getBaseInfo = async () => {
-        const { status, data } = await getColors();
-        if (status == 200) setColors(data.items);
+    const getBaseInfo = async () => {
+      const { status, data } = await getColors();
+      if (status == 200) setColors(data.items);
 
-        const { status: status2, data: data2 } = await getBrands();
-        if (status2 == 200) setBrands(data2.items);
-      };
-      const getCar = async () => {
-        const { status, data } = await getCarById(carId);
-        if (status === 200) {
-          setCurrentCar(data);
-        }
-      };
-      getBaseInfo();
-      getCar();
-    }
-  }, [auctionId, carId]);
+      const { status: status2, data: data2 } = await getBrands();
+      if (status2 == 200) setBrands(data2.items);
+    };
+    const getCar = async () => {
+      const { status, data } = await getCarById(carId);
+      if (status === 200) {
+        setCurrentCar(data);
+      }
+    };
+    getBaseInfo();
+    getCar();
+  }, [carId]);
 
   useEffect(() => {
     if (currentCar) {
@@ -64,11 +61,10 @@ export function AuctionEditCarView({ auctionId, carId }: Props) {
     <DashboardContent>
       <CustomBreadcrumbs
         heading="Edit"
-        backHref={paths.dashboard.auction.cars(auctionId)}
+        backHref={paths.dashboard.car.root}
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Auction', href: paths.dashboard.auction.root },
-          { name: 'Cars', href: paths.dashboard.auction.cars(auctionId) },
+          { name: 'Cars', href: paths.dashboard.car.root },
           { name: `Chasis Num: ${currentCar?.chasisNumber}` },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
@@ -78,7 +74,6 @@ export function AuctionEditCarView({ auctionId, carId }: Props) {
         currentCar={currentCar}
         colors={colors}
         brands={brands}
-        auctionId={auctionId}
         files={files}
       />
     </DashboardContent>

@@ -6,7 +6,7 @@ import { CustomBreadcrumbs } from '@/components/custom-breadcrumbs';
 import { useEffect, useState } from 'react';
 import { IBrand, IColor } from '@/types/car';
 import { getBrands, getColors } from '@/actions/base-info';
-import { CreateEditCarForm } from '@/sections/car/car-create-edit-form';
+import { CreateEditCarForm } from '../car-create-edit-form';
 
 // ----------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ type Props = {
   auctionId: number;
 };
 
-export function AuctionCreateCarView({ auctionId }: Props) {
+export function CreateCarView({ auctionId }: Props) {
   const [colors, setColors] = useState<IColor[]>([]);
   const [brands, setBrands] = useState<IBrand[]>([]);
 
@@ -35,8 +35,7 @@ export function AuctionCreateCarView({ auctionId }: Props) {
         heading="Create a new car"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Auction', href: paths.dashboard.auction.root },
-          { name: 'Cars', href: paths.dashboard.auction.cars(auctionId) },
+          { name: 'Cars', href: paths.dashboard.car.root },
           { name: 'Create' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

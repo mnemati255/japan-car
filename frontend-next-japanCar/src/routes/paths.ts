@@ -71,22 +71,6 @@ export const paths = {
   // DASHBOARD
   dashboard: {
     root: ROOTS.DASHBOARD,
-    // mail: `${ROOTS.DASHBOARD}/mail`,
-    // chat: `${ROOTS.DASHBOARD}/chat`,
-    // blank: `${ROOTS.DASHBOARD}/blank`,
-    // kanban: `${ROOTS.DASHBOARD}/kanban`,
-    // calendar: `${ROOTS.DASHBOARD}/calendar`,
-    // fileManager: `${ROOTS.DASHBOARD}/file-manager`,
-    // permission: `${ROOTS.DASHBOARD}/permission`,
-    // general: {
-    //   app: `${ROOTS.DASHBOARD}/app`,
-    //   ecommerce: `${ROOTS.DASHBOARD}/ecommerce`,
-    //   analytics: `${ROOTS.DASHBOARD}/analytics`,
-    //   banking: `${ROOTS.DASHBOARD}/banking`,
-    //   booking: `${ROOTS.DASHBOARD}/booking`,
-    //   file: `${ROOTS.DASHBOARD}/file`,
-    //   course: `${ROOTS.DASHBOARD}/course`,
-    // },
     auction: {
       root: `${ROOTS.DASHBOARD}/auction`,
       new: `${ROOTS.DASHBOARD}/auction/new`,
@@ -95,6 +79,11 @@ export const paths = {
       cars: (auctionId: number) => `${ROOTS.DASHBOARD}/auction/${auctionId}/car`,
       editCar: (auctionId: number, carId: number) =>
         `${ROOTS.DASHBOARD}/auction/${auctionId}/car/${carId}/edit`,
+    },
+    car: {
+      root: `${ROOTS.DASHBOARD}/car`,
+      new: `${ROOTS.DASHBOARD}/car/new`,
+      edit: (id: number) => `${ROOTS.DASHBOARD}/car/${id}/edit`,
     },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,

@@ -6,7 +6,9 @@ namespace JapanCar.Application.DTOs
     {
         public int CarId { get; set; }
 
-        public int AuctionId { get; set; }
+        public int? AuctionId { get; set; }
+
+        public string? AuctionName { get; set; }
 
         public int? BrandId { get; set; }
 

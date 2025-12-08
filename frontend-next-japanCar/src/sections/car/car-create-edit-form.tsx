@@ -11,7 +11,7 @@ import { Form, Field } from '@/components/hook-form';
 import messages from '@/lib/messages';
 import { IBrand, ICar, IColor, IModel } from '@/types/car';
 import MenuItem from '@mui/material/MenuItem';
-import { createEditCarForAuction } from '@/actions/car';
+import { createEditCar } from '@/actions/car';
 import { toast } from 'sonner';
 import { paths } from '@/routes/paths';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -24,16 +24,16 @@ type Props = {
   colors: IColor[];
   brands: IBrand[];
   currentCar?: ICar;
-  auctionId: number;
   files?: File[];
+  auctionId?: number;
 };
 
-export function AuctionCreateEditCarForm({
+export function CreateEditCarForm({
   currentCar,
   colors,
   brands,
-  auctionId,
   files,
+  auctionId,
 }: Props) {
   const BRANDS = brands.map((x) => ({
     value: x.brandId,
@@ -141,14 +141,15 @@ export function AuctionCreateEditCarForm({
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const { status } = await createEditCarForAuction(
+      const { status } = await createEditCar(
         data,
-        auctionId,
+        auctionId ?? null,
         currentCar ? currentCar.carId! : null
       );
       if (status == 200) {
         toast.success(currentCar ? 'Update success!' : 'Create success!');
-        router.push(paths.dashboard.auction.cars(auctionId));
+        if(!auctionId) router.push(paths.dashboard.car.root);
+        else router.push(paths.dashboard.auction.cars(auctionId));
       }
     } catch (error) {
       console.error(error);

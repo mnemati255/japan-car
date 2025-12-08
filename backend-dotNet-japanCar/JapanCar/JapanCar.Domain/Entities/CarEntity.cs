@@ -40,7 +40,9 @@ namespace JapanCar.Domain.Entities
 
         public int? ModifiedBy { get; set; }
 
-        public int AuctionId { get; set; }
+        public int? AuctionId { get; set; }
+
+        public string? AuctionName { get; set; }
 
         public decimal PurchasePrice { get; set; }
 

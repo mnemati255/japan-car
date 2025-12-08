@@ -1,19 +1,19 @@
 import type { Metadata } from 'next';
 import { CONFIG } from '@/global-config';
-import { CarsListView } from '@/sections/car/view/car-list-view';
+import { EditCarView } from '@/sections/car/view/car-edit-view';
 
 // ----------------------------------------------------------------------
 
 export const metadata: Metadata = {
-  title: `Auction cars | Dashboard - ${CONFIG.appName}`,
+  title: `Car edit | Dashboard - ${CONFIG.appName}`,
 };
 
 type Props = {
-  params: Promise<{ id: number }>;
+  params: Promise<{ id: number; carId: number }>;
 };
 
 export default async function Page({ params }: Props) {
   const { id } = await params;
 
-  return <CarsListView auctionId={id} />;
+  return <EditCarView carId={id} />;
 }

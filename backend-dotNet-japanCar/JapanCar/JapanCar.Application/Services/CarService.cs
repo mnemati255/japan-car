@@ -20,27 +20,15 @@ namespace JapanCar.Application.Services
         }
 
 
-        public async Task<IEnumerable<CarDto>> GetAllCars()
+        public async Task<GridDto<CarDto>> GetAllCars(CarFilterDto filterDto, int? auctionId = null)
         {
-            var cars = await _unitOfWork.CarRepository.GetAll();
-            return cars.Select(x => new CarDto
-            {
-                ColorName = x.ColorName,
-                Mileage = x.Mileage,
-                ModelName = x.ModelName,
-                Year = x.Year
-            });
-        }
-
-
-        public async Task<GridDto<CarDto>> GetAllCarsOfAuction(int auctionId, CarFilterDto filterDto)
-        {
-            var entities = await _unitOfWork.CarRepository.GetAllCarsOfAuction(auctionId, filterDto);
+            var entities = await _unitOfWork.CarRepository.GetCars(filterDto, auctionId);
 
             var cars = entities.Items.Select(x => new CarDto
             {
                 CarId = x.CarId,
-                AuctionId = auctionId,
+                AuctionId = x.AuctionId,
+                AuctionName = x.AuctionName,
                 BrandName = x.BrandName,
                 ModelName = x.ModelName,
                 ColorName = x.ColorName,
@@ -68,6 +56,43 @@ namespace JapanCar.Application.Services
                 TotalPage = totalPage
             };
         }
+
+
+        //public async Task<GridDto<CarDto>> GetAllCarsOfAuction(int auctionId, CarFilterDto filterDto)
+        //{
+        //    var entities = await _unitOfWork.CarRepository.GetAllCarsOfAuction(auctionId, filterDto);
+
+        //    var cars = entities.Items.Select(x => new CarDto
+        //    {
+        //        CarId = x.CarId,
+        //        AuctionId = auctionId,
+        //        BrandName = x.BrandName,
+        //        ModelName = x.ModelName,
+        //        ColorName = x.ColorName,
+        //        FinalPrice = x.FinalPrice,
+        //        PurchasePrice = x.PurchasePrice,
+        //        TaxAmount = x.TaxAmount,
+        //        TransportPrice = x.TransportPrice,
+        //        AuctionPrice = x.AuctionPrice,
+        //        Year = x.Year,
+        //        CreatedAt = x.CreatedDate,
+        //        Images = x.ImageUrls
+        //    });
+
+        //    var totalPage = 0;
+
+        //    if (filterDto.Take.HasValue)
+        //    {
+        //        var tp = int.Parse(Math.Floor(decimal.Divide(entities.TotalCount, Convert.ToDecimal(filterDto.Take))).ToString());
+        //        totalPage = tp + 1;
+        //    }
+
+        //    return new GridDto<CarDto>
+        //    {
+        //        Items = cars,
+        //        TotalPage = totalPage
+        //    };
+        //}
 
 
         public async Task CreateCar(CarDto dto, List<FileData> images)

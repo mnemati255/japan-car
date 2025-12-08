@@ -10,9 +10,45 @@ const BASE_URL = `${CONFIG.serverUrl}/car`;
 
 // ----------------------------------------------------------------------
 
-export async function createEditCarForAuction(
+function mutateCars() {
+  mutate((key) => typeof key === 'string' && key.startsWith(BASE_URL), undefined, {
+    revalidate: true,
+  });
+}
+
+export function useGetCars(page: number, filters: any, auctionId?: number) {
+  const skip = (page - 1) * CONFIG.appSettings.pageSize;
+  const take = CONFIG.appSettings.pageSize;
+
+  const query = new URLSearchParams({
+    skip: skip,
+    take: take,
+    ...filters,
+  }).toString();
+
+  const url = !auctionId
+    ? `${BASE_URL}?${query}`
+    : `${BASE_URL}?auctionId=${auctionId}&${query}`;
+
+  const { data, isLoading, error, isValidating } = useSWR<IGrid<ICar>>(url, fetcher, {
+    ...swrOptions,
+  });
+
+  return {
+    cars: data?.items || [],
+    totalPage: data?.totalPage || 0,
+    isLoading,
+    error,
+    isValidating,
+    empty: !isLoading && !data?.items.length,
+  };
+}
+
+// ----------------------------------------------------------------------
+
+export async function createEditCar(
   car: ICar,
-  auctionId: number,
+  auctionId: number | null,
   carId: number | null
 ) {
   const url = BASE_URL;
@@ -42,7 +78,7 @@ export async function createEditCarForAuction(
 
   const response = await api;
   if (response && response.status == 200) {
-    mutate(`${BASE_URL}/cars-of-auction/${auctionId}`, () => {});
+    mutateCars();
   }
 
   return response;
@@ -54,7 +90,7 @@ export async function updateCarOfAuction(carId: number, car: ICar) {
   const url = `${BASE_URL}/${carId}`;
   const response = await axiosInstance.put(url, car);
   if (response && response.status == 200) {
-    mutate(`${BASE_URL}/cars-of-auction/${car.auctionId!}`, () => {});
+    mutateCars();
   }
 
   return response;
@@ -62,11 +98,11 @@ export async function updateCarOfAuction(carId: number, car: ICar) {
 
 // ----------------------------------------------------------------------
 
-export async function deleteCarOfAuction(carId: number, auctionId: number) {
+export async function deleteCar(carId: number) {
   const url = `${BASE_URL}/${carId}`;
   const response = await axiosInstance.delete(url);
   if (response && response.status === 200) {
-    mutate(`${BASE_URL}/cars-of-auction/${auctionId}`, () => {});
+    mutateCars();
   }
 }
 
