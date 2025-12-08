@@ -16,6 +16,8 @@ import { BrandTableRow } from '../brand-tabel-row';
 import { useCallback, useEffect, useState } from 'react';
 import { IBrand } from '@/types/car';
 import Pagination from '@mui/material/Pagination';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
 
 const TABLE_HEAD: TableHeadCellProps[] = [
   { id: 'brandName', label: 'Brand' },
@@ -27,8 +29,15 @@ export function BrandListView() {
   const formDialog = useBoolean();
   const [item, setItem] = useState<IBrand | null>(null);
   const [page, setPage] = useState(1);
+  const [keyword, setKeyword] = useState('');
+  const [searchKeyword, setSearchKeyword] = useState('');
 
-  const { brands, totalPage, empty, isLoading } = useGetBrands(page);
+  const handleSearch = () => {
+    setPage(1);
+    setSearchKeyword(keyword);
+  };
+
+  const { brands, totalPage, empty, isLoading } = useGetBrands(page, searchKeyword);
 
   const handleDeleteRow = useCallback(async (brandId: number) => {
     await deleteBrand(brandId);
@@ -66,29 +75,75 @@ export function BrandListView() {
 
   const renderTable = () => (
     <Card>
-      <Scrollbar sx={{ minHeight: 350 }}>
-        <Table sx={{ minWidth: 500 }}>
-          <TableHeadCustom headCells={TABLE_HEAD} />
-          <TableBody>
-            {brands.map((brand) => (
-              <BrandTableRow
-                key={brand.brandId}
-                row={brand}
-                onDeleteRow={() => handleDeleteRow(brand.brandId!)}
-                onShowEditDialog={() => handleShowEditDialog(brand)}
-              />
-            ))}
-          </TableBody>
-        </Table>
+      <Box sx={{ p: 2, display: 'flex' }}>
+        <TextField
+          fullWidth
+          placeholder="Search ..."
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          slotProps={{
+            input: {
+              sx: {
+                borderTopRightRadius: 0,
+                borderBottomRightRadius: 0,
+              },
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                </InputAdornment>
+              ),
+              endAdornment: keyword ? (
+                <InputAdornment position="end">
+                  <Iconify
+                    icon="mingcute:close-line"
+                    sx={{ color: 'text.disabled', cursor: 'pointer' }}
+                    onClick={() => {
+                      setPage(1);
+                      setKeyword('');
+                      setSearchKeyword('');
+                    }}
+                  />
+                </InputAdornment>
+              ) : null,
+            },
+          }}
+        />
+        <Button
+          variant="soft"
+          sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+          onClick={handleSearch}
+        >
+          <Iconify icon="eva:search-fill" />
+        </Button>
+      </Box>
 
-        <Box sx={{ py: 3, display: 'flex', justifyContent: 'center' }}>
-          <Pagination
-            page={page}
-            count={totalPage}
-            onChange={(event, newPage) => setPage(newPage)}
-          />
-        </Box>
-      </Scrollbar>
+      {empty ? (
+        renderEmpty()
+      ) : (
+        <Scrollbar sx={{ minHeight: 350 }}>
+          <Table sx={{ minWidth: 500 }}>
+            <TableHeadCustom headCells={TABLE_HEAD} />
+            <TableBody>
+              {brands.map((brand) => (
+                <BrandTableRow
+                  key={brand.brandId}
+                  row={brand}
+                  onDeleteRow={() => handleDeleteRow(brand.brandId!)}
+                  onShowEditDialog={() => handleShowEditDialog(brand)}
+                />
+              ))}
+            </TableBody>
+          </Table>
+
+          <Box sx={{ py: 3, display: 'flex', justifyContent: 'center' }}>
+            <Pagination
+              page={page}
+              count={totalPage}
+              onChange={(event, newPage) => setPage(newPage)}
+            />
+          </Box>
+        </Scrollbar>
+      )}
     </Card>
   );
 
@@ -108,8 +163,7 @@ export function BrandListView() {
         </Button>
       </Box>
 
-      {empty ? renderEmpty() : renderTable()}
-
+      {renderTable()}
       {renderFormDialog()}
     </Box>
   );

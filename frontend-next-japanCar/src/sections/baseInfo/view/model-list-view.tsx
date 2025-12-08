@@ -16,6 +16,8 @@ import { IModel } from '@/types/car';
 import { ModelTableRow } from '../model-table-row';
 import { ModelCreateEditForm } from '../model-create-edit-form';
 import Pagination from '@mui/material/Pagination';
+import InputAdornment from '@mui/material/InputAdornment';
+import TextField from '@mui/material/TextField';
 
 const TABLE_HEAD: TableHeadCellProps[] = [
   { id: 'modelName', label: 'Model' },
@@ -28,8 +30,15 @@ export function ModelListView() {
   const formDialog = useBoolean();
   const [item, setItem] = useState<IModel | null>(null);
   const [page, setPage] = useState(1);
+  const [keyword, setKeyword] = useState('');
+  const [searchKeyword, setSearchKeyword] = useState('');
 
-  const { models, totalPage, empty, isLoading } = useGetModels(page);
+  const handleSearch = () => {
+    setPage(1);
+    setSearchKeyword(keyword);
+  };
+
+  const { models, totalPage, empty, isLoading } = useGetModels(page, searchKeyword);
 
   const handleDeleteRow = useCallback(async (modelId: number) => {
     await deleteModel(modelId);
@@ -67,29 +76,75 @@ export function ModelListView() {
 
   const renderTable = () => (
     <Card>
-      <Scrollbar sx={{ minHeight: 350 }}>
-        <Table sx={{ minWidth: 500 }}>
-          <TableHeadCustom headCells={TABLE_HEAD} />
-          <TableBody>
-            {models.map((model) => (
-              <ModelTableRow
-                key={model.modelId}
-                row={model}
-                onDeleteRow={() => handleDeleteRow(model.modelId!)}
-                onShowEditDialog={() => handleShowEditDialog(model)}
-              />
-            ))}
-          </TableBody>
-        </Table>
+      <Box sx={{ p: 2, display: 'flex' }}>
+        <TextField
+          fullWidth
+          placeholder="Search ..."
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          slotProps={{
+            input: {
+              sx: {
+                borderTopRightRadius: 0,
+                borderBottomRightRadius: 0,
+              },
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                </InputAdornment>
+              ),
+              endAdornment: keyword ? (
+                <InputAdornment position="end">
+                  <Iconify
+                    icon="mingcute:close-line"
+                    sx={{ color: 'text.disabled', cursor: 'pointer' }}
+                    onClick={() => {
+                      setPage(1);
+                      setKeyword('');
+                      setSearchKeyword('');
+                    }}
+                  />
+                </InputAdornment>
+              ) : null,
+            },
+          }}
+        />
+        <Button
+          variant="soft"
+          sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+          onClick={handleSearch}
+        >
+          <Iconify icon="eva:search-fill" />
+        </Button>
+      </Box>
 
-        <Box sx={{ py: 3, display: 'flex', justifyContent: 'center' }}>
-          <Pagination
-            page={page}
-            count={totalPage}
-            onChange={(event, newPage) => setPage(newPage)}
-          />
-        </Box>
-      </Scrollbar>
+      {empty ? (
+        renderEmpty()
+      ) : (
+        <Scrollbar sx={{ minHeight: 350 }}>
+          <Table sx={{ minWidth: 500 }}>
+            <TableHeadCustom headCells={TABLE_HEAD} />
+            <TableBody>
+              {models.map((model) => (
+                <ModelTableRow
+                  key={model.modelId}
+                  row={model}
+                  onDeleteRow={() => handleDeleteRow(model.modelId!)}
+                  onShowEditDialog={() => handleShowEditDialog(model)}
+                />
+              ))}
+            </TableBody>
+          </Table>
+
+          <Box sx={{ py: 3, display: 'flex', justifyContent: 'center' }}>
+            <Pagination
+              page={page}
+              count={totalPage}
+              onChange={(event, newPage) => setPage(newPage)}
+            />
+          </Box>
+        </Scrollbar>
+      )}
     </Card>
   );
 
@@ -109,8 +164,7 @@ export function ModelListView() {
         </Button>
       </Box>
 
-      {empty ? renderEmpty() : renderTable()}
-
+      {renderTable()}
       {renderFormDialog()}
     </Box>
   );

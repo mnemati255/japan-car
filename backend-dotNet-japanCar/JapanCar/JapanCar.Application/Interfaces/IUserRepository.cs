@@ -4,7 +4,7 @@ namespace JapanCar.Application.Interfaces
 {
     public interface IUserRepository
     {
-        Task<IEnumerable<UserEntity>> GetAllUsers();
+        Task<IEnumerable<UserEntity>> GetAllUsers(string? keyword);
         Task<UserEntity?> GetUserById(int id);
         Task<UserEntity?> GetUserByUserName(string userName, bool withPassword = false);
         Task CreateUser(UserEntity user);

@@ -21,9 +21,9 @@ namespace JapanCar.Api.Controllers
 
 
         [HttpGet("color")]
-        public async Task<IActionResult> GetColors(int? skip = null, int? take = null)
+        public async Task<IActionResult> GetColors(string? keyword, int? skip = null, int? take = null)
         {
-            var colors = await _baseInfoService.GetColors(skip, take);
+            var colors = await _baseInfoService.GetColors(keyword, skip, take);
             return Ok(colors);
         }
 
@@ -53,9 +53,9 @@ namespace JapanCar.Api.Controllers
 
 
         [HttpGet("brand")]
-        public async Task<IActionResult> GetBrands(int? skip = null, int? take = null)
+        public async Task<IActionResult> GetBrands(string? keyword, int? skip = null, int? take = null)
         {
-            var models = await _baseInfoService.GetBrands(skip, take);
+            var models = await _baseInfoService.GetBrands(keyword, skip, take);
             return Ok(models);
         }
 
@@ -85,9 +85,9 @@ namespace JapanCar.Api.Controllers
 
 
         [HttpGet("model")]
-        public async Task<IActionResult> GetModels(int? skip = null, int? take = null)
+        public async Task<IActionResult> GetModels(string? keyword, int? skip = null, int? take = null)
         {
-            var models = await _baseInfoService.GetModels(skip, take);
+            var models = await _baseInfoService.GetModels(keyword, skip, take);
             return Ok(models);
         }
 

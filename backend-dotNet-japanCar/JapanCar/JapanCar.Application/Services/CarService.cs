@@ -4,6 +4,7 @@ using JapanCar.Application.Interfaces;
 using JapanCar.Application.Models;
 using JapanCar.Common;
 using JapanCar.Domain.Entities;
+using System.Reflection;
 
 namespace JapanCar.Application.Services
 {
@@ -32,11 +33,11 @@ namespace JapanCar.Application.Services
         }
 
 
-        public async Task<IEnumerable<CarDto>> GetAllCarsOfAuction(int auctionId)
+        public async Task<GridDto<CarDto>> GetAllCarsOfAuction(int auctionId, CarFilterDto filterDto)
         {
-            var cars = await _unitOfWork.CarRepository.GetAllCarsOfAuction(auctionId);
+            var entities = await _unitOfWork.CarRepository.GetAllCarsOfAuction(auctionId, filterDto);
 
-            return cars.Select(x => new CarDto
+            var cars = entities.Items.Select(x => new CarDto
             {
                 CarId = x.CarId,
                 AuctionId = auctionId,
@@ -52,6 +53,20 @@ namespace JapanCar.Application.Services
                 CreatedAt = x.CreatedDate,
                 Images = x.ImageUrls
             });
+
+            var totalPage = 0;
+
+            if (filterDto.Take.HasValue)
+            {
+                var tp = int.Parse(Math.Floor(decimal.Divide(entities.TotalCount, Convert.ToDecimal(filterDto.Take))).ToString());
+                totalPage = tp + 1;
+            }
+
+            return new GridDto<CarDto>
+            {
+                Items = cars,
+                TotalPage = totalPage
+            };
         }
 
 

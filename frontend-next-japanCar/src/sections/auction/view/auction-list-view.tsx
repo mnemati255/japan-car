@@ -18,20 +18,20 @@ import { deleteAuction, useGetAuctions } from '@/actions/auction';
 import { EmptyContent } from '@/components/empty-content';
 import Stack from '@mui/material/Stack';
 import { Scrollbar } from '@/components/scrollbar';
-
-// ----------------------------------------------------------------------
-
-const TABLE_HEAD: TableHeadCellProps[] = [
-  { id: 'auctionName', label: 'Name' },
-  { id: 'auctionDate', label: 'Date' },
-  { id: 'auctionFee', label: 'Fee' },
-  { id: 'createdAt', label: 'Created date' },
-  { id: '', width: 88 },
-];
-
-// ----------------------------------------------------------------------
+import { useTranslate } from '@/locales';
 
 export function AuctionListView() {
+  const { t: tAuctions } = useTranslate('auctions');
+  const { t: tCommon } = useTranslate('common');
+
+  const TABLE_HEAD: TableHeadCellProps[] = [
+    { id: 'auctionName', label: tCommon('name') },
+    { id: 'auctionDate', label: tCommon('date') },
+    { id: 'auctionFee', label: tAuctions('columns.fee') },
+    { id: 'createdAt', label: tCommon('createdDate') },
+    { id: '', width: 88 },
+  ];
+
   const { auctions, auctionsLoading, auctionsEmpty } = useGetAuctions();
 
   const handleDeleteAuction = useCallback(async (auctionId: number) => {
@@ -40,7 +40,7 @@ export function AuctionListView() {
 
   const renderEmpty = () => (
     <Stack sx={{ flex: '1 1 auto', px: { xs: 2.5, md: 1.5 }, py: 8 }}>
-      <EmptyContent title="No auctions" />
+      <EmptyContent title={tAuctions('noAuctions')} />
     </Stack>
   );
 
@@ -65,11 +65,11 @@ export function AuctionListView() {
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="List"
+          heading={tCommon('list')}
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Auction', href: paths.dashboard.auction.root },
-            { name: 'List' },
+            { name: tCommon('dashboard'), href: paths.dashboard.root },
+            { name: tAuctions('auction'), href: paths.dashboard.auction.root },
+            { name: tCommon('list') },
           ]}
           action={
             <Button
@@ -78,7 +78,7 @@ export function AuctionListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              Add auction
+              {tAuctions('addAuction')}
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}

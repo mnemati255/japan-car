@@ -54,7 +54,7 @@ export function AuctionCarTableRow({ row, onDeleteRow }: Props) {
 
   return (
     <>
-      <TableRow key={row.auctionId}>
+      <TableRow>
         <TableCell>
           <Stack direction={'row'} alignItems={'center'} spacing={1}>
             {row.images.length > 0 ? (

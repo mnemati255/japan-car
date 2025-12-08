@@ -1,7 +1,7 @@
 'use client';
 
 import type { TableHeadCellProps } from '@/components/table';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -16,6 +16,9 @@ import Loading from '@/app/dashboard/loading';
 import { deleteUser, useGetUsers } from '@/actions/user';
 import { UserTableRow } from '../user-table-row';
 import { Scrollbar } from '@/components/scrollbar';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
 
 // ----------------------------------------------------------------------
 
@@ -30,7 +33,14 @@ const TABLE_HEAD: TableHeadCellProps[] = [
 // ----------------------------------------------------------------------
 
 export function UserListView() {
-  const { users, usersLoading } = useGetUsers();
+  const [keyword, setKeyword] = useState('');
+  const [searchKeyword, setSearchKeyword] = useState('');
+
+  const handleSearch = () => {
+    setSearchKeyword(keyword);
+  };
+
+  const { users, isLoading } = useGetUsers(searchKeyword);
 
   const handleDeleteUser = useCallback(async (userId: number) => {
     await deleteUser(userId);
@@ -59,10 +69,50 @@ export function UserListView() {
           sx={{ mb: { xs: 3, md: 5 } }}
         />
 
-        {usersLoading ? (
-          <Loading />
-        ) : (
-          <Card>
+        <Card>
+          <Box sx={{ p: 2, display: 'flex' }}>
+            <TextField
+              fullWidth
+              placeholder="Search ..."
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              slotProps={{
+                input: {
+                  sx: {
+                    borderTopRightRadius: 0,
+                    borderBottomRightRadius: 0,
+                  },
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                    </InputAdornment>
+                  ),
+                  endAdornment: keyword ? (
+                    <InputAdornment position="end">
+                      <Iconify
+                        icon="mingcute:close-line"
+                        sx={{ color: 'text.disabled', cursor: 'pointer' }}
+                        onClick={() => {
+                          setKeyword('');
+                          setSearchKeyword('');
+                        }}
+                      />
+                    </InputAdornment>
+                  ) : null,
+                },
+              }}
+            />
+            <Button
+              variant="soft"
+              sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+              onClick={handleSearch}
+            >
+              <Iconify icon="eva:search-fill" />
+            </Button>
+          </Box>
+          {isLoading ? (
+            <Loading />
+          ) : (
             <Scrollbar sx={{ minHeight: 350 }}>
               <Table sx={{ minWidth: 700 }}>
                 <TableHeadCustom headCells={TABLE_HEAD} />
@@ -77,8 +127,8 @@ export function UserListView() {
                 </TableBody>
               </Table>
             </Scrollbar>
-          </Card>
-        )}
+          )}
+        </Card>
       </DashboardContent>
     </>
   );

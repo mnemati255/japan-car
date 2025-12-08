@@ -1,12 +1,9 @@
 {
-  "app": "App",
-  "job": "Job",
-  "user": "User",
-  "travel": "Travel",
-  "invoice": "Invoice",
-  "blog": {
-    "title": "Blog",
-    "caption": "Custom keyboard shortcuts."
-  },
-  "subheader": "Sub header"
+  "subheader": "Management",
+  "auctions": "Auctions",
+  "users": "Users",
+  "roles": "Roles",
+  "baseInfo": "Base informations",
+  "list": "List",
+  "create": "Create"
 }

@@ -3,6 +3,7 @@
 import { CONFIG, swrOptions } from '@/global-config';
 import axiosInstance, { fetcher } from '@/lib/axios';
 import { ICar } from '@/types/car';
+import { IGrid } from '@/types/common';
 import useSWR, { mutate } from 'swr';
 
 const BASE_URL = `${CONFIG.serverUrl}/car`;
@@ -71,18 +72,29 @@ export async function deleteCarOfAuction(carId: number, auctionId: number) {
 
 // ----------------------------------------------------------------------
 
-export function useGetCarsOfAuction(auctionId: number) {
-  const url = `${BASE_URL}/cars-of-auction/${auctionId}`;
-  const { data, isLoading, error, isValidating } = useSWR<ICar[]>(url, fetcher, {
+export function useGetCarsOfAuction(auctionId: number, page: number, filters: any) {
+  const skip = (page - 1) * CONFIG.appSettings.pageSize;
+  const take = CONFIG.appSettings.pageSize;
+
+  const query = new URLSearchParams({
+    skip: skip,
+    take: take,
+    ...filters,
+  }).toString();
+
+  const url = `${BASE_URL}/cars-of-auction/${auctionId}?${query}`;
+
+  const { data, isLoading, error, isValidating } = useSWR<IGrid<ICar>>(url, fetcher, {
     ...swrOptions,
   });
 
   return {
-    cars: data || [],
+    cars: data?.items || [],
+    totalPage: data?.totalPage || 0,
     isLoading,
     error,
     isValidating,
-    empty: !isLoading && !data?.length,
+    empty: !isLoading && !data?.items.length,
   };
 }
 

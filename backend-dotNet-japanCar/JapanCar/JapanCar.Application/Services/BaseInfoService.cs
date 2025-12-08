@@ -21,23 +21,22 @@ namespace JapanCar.Application.Services
         }
 
 
-        public async Task<GridDto<ColorDto>> GetColors(int? skip = null, int? take = null)
+        public async Task<GridDto<ColorDto>> GetColors(string? keyword, int? skip = null, int? take = null)
         {
-            var entities = await _unitOfWork.BaseInfoRepository.GetColors(skip, take);
+            var entities = await _unitOfWork.BaseInfoRepository.GetColors(keyword, skip, take);
 
-            var colors = entities.Select(x => new ColorDto
+            var colors = entities.Items.Select(x => new ColorDto
             {
                 ColorId = x.ColorId,
                 ColorName = x.ColorName,
                 CreatedAt = x.CreatedDate
             });
 
-            var totalCount = await _unitOfWork.BaseInfoRepository.GetColorsCount();
             var totalPage = 0;
 
             if (take.HasValue)
             {
-                var tp = int.Parse(Math.Floor(decimal.Divide(totalCount, Convert.ToDecimal(take))).ToString());
+                var tp = int.Parse(Math.Floor(decimal.Divide(entities.TotalCount, Convert.ToDecimal(take))).ToString());
                 totalPage = tp + 1;
             }
 
@@ -49,23 +48,22 @@ namespace JapanCar.Application.Services
         }
 
 
-        public async Task<GridDto<BrandDto>> GetBrands(int? skip = null, int? take = null)
+        public async Task<GridDto<BrandDto>> GetBrands(string? keyword, int? skip = null, int? take = null)
         {
-            var entities = await _unitOfWork.BaseInfoRepository.GetBrands(skip, take);
+            var entities = await _unitOfWork.BaseInfoRepository.GetBrands(keyword, skip, take);
 
-            var brands = entities.Select(x => new BrandDto
+            var brands = entities.Items.Select(x => new BrandDto
             {
                 BrandId = x.BrandId,
                 BrandName = x.BrandName,
                 CreatedAt = x.CreatedDate
             });
 
-            var totalCount = await _unitOfWork.BaseInfoRepository.GetBrandsCount();
             var totalPage = 0;
 
             if (take.HasValue)
             {
-                var tp = int.Parse(Math.Floor(decimal.Divide(totalCount, Convert.ToDecimal(take))).ToString());
+                var tp = int.Parse(Math.Floor(decimal.Divide(entities.TotalCount, Convert.ToDecimal(take))).ToString());
                 totalPage = tp + 1;
             }
 
@@ -77,11 +75,11 @@ namespace JapanCar.Application.Services
         }
 
 
-        public async Task<GridDto<ModelDto>> GetModels(int? skip = null, int? take = null)
+        public async Task<GridDto<ModelDto>> GetModels(string? keyword, int? skip = null, int? take = null)
         {
-            var entities = await _unitOfWork.BaseInfoRepository.GetModels(skip, take);
+            var entities = await _unitOfWork.BaseInfoRepository.GetModels(keyword, skip, take);
 
-            var models = entities.Select(x => new ModelDto
+            var models = entities.Items.Select(x => new ModelDto
             {
                 ModelId = x.ModelId,
                 BrandId = x.BrandId,
@@ -90,12 +88,11 @@ namespace JapanCar.Application.Services
                 CreatedAt = x.CreatedDate
             });
 
-            var totalCount = await _unitOfWork.BaseInfoRepository.GetModelsCount();
             var totalPage = 0;
 
             if (take.HasValue)
             {
-                var tp = int.Parse(Math.Floor(decimal.Divide(totalCount, Convert.ToDecimal(take))).ToString());
+                var tp = int.Parse(Math.Floor(decimal.Divide(entities.TotalCount, Convert.ToDecimal(take))).ToString());
                 totalPage = tp + 1;
             }
 

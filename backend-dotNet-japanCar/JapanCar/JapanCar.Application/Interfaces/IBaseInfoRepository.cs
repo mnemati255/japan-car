@@ -1,4 +1,5 @@
-﻿using JapanCar.Domain.Entities;
+﻿using JapanCar.Application.Models;
+using JapanCar.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +10,9 @@ namespace JapanCar.Application.Interfaces
 {
     public interface IBaseInfoRepository
     {
-        Task<IEnumerable<CarColorEntity>> GetColors(int? skip = null, int? take = null);
-        Task<IEnumerable<CarBrandEntity>> GetBrands(int? skip = null, int? take = null);
-        Task<IEnumerable<CarModelEntity>> GetModels(int? skip = null, int? take = null);
-        Task<int> GetColorsCount();
-        Task<int> GetBrandsCount();
-        Task<int> GetModelsCount();
+        Task<PagedResult<CarColorEntity>> GetColors(string? keyword, int? skip = null, int? take = null);
+        Task<PagedResult<CarBrandEntity>> GetBrands(string? keyword, int? skip = null, int? take = null);
+        Task<PagedResult<CarModelEntity>> GetModels(string? keyword, int? skip = null, int? take = null);
         Task<IEnumerable<CarModelEntity>> GetModelsOfBrands(int brandId);
         Task CreateBrand(CarBrandEntity entity);
         Task CreateColor(CarColorEntity entity);

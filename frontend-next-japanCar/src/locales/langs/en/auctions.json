@@ -1,0 +1,9 @@
+{
+  "auction": "Action",
+  "addAuction": "Add auction",
+  "noAuctions": "No auctions",
+  "columns": {
+    "fee": "Fee",
+    "cars": "Cars"
+  }
+}

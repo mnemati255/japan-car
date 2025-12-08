@@ -3,11 +3,13 @@ using JapanCar.Api.Filters;
 using JapanCar.Application.DTOs;
 using JapanCar.Application.Models;
 using JapanCar.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JapanCar.Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CarController : ControllerBase
@@ -37,9 +39,9 @@ namespace JapanCar.Api.Controllers
 
 
         [HttpGet("cars-of-auction/{auctionId}")]
-        public async Task<IActionResult> GetAllCarsOfAuction(int auctionId)
+        public async Task<IActionResult> GetAllCarsOfAuction(int auctionId, [FromQuery]CarFilterDto filterDto)
         {
-            var result = await _carService.GetAllCarsOfAuction(auctionId);
+            var result = await _carService.GetAllCarsOfAuction(auctionId, filterDto);
             return Ok(result);
         }
 

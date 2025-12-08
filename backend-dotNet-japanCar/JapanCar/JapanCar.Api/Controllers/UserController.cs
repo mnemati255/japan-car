@@ -21,9 +21,9 @@ namespace JapanCar.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<IActionResult> GetAllUsers(string? keyword)
         {
-            var result = await _userService.GetAllUsers();
+            var result = await _userService.GetAllUsers(keyword);
             return Ok(result);
         }
 

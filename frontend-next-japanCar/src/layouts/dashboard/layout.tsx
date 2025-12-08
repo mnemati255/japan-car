@@ -3,23 +3,16 @@
 import type { Breakpoint } from '@mui/material/styles';
 import type { NavItemProps, NavSectionProps } from '@/components/nav-section';
 import type { MainSectionProps, HeaderSectionProps, LayoutSectionProps } from '../core';
-
 import { merge } from 'es-toolkit';
 import { useBoolean } from 'minimal-shared/hooks';
-
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 import { iconButtonClasses } from '@mui/material/IconButton';
-
-import { allLangs } from '@/locales';
-import { _notifications } from '@/_mock';
-
+import { allLangs, useTranslate } from '@/locales';
 import { Logo } from '@/components/logo';
 import { useSettingsContext } from '@/components/settings';
-
 import { useMockedUser } from '@/auth/hooks';
-
 import { NavMobile } from './nav-mobile';
 import { VerticalDivider } from './content';
 import { NavVertical } from './nav-vertical';
@@ -31,7 +24,6 @@ import { AccountDrawer } from '../components/account-drawer';
 import { LanguagePopover } from '../components/language-popover';
 import { navData as dashboardNavData } from '../nav-config-dashboard';
 import { dashboardLayoutVars, dashboardNavColorVars } from './css-vars';
-import { NotificationsDrawer } from '../components/notifications-drawer';
 import { MainSection, layoutClasses, HeaderSection, LayoutSection } from '../core';
 
 // ----------------------------------------------------------------------
@@ -62,11 +54,17 @@ export function DashboardLayout({
 
   const settings = useSettingsContext();
 
-  const navVars = dashboardNavColorVars(theme, settings.state.navColor, settings.state.navLayout);
+  const navVars = dashboardNavColorVars(
+    theme,
+    settings.state.navColor,
+    settings.state.navLayout
+  );
 
   const { value: open, onFalse: onClose, onTrue: onOpen } = useBoolean();
 
-  const navData = slotProps?.nav?.data ?? dashboardNavData;
+  const { t } = useTranslate('navbar');
+
+  const navData = slotProps?.nav?.data ?? dashboardNavData(t);
 
   const isNavMini = settings.state.navLayout === 'mini';
   const isNavHorizontal = settings.state.navLayout === 'horizontal';
@@ -84,7 +82,9 @@ export function DashboardLayout({
           ...(isNavHorizontal && {
             bgcolor: 'var(--layout-nav-bg)',
             height: { [layoutQuery]: 'var(--layout-nav-horizontal-height)' },
-            [`& .${iconButtonClasses.root}`]: { color: 'var(--layout-nav-text-secondary-color)' },
+            [`& .${iconButtonClasses.root}`]: {
+              color: 'var(--layout-nav-text-secondary-color)',
+            },
           }),
         },
       },
@@ -109,7 +109,11 @@ export function DashboardLayout({
           {/** @slot Nav mobile */}
           <MenuButton
             onClick={onOpen}
-            sx={{ mr: 1, ml: -1, [theme.breakpoints.up(layoutQuery)]: { display: 'none' } }}
+            sx={{
+              mr: 1,
+              ml: -1,
+              [theme.breakpoints.up(layoutQuery)]: { display: 'none' },
+            }}
           />
           <NavMobile
             data={navData}
@@ -131,7 +135,9 @@ export function DashboardLayout({
 
           {/** @slot Divider */}
           {isNavHorizontal && (
-            <VerticalDivider sx={{ [theme.breakpoints.up(layoutQuery)]: { display: 'flex' } }} />
+            <VerticalDivider
+              sx={{ [theme.breakpoints.up(layoutQuery)]: { display: 'flex' } }}
+            />
           )}
         </>
       ),
@@ -206,7 +212,9 @@ export function DashboardLayout({
         {
           [`& .${layoutClasses.sidebarContainer}`]: {
             [theme.breakpoints.up(layoutQuery)]: {
-              pl: isNavMini ? 'var(--layout-nav-mini-width)' : 'var(--layout-nav-vertical-width)',
+              pl: isNavMini
+                ? 'var(--layout-nav-mini-width)'
+                : 'var(--layout-nav-vertical-width)',
               transition: theme.transitions.create(['padding-left'], {
                 easing: 'var(--layout-transition-easing)',
                 duration: 'var(--layout-transition-duration)',

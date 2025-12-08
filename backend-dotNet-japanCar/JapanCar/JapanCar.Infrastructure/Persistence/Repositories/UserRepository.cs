@@ -13,10 +13,18 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<UserEntity>> GetAllUsers()
+        public async Task<IEnumerable<UserEntity>> GetAllUsers(string? keyword)
         {
-            var users = await _context.Users.ToListAsync();
-            
+            var query = _context.Users.AsQueryable();
+
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                query = query
+                    .Where(x => x.UserName.Contains(keyword) || (!string.IsNullOrEmpty(x.Email) && x.Email.Contains(keyword)));
+            }
+
+            var users = await query.ToListAsync();
+
             return users.Select(x => new UserEntity
             {
                 UserId = x.UserId,

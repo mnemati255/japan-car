@@ -18,9 +18,9 @@ namespace JapanCar.Application.Services
             _passwordHasher = passwordHasher;
         }
 
-        public async Task<IEnumerable<UserDto>> GetAllUsers()
+        public async Task<IEnumerable<UserDto>> GetAllUsers(string? keyword)
         {
-            var users = await _unitOfWork.UserRepository.GetAllUsers();
+            var users = await _unitOfWork.UserRepository.GetAllUsers(keyword);
 
             return users.Select(x => new UserDto
             {

@@ -1,4 +1,5 @@
 ﻿using JapanCar.Application.Interfaces;
+using JapanCar.Application.Models;
 using JapanCar.Domain.Entities;
 using JapanCar.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
@@ -20,9 +21,14 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<IEnumerable<CarColorEntity>> GetColors(int? skip = null, int? take = null)
+        public async Task<PagedResult<CarColorEntity>> GetColors(string? keyword, int? skip = null, int? take = null)
         {
             var query = _context.CarColors.AsQueryable();
+
+            if (!string.IsNullOrEmpty(keyword))
+                query = query.Where(x => x.ColorName.Contains(keyword));
+
+            var totalCount = await query.CountAsync();
 
             if (skip.HasValue)
                 query = query.Skip(skip.Value);
@@ -30,20 +36,29 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
             if (take.HasValue)
                 query = query.Take(take.Value);
 
-            var colors = await query.ToListAsync();
-
-            return colors.Select(x => new CarColorEntity
+            var items = await query.Select(x => new CarColorEntity
             {
                 ColorId = x.ColorId,
                 ColorName = x.ColorName,
                 CreatedDate = x.CreatedDate
-            });
+            }).ToListAsync();
+
+            return new PagedResult<CarColorEntity>
+            {
+                Items = items,
+                TotalCount = totalCount
+            };
         }
 
 
-        public async Task<IEnumerable<CarBrandEntity>> GetBrands(int? skip = null, int? take = null)
+        public async Task<PagedResult<CarBrandEntity>> GetBrands(string? keyword, int? skip = null, int? take = null)
         {
             var query = _context.CarBrands.AsQueryable();
+
+            if (!string.IsNullOrEmpty(keyword))
+                query = query.Where(x => x.BrandName.Contains(keyword));
+
+            var totalCount = await query.CountAsync();
 
             if (skip.HasValue)
                 query = query.Skip(skip.Value);
@@ -51,57 +66,52 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
             if (take.HasValue)
                 query = query.Take(take.Value);
 
-            var brands = await query.ToListAsync();
-
-            return brands.Select(x => new CarBrandEntity
+            var items = await query.Select(x => new CarBrandEntity
             {
                 BrandId = x.BrandId,
                 BrandName = x.BrandName,
                 CreatedDate = x.CreatedDate
-            });
+            }).ToListAsync();
+
+            return new PagedResult<CarBrandEntity>
+            {
+                Items = items,
+                TotalCount = totalCount
+            };
         }
 
 
-        public async Task<IEnumerable<CarModelEntity>> GetModels(int? skip = null, int? take = null)
+        public async Task<PagedResult<CarModelEntity>> GetModels(string? keyword, int? skip = null, int? take = null)
         {
             var query = _context.CarModels
-                .Include(x=>x.Brand)
+                .Include(x => x.Brand)
                 .AsQueryable();
+
+            if (!string.IsNullOrEmpty(keyword))
+                query = query.Where(x => x.ModelName.Contains(keyword));
+
+            var totalCount = await query.CountAsync();
 
             if (skip.HasValue)
                 query = query.Skip(skip.Value);
 
-            if(take.HasValue)
-                query = query.Take(take.Value);            
+            if (take.HasValue)
+                query = query.Take(take.Value);
 
-            var models = await query.ToListAsync();
-                
-            return models.Select(x => new CarModelEntity
+            var items = await query.Select(x => new CarModelEntity
             {
                 ModelId = x.ModelId,
                 BrandId = x.BrandId,
                 ModelName = x.ModelName,
                 BrandName = x.Brand.BrandName,
                 CreatedDate = x.CreatedDate
-            });
-        }
+            }).ToListAsync();
 
-
-        public async Task<int> GetColorsCount()
-        {
-            return await _context.CarColors.CountAsync();
-        }
-
-
-        public async Task<int> GetBrandsCount()
-        {
-            return await _context.CarBrands.CountAsync();
-        }
-
-
-        public async Task<int> GetModelsCount()
-        {
-            return await _context.CarModels.CountAsync();
+            return new PagedResult<CarModelEntity>
+            {
+                Items = items,
+                TotalCount = totalCount
+            };
         }
 
 
@@ -219,7 +229,7 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 .Include(x => x.Cars)
                 .FirstOrDefaultAsync(x => x.ColorId == id);
 
-            if(color != null)
+            if (color != null)
             {
                 _context.Cars.RemoveRange(color.Cars);
                 _context.CarColors.Remove(color);

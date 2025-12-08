@@ -19,6 +19,10 @@ import { TableHeadCellProps, TableHeadCustom } from '@/components/table';
 import TableBody from '@mui/material/TableBody';
 import { AuctionCarTableRow } from '../auction-car-table-row';
 import { Scrollbar } from '@/components/scrollbar';
+import Box from '@mui/material/Box';
+import Pagination from '@mui/material/Pagination';
+import AuctionCarSearchDialog from '../auction-car-search-dialog';
+import { useBoolean } from 'minimal-shared/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -30,6 +34,15 @@ const TABLE_HEAD: TableHeadCellProps[] = [
   { id: 'actions', width: 88 },
 ];
 
+const DEFAULT_FILTERS = {
+  brandId: '',
+  colorId: '',
+  modelId: '',
+  year: '',
+  chasisNumber: '',
+  fuelType: '',
+};
+
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -38,7 +51,15 @@ type Props = {
 
 export function AuctionCarsListView({ auctionId }: Props) {
   const [currentAuction, setCurrentAuction] = useState<IAuctionItem | null>(null);
-  const { cars, empty, isLoading } = useGetCarsOfAuction(auctionId);
+  const [page, setPage] = useState(1);
+  const searchDialog = useBoolean();
+  const [filters, setFilters] = useState<any>(DEFAULT_FILTERS);
+
+  const { cars, totalPage, empty, isLoading } = useGetCarsOfAuction(
+    auctionId,
+    page,
+    filters
+  );
 
   useEffect(() => {
     if (auctionId) {
@@ -56,6 +77,19 @@ export function AuctionCarsListView({ auctionId }: Props) {
     await deleteCarOfAuction(carId, auctionId);
   }, []);
 
+  const renderSearchDialog = () => (
+    <AuctionCarSearchDialog
+      open={searchDialog.value}
+      onClose={searchDialog.onFalse}
+      onApplyFilters={(e) => {
+        setFilters(e);
+        searchDialog.onFalse();
+        setPage(1);
+      }}
+      filters={filters}
+    />
+  );
+
   const renderEmpty = () => (
     <Stack sx={{ flex: '1 1 auto', px: { xs: 2.5, md: 1.5 }, py: 8 }}>
       <EmptyContent title="No cars" />
@@ -63,20 +97,59 @@ export function AuctionCarsListView({ auctionId }: Props) {
   );
 
   const renderTable = () => (
-    <Scrollbar sx={{ minHeight: 350 }}>
-      <Table sx={{ minWidth: 800 }}>
-        <TableHeadCustom headCells={TABLE_HEAD} />
-        <TableBody>
-          {cars.map((row) => (
-            <AuctionCarTableRow
-              key={row.carId}
-              row={row}
-              onDeleteRow={() => handleDeleteCar(row.carId!, row.auctionId!)}
+    <>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'end',
+          gap: 1,
+          p: 2,
+        }}
+      >
+        <Button
+          variant="outlined"
+          startIcon={<Iconify icon="eva:search-fill" />}
+          onClick={() => searchDialog.onTrue()}
+        >
+          Search
+        </Button>
+        {Object.keys(filters).some((k) => filters[k] !== (DEFAULT_FILTERS as any)[k]) && (
+          <Button
+            variant="soft"
+            color="error"
+            onClick={() => setFilters(DEFAULT_FILTERS)}
+          >
+            Clear filters
+          </Button>
+        )}
+      </Box>
+      {empty ? (
+        renderEmpty()
+      ) : (
+        <Scrollbar sx={{ minHeight: 350 }}>
+          <Table sx={{ minWidth: 800 }}>
+            <TableHeadCustom headCells={TABLE_HEAD} />
+            <TableBody>
+              {cars.map((row, index) => (
+                <AuctionCarTableRow
+                  key={index}
+                  row={row}
+                  onDeleteRow={() => handleDeleteCar(row.carId!, row.auctionId!)}
+                />
+              ))}
+            </TableBody>
+          </Table>
+
+          <Box sx={{ py: 3, display: 'flex', justifyContent: 'center' }}>
+            <Pagination
+              page={page}
+              count={totalPage}
+              onChange={(event, newPage) => setPage(newPage)}
             />
-          ))}
-        </TableBody>
-      </Table>
-    </Scrollbar>
+          </Box>
+        </Scrollbar>
+      )}
+    </>
   );
 
   if (!currentAuction) return null;
@@ -104,7 +177,9 @@ export function AuctionCarsListView({ auctionId }: Props) {
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      {isLoading ? <Loading /> : <Card>{empty ? renderEmpty() : renderTable()}</Card>}
+      {isLoading ? <Loading /> : <Card>{renderTable()}</Card>}
+
+      {renderSearchDialog()}
     </DashboardContent>
   );
 }

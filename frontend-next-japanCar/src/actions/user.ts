@@ -15,18 +15,18 @@ const BASE_URL = `${CONFIG.serverUrl}/user`;
 
 // ----------------------------------------------------------------------
 
-export function useGetUsers() {
-  const url = BASE_URL;
+export function useGetUsers(keyword: string) {
+  const url = `${BASE_URL}?keyword=${keyword}`;
   const { data, isLoading, error, isValidating } = useSWR<IUserItem[]>(url, fetcher, {
     ...swrOptions,
   });
 
   return {
     users: data || [],
-    usersLoading: isLoading,
-    usersError: error,
-    usersValidating: isValidating,
-    usersEmpty: !isLoading && !data?.length,
+    isLoading,
+    error,
+    isValidating,
+    empty: !isLoading && !data?.length,
   };
 }
 

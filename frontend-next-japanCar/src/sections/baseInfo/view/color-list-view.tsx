@@ -16,6 +16,8 @@ import { IColor } from '@/types/car';
 import { ColorCreateEditForm } from '../color-create-edit-form';
 import { ColorTableRow } from '../color-table-row';
 import Pagination from '@mui/material/Pagination';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
 
 const TABLE_HEAD: TableHeadCellProps[] = [
   { id: 'colorName', label: 'Color' },
@@ -27,8 +29,15 @@ export function ColorListView() {
   const formDialog = useBoolean();
   const [item, setItem] = useState<IColor | null>(null);
   const [page, setPage] = useState(1);
+  const [keyword, setKeyword] = useState('');
+  const [searchKeyword, setSearchKeyword] = useState('');
 
-  const { colors, totalPage, empty, isLoading } = useGetColors(page);
+  const handleSearch = () => {
+    setPage(1);
+    setSearchKeyword(keyword);
+  };
+
+  const { colors, totalPage, empty, isLoading } = useGetColors(page, searchKeyword);
 
   const handleDeleteRow = useCallback(async (colorId: number) => {
     await deleteColor(colorId);
@@ -66,29 +75,75 @@ export function ColorListView() {
 
   const renderTable = () => (
     <Card>
-      <Scrollbar sx={{ minHeight: 350 }}>
-        <Table sx={{ minWidth: 500 }}>
-          <TableHeadCustom headCells={TABLE_HEAD} />
-          <TableBody>
-            {colors.map((color) => (
-              <ColorTableRow
-                key={color.colorId}
-                row={color}
-                onDeleteRow={() => handleDeleteRow(color.colorId!)}
-                onShowEditDialog={() => handleShowEditDialog(color)}
-              />
-            ))}
-          </TableBody>
-        </Table>
+      <Box sx={{ p: 2, display: 'flex' }}>
+        <TextField
+          fullWidth
+          placeholder="Search ..."
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          slotProps={{
+            input: {
+              sx: {
+                borderTopRightRadius: 0,
+                borderBottomRightRadius: 0,
+              },
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                </InputAdornment>
+              ),
+              endAdornment: keyword ? (
+                <InputAdornment position="end">
+                  <Iconify
+                    icon="mingcute:close-line"
+                    sx={{ color: 'text.disabled', cursor: 'pointer' }}
+                    onClick={() => {
+                      setPage(1);
+                      setKeyword('');
+                      setSearchKeyword('');
+                    }}
+                  />
+                </InputAdornment>
+              ) : null,
+            },
+          }}
+        />
+        <Button
+          variant="soft"
+          sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+          onClick={handleSearch}
+        >
+          <Iconify icon="eva:search-fill" />
+        </Button>
+      </Box>
 
-        <Box sx={{ py: 3, display: 'flex', justifyContent: 'center' }}>
-          <Pagination
-            page={page}
-            count={totalPage}
-            onChange={(event, newPage) => setPage(newPage)}
-          />
-        </Box>
-      </Scrollbar>
+      {empty ? (
+        renderEmpty()
+      ) : (
+        <Scrollbar sx={{ minHeight: 350 }}>
+          <Table sx={{ minWidth: 500 }}>
+            <TableHeadCustom headCells={TABLE_HEAD} />
+            <TableBody>
+              {colors.map((color) => (
+                <ColorTableRow
+                  key={color.colorId}
+                  row={color}
+                  onDeleteRow={() => handleDeleteRow(color.colorId!)}
+                  onShowEditDialog={() => handleShowEditDialog(color)}
+                />
+              ))}
+            </TableBody>
+          </Table>
+
+          <Box sx={{ py: 3, display: 'flex', justifyContent: 'center' }}>
+            <Pagination
+              page={page}
+              count={totalPage}
+              onChange={(event, newPage) => setPage(newPage)}
+            />
+          </Box>
+        </Scrollbar>
+      )}
     </Card>
   );
 
@@ -108,8 +163,7 @@ export function ColorListView() {
         </Button>
       </Box>
 
-      {empty ? renderEmpty() : renderTable()}
-
+      {renderTable()}
       {renderFormDialog()}
     </Box>
   );

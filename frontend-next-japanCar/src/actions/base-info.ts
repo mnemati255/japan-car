@@ -21,10 +21,10 @@ export async function getColors() {
   return res;
 }
 
-export function useGetColors(page: number) {
+export function useGetColors(page: number, keyword: string) {
   const skip = (page - 1) * CONFIG.appSettings.pageSize;
   const take = CONFIG.appSettings.pageSize;
-  const url = `${COLOR_BASE_URL}?skip=${skip}&take=${take}`;
+  const url = `${COLOR_BASE_URL}?keyword=${keyword}&skip=${skip}&take=${take}`;
 
   const { data, isLoading, error, isValidating } = useSWR<IGrid<IColor>>(url, fetcher, {
     ...swrOptions,
@@ -78,10 +78,10 @@ export async function getBrands() {
   return res;
 }
 
-export function useGetBrands(page: number) {
+export function useGetBrands(page: number, keyword: string) {
   const skip = (page - 1) * CONFIG.appSettings.pageSize;
   const take = CONFIG.appSettings.pageSize;
-  const url = `${BRAND_BASE_URL}?skip=${skip}&take=${take}`;
+  const url = `${BRAND_BASE_URL}?keyword=${keyword}&skip=${skip}&take=${take}`;
 
   const { data, isLoading, error, isValidating } = useSWR<IGrid<IBrand>>(url, fetcher, {
     ...swrOptions,
@@ -141,10 +141,10 @@ export async function getModels() {
   return res;
 }
 
-export function useGetModels(page: number) {
+export function useGetModels(page: number, keyword: string) {
   const skip = (page - 1) * CONFIG.appSettings.pageSize;
   const take = CONFIG.appSettings.pageSize;
-  const url = `${MODEL_BASE_URL}?skip=${skip}&take=${take}`;
+  const url = `${MODEL_BASE_URL}?keyword=${keyword}&skip=${skip}&take=${take}`;
 
   const { data, isLoading, error, isValidating } = useSWR<IGrid<IModel>>(url, fetcher, {
     ...swrOptions,
