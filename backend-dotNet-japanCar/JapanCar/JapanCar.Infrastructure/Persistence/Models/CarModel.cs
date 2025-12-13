@@ -16,11 +16,6 @@ public partial class CarModel
     public int BrandId { get; set; }
 
     /// <summary>
-    /// نام مدل خودرو
-    /// </summary>
-    public string ModelName { get; set; } = null!;
-
-    /// <summary>
     /// تاریخ ایجاد
     /// </summary>
     public DateTime CreatedDate { get; set; }
@@ -41,6 +36,8 @@ public partial class CarModel
     public int? ModifiedBy { get; set; }
 
     public virtual CarBrand Brand { get; set; } = null!;
+
+    public virtual ICollection<CarModelTranslation> CarModelTranslations { get; set; } = new List<CarModelTranslation>();
 
     public virtual ICollection<Car> Cars { get; set; } = new List<Car>();
 

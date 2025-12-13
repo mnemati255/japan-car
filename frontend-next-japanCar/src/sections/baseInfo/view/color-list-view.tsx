@@ -2,7 +2,7 @@ import { Iconify } from '@/components/iconify';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { useBoolean } from 'minimal-shared/hooks';
-import { deleteColor, useGetColors } from '@/actions/base-info';
+import { deleteColor, getColorById, useGetColors } from '@/actions/base-info';
 import Loading from '@/app/dashboard/loading';
 import { Scrollbar } from '@/components/scrollbar';
 import Table from '@mui/material/Table';
@@ -11,13 +11,14 @@ import TableBody from '@mui/material/TableBody';
 import Stack from '@mui/material/Stack';
 import { EmptyContent } from '@/components/empty-content';
 import Card from '@mui/material/Card';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { IColor } from '@/types/car';
 import { ColorCreateEditForm } from '../color-create-edit-form';
 import { ColorTableRow } from '../color-table-row';
 import Pagination from '@mui/material/Pagination';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
+import { LangCode, useTranslate } from '@/locales';
 
 const TABLE_HEAD: TableHeadCellProps[] = [
   { id: 'colorName', label: 'Color' },
@@ -28,6 +29,8 @@ const TABLE_HEAD: TableHeadCellProps[] = [
 export function ColorListView() {
   const formDialog = useBoolean();
   const [item, setItem] = useState<IColor | null>(null);
+  const { currentLang } = useTranslate();
+  const [currentLocale, setCurrentLocale] = useState<LangCode>(currentLang.value);
   const [page, setPage] = useState(1);
   const [keyword, setKeyword] = useState('');
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -37,33 +40,44 @@ export function ColorListView() {
     setSearchKeyword(keyword);
   };
 
-  const { colors, totalPage, empty, isLoading } = useGetColors(page, searchKeyword);
+  const { colors, totalPage, empty, isLoading } = useGetColors(
+    currentLang.value,
+    page,
+    searchKeyword
+  );
 
   const handleDeleteRow = useCallback(async (colorId: number) => {
     await deleteColor(colorId);
   }, []);
 
   const handleShowEditDialog = useCallback(
-    (color: IColor) => {
-      setItem(color);
-      formDialog.onTrue();
+    async (color: IColor, locale?: LangCode) => {
+      if (locale) {
+        setCurrentLocale(locale);
+        const { status, data } = await getColorById(locale, color.colorId!);
+        if (status == 200) {
+          setItem(data);
+          formDialog.onTrue();
+        }
+      } else {
+        setItem(color);
+        formDialog.onTrue();
+      }
     },
     [formDialog]
   );
 
-  useEffect(() => {
-    if (!formDialog.value) {
-      setTimeout(() => {
-        setItem(null);
-      }, 300);
-    }
-  }, [formDialog]);
-
   const renderFormDialog = () => (
     <ColorCreateEditForm
       open={formDialog.value}
-      onClose={formDialog.onFalse}
+      onClose={() => {
+        formDialog.onFalse();
+        setTimeout(() => {
+          setCurrentLocale(currentLang.value);
+        }, 200);
+      }}
       currentItem={item}
+      locale={currentLocale}
     />
   );
 
@@ -129,7 +143,7 @@ export function ColorListView() {
                   key={color.colorId}
                   row={color}
                   onDeleteRow={() => handleDeleteRow(color.colorId!)}
-                  onShowEditDialog={() => handleShowEditDialog(color)}
+                  onShowEditDialog={(locale) => handleShowEditDialog(color, locale)}
                 />
               ))}
             </TableBody>
@@ -157,7 +171,10 @@ export function ColorListView() {
         <Button
           variant="contained"
           startIcon={<Iconify icon="mingcute:add-line" />}
-          onClick={formDialog.onTrue}
+          onClick={() => {
+            setItem(null);
+            formDialog.onTrue();
+          }}
         >
           Add color
         </Button>

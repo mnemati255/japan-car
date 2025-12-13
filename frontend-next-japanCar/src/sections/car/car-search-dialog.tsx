@@ -29,14 +29,17 @@ export default function CarSearchDialog({
   const [models, setModels] = useState<IModel[]>([]);
   const [colors, setColors] = useState<IColor[]>([]);
   const [localFilters, setLocalFilters] = useState(filters);
-
+  
   useEffect(() => {
     setLocalFilters(filters);
   }, [filters]);
 
   useEffect(() => {
     (async () => {
-      const [brandsRes, colorsRes] = await Promise.all([getBrands(), getColors()]);
+      const [brandsRes, colorsRes] = await Promise.all([
+        getBrands(),
+        getColors(),
+      ]);
       if (brandsRes.status === 200) setBrands(brandsRes.data.items);
       if (colorsRes.status === 200) setColors(colorsRes.data.items);
     })();

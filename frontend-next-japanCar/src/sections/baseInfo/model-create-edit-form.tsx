@@ -1,6 +1,7 @@
 import { createModel, getBrands, updateModel } from '@/actions/base-info';
 import { Field, Form } from '@/components/hook-form';
 import messages from '@/lib/messages';
+import { LangCode, useTranslate } from '@/locales';
 import { IBrand, IModel } from '@/types/car';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Button from '@mui/material/Button';
@@ -22,9 +23,11 @@ type Props = {
   open: boolean;
   onClose: () => void;
   currentItem: IModel | null;
+  locale: LangCode;
 };
 
-export function ModelCreateEditForm({ onClose, open, currentItem }: Props) {
+export function ModelCreateEditForm({ onClose, open, currentItem, locale }: Props) {
+  const { currentLang } = useTranslate();
   const [brands, setBrands] = useState<IBrand[]>([]);
 
   useEffect(() => {
@@ -60,13 +63,14 @@ export function ModelCreateEditForm({ onClose, open, currentItem }: Props) {
         reset({ modelName: '', brandId: '' });
       }, 300);
     }
-  }, [currentItem, open, reset]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ open, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
       const api = !currentItem
         ? createModel(data)
-        : updateModel(currentItem.modelId!, data);
+        : updateModel(locale, currentItem.modelId!, data);
       const { status } = await api;
       if (status == 200) {
         onClose();
@@ -78,7 +82,13 @@ export function ModelCreateEditForm({ onClose, open, currentItem }: Props) {
 
   return (
     <Dialog fullWidth open={open} onClose={onClose}>
-      <DialogTitle>{currentItem ? 'Update model' : 'Create model'}</DialogTitle>
+      <DialogTitle>
+        {currentItem
+          ? locale == currentLang.value
+            ? 'Update model'
+            : 'Translation'
+          : 'Create model'}
+      </DialogTitle>
       <Form methods={methods} onSubmit={onSubmit}>
         <DialogContent sx={{ py: 3, rowGap: 3, display: 'grid' }}>
           <Field.Select name="brandId" label="Brand">

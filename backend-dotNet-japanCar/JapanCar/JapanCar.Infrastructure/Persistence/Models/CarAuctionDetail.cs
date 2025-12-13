@@ -18,7 +18,7 @@ public partial class CarAuctionDetail
     /// <summary>
     /// شناسه حراج
     /// </summary>
-    public int AuctionId { get; set; }
+    public int? AuctionId { get; set; }
 
     /// <summary>
     /// قیمت خرید
@@ -65,7 +65,7 @@ public partial class CarAuctionDetail
     /// </summary>
     public int? ModifiedBy { get; set; }
 
-    public virtual Auction Auction { get; set; } = null!;
+    public virtual Auction? Auction { get; set; }
 
     public virtual Car Car { get; set; } = null!;
 

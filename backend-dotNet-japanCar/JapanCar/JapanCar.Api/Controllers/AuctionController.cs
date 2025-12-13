@@ -1,6 +1,7 @@
 ﻿using JapanCar.Api.Filters;
 using JapanCar.Application.DTOs;
 using JapanCar.Application.Services;
+using JapanCar.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,10 +29,11 @@ namespace JapanCar.Api.Controllers
             return Ok(result);
         }
 
+
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetAuctionById(int id)
+        public async Task<IActionResult> GetAuctionById(int id, string locale)
         {
-            var result = await _auctionService.GetAuctionById(id);
+            var result = await _auctionService.GetAuctionById(id, locale);
             return Ok(result);
         }
 
@@ -47,9 +49,9 @@ namespace JapanCar.Api.Controllers
 
         [HttpPut("{id}")]
         [ServiceFilter(typeof(ValidateDtoFilter<AuctionDto>))]
-        public async Task<IActionResult> UpdateAuction(int id, AuctionDto dto)
+        public async Task<IActionResult> UpdateAuction(string locale, int id, AuctionDto dto)
         {
-            await _auctionService.UpdateAuction(id, dto);
+            await _auctionService.UpdateAuction(locale, id, dto);
             return Ok();
         }
 

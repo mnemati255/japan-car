@@ -23,6 +23,7 @@ import Pagination from '@mui/material/Pagination';
 import { useBoolean } from 'minimal-shared/hooks';
 import { CarTableRow } from '../car-table-row';
 import CarSearchDialog from '../car-search-dialog';
+import { useTranslate, useTranslateFromServer } from '@/locales';
 
 // ----------------------------------------------------------------------
 
@@ -42,37 +43,40 @@ type Props = {
 };
 
 export function CarsListView({ auctionId }: Props) {
+  const { formFields } = useTranslateFromServer();
+  
   const TABLE_HEAD: TableHeadCellProps[] = [
-    { id: 'modelName', label: 'Model' },
-    { id: 'purchasePrice', label: 'Purchase price' },
-    { id: 'finalPrice', label: 'Final price' },
-    { id: 'createdAt', label: 'Date' },
+    { id: 'modelName', label: formFields['ModelName'] },
+    { id: 'purchasePrice', label: formFields['PurchasePrice'] },
+    { id: 'finalPrice', label: formFields['FinalPrice'] },
+    { id: 'createdAt', label: formFields['CreatedDate'] },
     { id: 'actions', width: 88 },
   ];
-  if (!auctionId)
-    TABLE_HEAD.splice(1, 0, {
-      id: 'auctionName',
-      label: 'Auction',
-    });
 
   const [currentAuction, setCurrentAuction] = useState<IAuctionItem | null>(null);
   const [page, setPage] = useState(1);
   const searchDialog = useBoolean();
   const [filters, setFilters] = useState<any>(DEFAULT_FILTERS);
+  const { currentLang, t: tCommon } = useTranslate('common');
 
-  const { cars, totalPage, empty, isLoading } = useGetCars(page, filters, auctionId);
+  const { cars, totalPage, empty, isLoading } = useGetCars(
+    currentLang.value,
+    page,
+    filters,
+    auctionId
+  );
 
   useEffect(() => {
     if (auctionId) {
       const getAuction = async () => {
-        const { status, data } = await getAuctionById(auctionId);
+        const { status, data } = await getAuctionById(auctionId, currentLang.value);
         if (status === 200) {
           setCurrentAuction(data);
         }
       };
       getAuction();
     }
-  }, [auctionId]);
+  }, [auctionId, currentLang.value]);
 
   const handleDeleteCar = useCallback(async (carId: number) => {
     await deleteCar(carId);
@@ -93,7 +97,7 @@ export function CarsListView({ auctionId }: Props) {
 
   const renderEmpty = () => (
     <Stack sx={{ flex: '1 1 auto', px: { xs: 2.5, md: 1.5 }, py: 8 }}>
-      <EmptyContent title="No cars" />
+      <EmptyContent title={tCommon('car.noCars')} />
     </Stack>
   );
 
@@ -112,7 +116,7 @@ export function CarsListView({ auctionId }: Props) {
           startIcon={<Iconify icon="eva:search-fill" />}
           onClick={() => searchDialog.onTrue()}
         >
-          Search
+          {tCommon('search')}
         </Button>
         {Object.keys(filters).some((k) => filters[k] !== (DEFAULT_FILTERS as any)[k]) && (
           <Button
@@ -120,7 +124,7 @@ export function CarsListView({ auctionId }: Props) {
             color="error"
             onClick={() => setFilters(DEFAULT_FILTERS)}
           >
-            Clear filters
+            {tCommon('clearFilters')}
           </Button>
         )}
       </Box>
@@ -155,11 +159,11 @@ export function CarsListView({ auctionId }: Props) {
   );
 
   const links = !auctionId
-    ? [{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Cars' }]
+    ? [{ name: tCommon('dashboard'), href: paths.dashboard.root }, { name: 'Cars' }]
     : [
-        { name: 'Dashboard', href: paths.dashboard.root },
+        { name: tCommon('dashboard'), href: paths.dashboard.root },
         { name: currentAuction?.auctionName, href: paths.dashboard.auction.root },
-        { name: 'Cars' },
+        { name: tCommon('car.cars') },
       ];
 
   if (auctionId && !currentAuction) return null;
@@ -167,7 +171,7 @@ export function CarsListView({ auctionId }: Props) {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Cars"
+        heading={tCommon('car.cars')}
         backHref={paths.dashboard.car.root}
         links={links}
         action={
@@ -181,7 +185,7 @@ export function CarsListView({ auctionId }: Props) {
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
           >
-            Add car
+            {tCommon('car.addCar')}
           </Button>
         }
         sx={{ mb: { xs: 3, md: 5 } }}

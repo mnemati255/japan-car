@@ -1,6 +1,7 @@
 import { createColor, updateColor } from '@/actions/base-info';
 import { Field, Form } from '@/components/hook-form';
 import messages from '@/lib/messages';
+import { LangCode, useTranslate } from '@/locales';
 import { IColor } from '@/types/car';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Button from '@mui/material/Button';
@@ -20,9 +21,12 @@ type Props = {
   open: boolean;
   onClose: () => void;
   currentItem: IColor | null;
+  locale: LangCode;
 };
 
-export function ColorCreateEditForm({ onClose, open, currentItem }: Props) {
+export function ColorCreateEditForm({ onClose, open, currentItem, locale }: Props) {
+  const { currentLang } = useTranslate();
+
   const methods = useForm({
     mode: 'all',
     resolver: zodResolver(ColorSchema),
@@ -45,13 +49,14 @@ export function ColorCreateEditForm({ onClose, open, currentItem }: Props) {
         reset({ colorName: '' });
       }, 300);
     }
-  }, [currentItem, open, reset]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
       const api = !currentItem
         ? createColor(data)
-        : updateColor(currentItem.colorId!, data);
+        : updateColor(locale, currentItem.colorId!, data);
       const { status } = await api;
       if (status == 200) {
         onClose();
@@ -63,7 +68,13 @@ export function ColorCreateEditForm({ onClose, open, currentItem }: Props) {
 
   return (
     <Dialog fullWidth open={open} onClose={onClose}>
-      <DialogTitle>{currentItem ? 'Update color' : 'Create color'}</DialogTitle>
+      <DialogTitle>
+        {currentItem
+          ? locale == currentLang.value
+            ? 'Update color'
+            : 'Translation'
+          : 'Create color'}
+      </DialogTitle>
       <Form methods={methods} onSubmit={onSubmit}>
         <DialogContent sx={{ py: 3 }}>
           <Field.Text name="colorName" label="Color name" />

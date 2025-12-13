@@ -8,24 +8,26 @@ import IconButton from '@mui/material/IconButton';
 import { Iconify } from '@/components/iconify';
 import { ConfirmDialog } from '@/components/custom-dialog';
 import { IColor } from '@/types/car';
+import { allLangs, LangCode, useTranslate } from '@/locales';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   row: IColor;
   onDeleteRow: () => void;
-  onShowEditDialog: () => void;
+  onShowEditDialog: (locale?: LangCode) => void;
 };
 
 export function ColorTableRow({ row, onDeleteRow, onShowEditDialog }: Props) {
   const confirmDialog = useBoolean();
+  const { currentLang,t: tCommon } = useTranslate('common');
 
   const renderConfirmDialog = () => (
     <ConfirmDialog
       open={confirmDialog.value}
       onClose={confirmDialog.onFalse}
-      title="Delete"
-      content="Are you sure want to delete?"
+      title={tCommon('delete')}
+      content={tCommon('deleteText')}
       action={
         <Button
           variant="contained"
@@ -35,7 +37,7 @@ export function ColorTableRow({ row, onDeleteRow, onShowEditDialog }: Props) {
             confirmDialog.onFalse();
           }}
         >
-          Delete
+          {tCommon('delete')}
         </Button>
       }
     />
@@ -48,8 +50,17 @@ export function ColorTableRow({ row, onDeleteRow, onShowEditDialog }: Props) {
         <TableCell>{row.createdAt?.split('T')[0]}</TableCell>
         <TableCell>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            {allLangs
+              .filter((x) => x.value !== currentLang.value)
+              .map((x, i) => (
+                <Tooltip key={`lng_${i}`} title={x.label} placement="top" arrow>
+                  <IconButton onClick={() => onShowEditDialog(x.value)}>
+                    <Iconify icon="custom:translation" />
+                  </IconButton>
+                </Tooltip>
+              ))}
             <Tooltip title="Edit" placement="top" arrow>
-              <IconButton color="warning" onClick={onShowEditDialog}>
+              <IconButton color="warning" onClick={() => onShowEditDialog()}>
                 <Iconify icon="solar:pen-bold" />
               </IconButton>
             </Tooltip>

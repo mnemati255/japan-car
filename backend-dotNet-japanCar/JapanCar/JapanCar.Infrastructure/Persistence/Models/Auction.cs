@@ -11,21 +11,6 @@ public partial class Auction
     public int AuctionId { get; set; }
 
     /// <summary>
-    /// نام حراج
-    /// </summary>
-    public string AuctionName { get; set; } = null!;
-
-    /// <summary>
-    /// تاریخ برگزاری حراج
-    /// </summary>
-    public DateOnly AuctionDate { get; set; }
-
-    /// <summary>
-    /// کارمزد حراج
-    /// </summary>
-    public decimal? AuctionFee { get; set; }
-
-    /// <summary>
     /// تاریخ ایجاد
     /// </summary>
     public DateTime CreatedDate { get; set; }
@@ -44,6 +29,8 @@ public partial class Auction
     /// ویرایش شده توسط
     /// </summary>
     public int? ModifiedBy { get; set; }
+
+    public virtual ICollection<AuctionsTranslation> AuctionsTranslations { get; set; } = new List<AuctionsTranslation>();
 
     public virtual ICollection<CarAuctionDetail> CarAuctionDetails { get; set; } = new List<CarAuctionDetail>();
 

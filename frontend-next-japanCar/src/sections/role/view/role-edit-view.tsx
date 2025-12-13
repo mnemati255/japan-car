@@ -7,6 +7,7 @@ import { RoleCreateEditForm } from '../role-create-edit-form';
 import { IRoleItem } from '@/types/role';
 import { useEffect, useState } from 'react';
 import { getRoleById } from '@/actions/role';
+import { useTranslate } from '@/locales';
 
 // ----------------------------------------------------------------------
 
@@ -16,6 +17,7 @@ type Props = {
 
 export function RoleEditView({ roleId }: Props) {
   const [currentRole, setCurrentRole] = useState<IRoleItem | null>(null);
+  const { t: tCommon } = useTranslate('common');
 
   useEffect(() => {
     if (roleId) {
@@ -34,11 +36,11 @@ export function RoleEditView({ roleId }: Props) {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Edit"
+        heading={tCommon('edit')}
         backHref={paths.dashboard.role.root}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Role', href: paths.dashboard.role.root },
+          { name: tCommon('dashboard'), href: paths.dashboard.root },
+          { name: tCommon('role.role'), href: paths.dashboard.role.root },
           { name: currentRole?.roleName },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

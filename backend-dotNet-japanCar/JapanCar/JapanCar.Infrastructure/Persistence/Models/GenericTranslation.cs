@@ -16,11 +16,6 @@ public partial class GenericTranslation
     public string EntityName { get; set; } = null!;
 
     /// <summary>
-    /// شناسه موجودیت
-    /// </summary>
-    public int EntityId { get; set; }
-
-    /// <summary>
     /// شناسه زبان
     /// </summary>
     public int LanguageId { get; set; }
@@ -44,6 +39,8 @@ public partial class GenericTranslation
     /// تاریخ ویرایش
     /// </summary>
     public DateTime? ModifiedDate { get; set; }
+
+    public string? Category { get; set; }
 
     public virtual Language Language { get; set; } = null!;
 }

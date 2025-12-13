@@ -19,6 +19,8 @@ namespace JapanCar.Application
             services.AddScoped<RoleService>();
             services.AddScoped<AuctionService>();
             services.AddScoped<BaseInfoService>();
+            services.AddScoped<LanguageService>();
+            services.AddScoped<TranslationService>();
 
             services.AddScoped<IValidator<RoleDto>, RoleDtoValidator>();
             services.AddScoped<IValidator<UserDto>, UserDtoValidator>();

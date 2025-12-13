@@ -10,7 +10,7 @@ import { JWT_STORAGE_KEY } from '@/auth/context/jwt';
 
 export const axiosInstance = axios.create({
   baseURL: CONFIG.serverUrl,
-  withCredentials: true
+  withCredentials: true,
 });
 
 /**
@@ -31,6 +31,9 @@ axiosInstance.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  const locale = sessionStorage.getItem('locale');
+  config.headers['X-Locale'] = locale ?? 'en';
   return config;
 });
 

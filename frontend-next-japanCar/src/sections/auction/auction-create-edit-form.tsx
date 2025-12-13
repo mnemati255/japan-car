@@ -14,15 +14,25 @@ import messages from '@/lib/messages';
 import { IAuctionItem } from '@/types/auction';
 import InputAdornment from '@mui/material/InputAdornment';
 import { createAuction, updateAuction } from '@/actions/auction';
+import {
+  LangCode,
+  LocalizationProvider,
+  useTranslate,
+  useTranslateFromServer,
+} from '@/locales';
+import { useEffect } from 'react';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   currentAuction?: IAuctionItem;
+  lang: LangCode;
 };
 
-export function AuctionCreateEditForm({ currentAuction }: Props) {
+export function AuctionCreateEditForm({ currentAuction, lang }: Props) {
   const router = useRouter();
+  const { t: tCommon } = useTranslate('common');
+  const { formFields } = useTranslateFromServer();
 
   const AuctionCreateSchema = z.object({
     auctionName: z.string().min(1, { error: messages.required() }),
@@ -42,14 +52,25 @@ export function AuctionCreateEditForm({ currentAuction }: Props) {
 
   const {
     handleSubmit,
+    reset,
     formState: { isSubmitting },
   } = methods;
+
+  useEffect(() => {
+    if (currentAuction) {
+      reset({
+        auctionName: currentAuction.auctionName ?? '',
+        auctionDate: currentAuction.auctionDate ?? '',
+        auctionFee: currentAuction.auctionFee ?? 0,
+      });
+    }
+  }, [currentAuction, reset, lang]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
       const api = !currentAuction
         ? createAuction(data)
-        : updateAuction(currentAuction.auctionId!, data);
+        : updateAuction(lang, currentAuction.auctionId!, data);
 
       const { status } = await api;
       if (status == 200) {
@@ -74,18 +95,20 @@ export function AuctionCreateEditForm({ currentAuction }: Props) {
                 gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' },
               }}
             >
-              <Field.Text name="auctionName" label="Name" />
-              <Field.DatePicker name="auctionDate" label="Date" />
+              <Field.Text name="auctionName" label={formFields['AuctionName']} />
+              <LocalizationProvider>
+                <Field.DatePicker name="auctionDate" label={formFields['AuctionDate']} />
+              </LocalizationProvider>
               <Field.Text
                 name="auctionFee"
-                label="Fee"
+                label={formFields['AuctionFee']}
                 type="number"
                 slotProps={{
                   input: {
                     startAdornment: (
                       <InputAdornment position="start">
                         <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>
-                          $
+                          ¥
                         </Box>
                       </InputAdornment>
                     ),
@@ -96,7 +119,9 @@ export function AuctionCreateEditForm({ currentAuction }: Props) {
 
             <Stack sx={{ mt: 3, alignItems: 'flex-end' }}>
               <Button type="submit" variant="contained" loading={isSubmitting}>
-                {!currentAuction ? 'Create auction' : 'Save changes'}
+                {!currentAuction
+                  ? `${tCommon('create')} ${tCommon('auction.auction')}`
+                  : tCommon('save')}
               </Button>
             </Stack>
           </Card>

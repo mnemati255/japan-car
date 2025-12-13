@@ -16,19 +16,20 @@ import { deleteRole, useGetRoles } from '@/actions/role';
 import { RoleTableRow } from '../role-table-row';
 import Loading from '@/app/dashboard/loading';
 import { Scrollbar } from '@/components/scrollbar';
-
-// ----------------------------------------------------------------------
-
-const TABLE_HEAD: TableHeadCellProps[] = [
-  { id: 'roleName', label: 'Role name' },
-  { id: 'createdAt', label: 'Created date' },
-  { id: '', width: 88 },
-];
+import { useTranslate, useTranslateFromServer } from '@/locales';
 
 // ----------------------------------------------------------------------
 
 export function RoleListView() {
   const { roles, rolesLoading } = useGetRoles();
+  const { t: tCommon } = useTranslate('common');
+  const { formFields } = useTranslateFromServer();
+
+  const TABLE_HEAD: TableHeadCellProps[] = [
+    { id: 'roleName', label: formFields['RoleName'] },
+    { id: 'createdAt', label: formFields['CreatedDate'] },
+    { id: '', width: 88 },
+  ];
 
   const handleDeleteRole = useCallback(async (roleId: number) => {
     await deleteRole(roleId);
@@ -38,11 +39,14 @@ export function RoleListView() {
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="List"
+          heading={tCommon('list')}
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Role', href: paths.dashboard.role.root },
-            { name: 'List' },
+            { name: tCommon('dashboard'), href: paths.dashboard.root },
+            {
+              name: tCommon('role.roles'),
+              href: paths.dashboard.role.root,
+            },
+            { name: tCommon('list') },
           ]}
           action={
             <Button
@@ -51,7 +55,7 @@ export function RoleListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              Add role
+              {tCommon('role.addRole')}
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}

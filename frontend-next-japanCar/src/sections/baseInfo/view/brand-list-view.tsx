@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { useBoolean } from 'minimal-shared/hooks';
 import { BrandCreateEditForm } from '../brand-create-edit-form';
-import { deleteBrand, useGetBrands } from '@/actions/base-info';
+import { deleteBrand, getBrandById, useGetBrands } from '@/actions/base-info';
 import Loading from '@/app/dashboard/loading';
 import { Scrollbar } from '@/components/scrollbar';
 import Table from '@mui/material/Table';
@@ -13,11 +13,12 @@ import Stack from '@mui/material/Stack';
 import { EmptyContent } from '@/components/empty-content';
 import Card from '@mui/material/Card';
 import { BrandTableRow } from '../brand-tabel-row';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { IBrand } from '@/types/car';
 import Pagination from '@mui/material/Pagination';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
+import { LangCode, useTranslate } from '@/locales';
 
 const TABLE_HEAD: TableHeadCellProps[] = [
   { id: 'brandName', label: 'Brand' },
@@ -28,6 +29,8 @@ const TABLE_HEAD: TableHeadCellProps[] = [
 export function BrandListView() {
   const formDialog = useBoolean();
   const [item, setItem] = useState<IBrand | null>(null);
+  const { currentLang } = useTranslate();
+  const [currentLocale, setCurrentLocale] = useState<LangCode>(currentLang.value);
   const [page, setPage] = useState(1);
   const [keyword, setKeyword] = useState('');
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -37,33 +40,43 @@ export function BrandListView() {
     setSearchKeyword(keyword);
   };
 
-  const { brands, totalPage, empty, isLoading } = useGetBrands(page, searchKeyword);
+  const { brands, totalPage, empty, isLoading } = useGetBrands(
+    currentLang.value,
+    page,
+    searchKeyword
+  );
 
   const handleDeleteRow = useCallback(async (brandId: number) => {
     await deleteBrand(brandId);
   }, []);
 
   const handleShowEditDialog = useCallback(
-    (brand: IBrand) => {
-      setItem(brand);
+    async (brand: IBrand, locale?: LangCode) => {
+      if (locale) {
+        setCurrentLocale(locale);
+        const { status, data } = await getBrandById(locale, brand.brandId!);
+        if (status == 200) {
+          setItem(data);
+        }
+      } else {
+        setItem(brand);
+      }
       formDialog.onTrue();
     },
     [formDialog]
   );
 
-  useEffect(() => {
-    if (!formDialog.value) {
-      setTimeout(() => {
-        setItem(null);
-      }, 300);
-    }
-  }, [formDialog]);
-
   const renderFormDialog = () => (
     <BrandCreateEditForm
       open={formDialog.value}
-      onClose={formDialog.onFalse}
+      onClose={() => {
+        formDialog.onFalse();
+        setTimeout(() => {
+          setCurrentLocale(currentLang.value);
+        }, 200);
+      }}
       currentItem={item}
+      locale={currentLocale}
     />
   );
 
@@ -129,7 +142,7 @@ export function BrandListView() {
                   key={brand.brandId}
                   row={brand}
                   onDeleteRow={() => handleDeleteRow(brand.brandId!)}
-                  onShowEditDialog={() => handleShowEditDialog(brand)}
+                  onShowEditDialog={(locale) => handleShowEditDialog(brand, locale)}
                 />
               ))}
             </TableBody>
@@ -157,7 +170,10 @@ export function BrandListView() {
         <Button
           variant="contained"
           startIcon={<Iconify icon="mingcute:add-line" />}
-          onClick={formDialog.onTrue}
+          onClick={() => {
+            setItem(null);
+            formDialog.onTrue();
+          }}
         >
           Add brand
         </Button>

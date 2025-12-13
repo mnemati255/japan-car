@@ -11,7 +11,8 @@ export type InputNumberValue = string | number | null | undefined;
 
 type Options = Intl.NumberFormatOptions;
 
-const DEFAULT_LOCALE = { code: 'en-US', currency: 'USD' };
+// const DEFAULT_LOCALE = { code: 'en-US', currency: 'USD' };
+const DEFAULT_LOCALE = { code: 'jp-JP', currency: 'JPY' };
 
 function processInput(inputValue: InputNumberValue): number | null {
   if (inputValue == null || Number.isNaN(inputValue)) return null;
@@ -38,8 +39,9 @@ export function fNumber(inputValue: InputNumberValue, options?: Options) {
 // ----------------------------------------------------------------------
 
 export function fCurrency(inputValue: InputNumberValue, options?: Options) {
-  const locale = formatNumberLocale() || DEFAULT_LOCALE;
-
+  // const locale = formatNumberLocale() || DEFAULT_LOCALE;
+  const locale = DEFAULT_LOCALE;
+  
   const number = processInput(inputValue);
   if (number === null) return '';
 
@@ -100,7 +102,9 @@ export function fData(inputValue: InputNumberValue) {
   const baseValue = 1024;
 
   const index = Math.floor(Math.log(number) / Math.log(baseValue));
-  const fm = `${parseFloat((number / baseValue ** index).toFixed(decimal))} ${units[index]}`;
+  const fm = `${parseFloat((number / baseValue ** index).toFixed(decimal))} ${
+    units[index]
+  }`;
 
   return fm;
 }

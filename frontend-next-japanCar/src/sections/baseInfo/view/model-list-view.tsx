@@ -2,7 +2,7 @@ import { Iconify } from '@/components/iconify';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { useBoolean } from 'minimal-shared/hooks';
-import { deleteModel, useGetModels } from '@/actions/base-info';
+import { deleteModel, getModelById, useGetModels } from '@/actions/base-info';
 import Loading from '@/app/dashboard/loading';
 import { Scrollbar } from '@/components/scrollbar';
 import Table from '@mui/material/Table';
@@ -11,13 +11,14 @@ import TableBody from '@mui/material/TableBody';
 import Stack from '@mui/material/Stack';
 import { EmptyContent } from '@/components/empty-content';
 import Card from '@mui/material/Card';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { IModel } from '@/types/car';
 import { ModelTableRow } from '../model-table-row';
 import { ModelCreateEditForm } from '../model-create-edit-form';
 import Pagination from '@mui/material/Pagination';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
+import { LangCode, useTranslate } from '@/locales';
 
 const TABLE_HEAD: TableHeadCellProps[] = [
   { id: 'modelName', label: 'Model' },
@@ -29,6 +30,8 @@ const TABLE_HEAD: TableHeadCellProps[] = [
 export function ModelListView() {
   const formDialog = useBoolean();
   const [item, setItem] = useState<IModel | null>(null);
+  const { currentLang } = useTranslate();
+  const [currentLocale, setCurrentLocale] = useState<LangCode>(currentLang.value);
   const [page, setPage] = useState(1);
   const [keyword, setKeyword] = useState('');
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -38,33 +41,44 @@ export function ModelListView() {
     setSearchKeyword(keyword);
   };
 
-  const { models, totalPage, empty, isLoading } = useGetModels(page, searchKeyword);
+  const { models, totalPage, empty, isLoading } = useGetModels(
+    currentLang.value,
+    page,
+    searchKeyword
+  );
 
   const handleDeleteRow = useCallback(async (modelId: number) => {
     await deleteModel(modelId);
   }, []);
 
   const handleShowEditDialog = useCallback(
-    (model: IModel) => {
-      setItem(model);
-      formDialog.onTrue();
+    async (model: IModel, locale?: LangCode) => {
+      if (locale) {
+        setCurrentLocale(locale);
+        const { status, data } = await getModelById(locale, model.modelId!);
+        if (status == 200) {
+          setItem(data);
+          formDialog.onTrue();
+        }
+      } else {
+        setItem(model);
+        formDialog.onTrue();
+      }
     },
     [formDialog]
   );
 
-  useEffect(() => {
-    if (!formDialog.value) {
-      setTimeout(() => {
-        setItem(null);
-      }, 300);
-    }
-  }, [formDialog]);
-
   const renderFormDialog = () => (
     <ModelCreateEditForm
       open={formDialog.value}
-      onClose={formDialog.onFalse}
+      onClose={() => {
+        formDialog.onFalse();
+        setTimeout(() => {
+          setCurrentLocale(currentLang.value);
+        }, 200);
+      }}
       currentItem={item}
+      locale={currentLocale}
     />
   );
 
@@ -130,7 +144,7 @@ export function ModelListView() {
                   key={model.modelId}
                   row={model}
                   onDeleteRow={() => handleDeleteRow(model.modelId!)}
-                  onShowEditDialog={() => handleShowEditDialog(model)}
+                  onShowEditDialog={(locale) => handleShowEditDialog(model, locale)}
                 />
               ))}
             </TableBody>
@@ -158,7 +172,10 @@ export function ModelListView() {
         <Button
           variant="contained"
           startIcon={<Iconify icon="mingcute:add-line" />}
-          onClick={formDialog.onTrue}
+          onClick={() => {
+            setItem(null);
+            formDialog.onTrue();
+          }}
         >
           Add model
         </Button>

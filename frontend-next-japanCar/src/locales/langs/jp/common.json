@@ -3,5 +3,41 @@
   "date": "日付",
   "createdDate": "作成日",
   "list": "一覧",
-  "dashboard": "ダッシュボード"
+  "dashboard": "ダッシュボード",
+  "edit": "編集",
+  "save": "変更を保存",
+  "create": "作成",
+  "delete": "削除",
+  "deleteText": "本当に削除しますか？",
+  "car": {
+    "car": "車",
+    "cars": "車",
+    "addCar": "車を追加",
+    "noCars": "車がありません",
+    "createNew": "新しい車を作成"
+  },
+  "search": "検索",
+  "clearFilters": "フィルターをクリア",
+  "auction": {
+    "auction": "オークション",
+    "addAuction": "オークションを追加",
+    "noAuctions": "オークションがありません",
+    "createNew": "新しいオークションを作成"
+  },
+  "user": {
+    "user": "ユーザー",
+    "addUser": "ユーザーを追加",
+    "createNew": "新しいユーザーを作成",
+    "noUsers": "ユーザーがいません",
+    "active": "アクティブ",
+    "inactive": "非アクティブ",
+    "isUserActive": "ユーザーはアクティブですか？"
+  },
+  "role": {
+    "role": "ロール",
+    "roles": "ロール",
+    "addRole": "ロールを追加",
+    "createNew": "新しいロールを作成",
+    "permissions": "権限"
+  }
 }

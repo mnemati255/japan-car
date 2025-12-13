@@ -19,22 +19,23 @@ import { Scrollbar } from '@/components/scrollbar';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
-
-// ----------------------------------------------------------------------
-
-const TABLE_HEAD: TableHeadCellProps[] = [
-  { id: 'userName', label: 'User name' },
-  { id: 'email', label: 'Email' },
-  { id: 'createdAt', label: 'Created date' },
-  { id: 'isActive', label: 'Status' },
-  { id: '', width: 88 },
-];
+import { useTranslate, useTranslateFromServer } from '@/locales';
 
 // ----------------------------------------------------------------------
 
 export function UserListView() {
   const [keyword, setKeyword] = useState('');
   const [searchKeyword, setSearchKeyword] = useState('');
+  const { t: tCommon } = useTranslate('common');
+  const {formFields} = useTranslateFromServer();
+
+  const TABLE_HEAD: TableHeadCellProps[] = [
+  { id: 'userName', label: formFields['UserName'] },
+  { id: 'email', label: formFields['Email'] },
+  { id: 'createdAt', label: formFields['CreatedDate'] },
+  { id: 'isActive', label: formFields['IsActive'] },
+  { id: '', width: 88 },
+];
 
   const handleSearch = () => {
     setSearchKeyword(keyword);
@@ -50,11 +51,11 @@ export function UserListView() {
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="List"
+          heading={tCommon('list')}
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'User', href: paths.dashboard.user.root },
-            { name: 'List' },
+            { name: tCommon('dashboard'), href: paths.dashboard.root },
+            { name: tCommon('user.user'), href: paths.dashboard.user.root },
+            { name: tCommon('list') },
           ]}
           action={
             <Button
@@ -63,7 +64,7 @@ export function UserListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              Add user
+              {tCommon('user.addUser')}
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
@@ -73,7 +74,7 @@ export function UserListView() {
           <Box sx={{ p: 2, display: 'flex' }}>
             <TextField
               fullWidth
-              placeholder="Search ..."
+              placeholder={`${tCommon('search')} ...`}
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               slotProps={{

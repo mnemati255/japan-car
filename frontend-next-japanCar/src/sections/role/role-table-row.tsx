@@ -10,6 +10,7 @@ import { Iconify } from '@/components/iconify';
 import { ConfirmDialog } from '@/components/custom-dialog';
 import { IRoleItem } from '@/types/role';
 import { paths } from '@/routes/paths';
+import { useTranslate } from '@/locales';
 
 // ----------------------------------------------------------------------
 
@@ -20,13 +21,14 @@ type Props = {
 
 export function RoleTableRow({ row, onDeleteRow }: Props) {
   const confirmDialog = useBoolean();
+  const { t: tCommon } = useTranslate('common');
 
   const renderConfirmDialog = () => (
     <ConfirmDialog
       open={confirmDialog.value}
       onClose={confirmDialog.onFalse}
-      title="Delete"
-      content="Are you sure want to delete?"
+      title={tCommon('delete')}
+      content={tCommon('deleteText')}
       action={
         <Button
           variant="contained"
@@ -36,7 +38,7 @@ export function RoleTableRow({ row, onDeleteRow }: Props) {
             confirmDialog.onFalse();
           }}
         >
-          Delete
+          {tCommon('delete')}
         </Button>
       }
     />

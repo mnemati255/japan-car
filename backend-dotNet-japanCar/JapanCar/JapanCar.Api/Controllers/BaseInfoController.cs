@@ -28,6 +28,14 @@ namespace JapanCar.Api.Controllers
         }
 
 
+        [HttpGet("color/{locale}/{id}")]
+        public async Task<IActionResult> GetColorById(string locale, int id)
+        {
+            var models = await _baseInfoService.GetColorById(locale, id);
+            return Ok(models);
+        }
+
+
         [HttpPost("color")]
         public async Task<IActionResult> CreateColor(ColorDto dto)
         {
@@ -37,9 +45,9 @@ namespace JapanCar.Api.Controllers
 
 
         [HttpPut("color/{colorId}")]
-        public async Task<IActionResult> UpdateColor(int colorId, ColorDto dto)
+        public async Task<IActionResult> UpdateColor(string locale, int colorId, ColorDto dto)
         {
-            await _baseInfoService.UpdateColor(colorId, dto);
+            await _baseInfoService.UpdateColor(locale, colorId, dto);
             return Ok();
         }
 
@@ -60,6 +68,14 @@ namespace JapanCar.Api.Controllers
         }
 
 
+        [HttpGet("brand/{locale}/{id}")]
+        public async Task<IActionResult> GetBrandById(string locale, int id)
+        {
+            var models = await _baseInfoService.GetBrandById(locale, id);
+            return Ok(models);
+        }
+
+
         [HttpPost("brand")]
         public async Task<IActionResult> CreateBrand(BrandDto dto)
         {
@@ -69,9 +85,9 @@ namespace JapanCar.Api.Controllers
 
 
         [HttpPut("brand/{brandId}")]
-        public async Task<IActionResult> UpdateBrand(int brandId, BrandDto dto)
+        public async Task<IActionResult> UpdateBrand(string locale, int brandId, BrandDto dto)
         {
-            await _baseInfoService.UpdateBrand(brandId, dto);
+            await _baseInfoService.UpdateBrand(locale, brandId, dto);
             return Ok();
         }
 
@@ -88,6 +104,14 @@ namespace JapanCar.Api.Controllers
         public async Task<IActionResult> GetModels(string? keyword, int? skip = null, int? take = null)
         {
             var models = await _baseInfoService.GetModels(keyword, skip, take);
+            return Ok(models);
+        }
+
+
+        [HttpGet("model/{locale}/{id}")]
+        public async Task<IActionResult> GetModelById(string locale, int id)
+        {
+            var models = await _baseInfoService.GetModelById(locale, id);
             return Ok(models);
         }
 
@@ -109,9 +133,9 @@ namespace JapanCar.Api.Controllers
 
 
         [HttpPut("model/{modelId}")]
-        public async Task<IActionResult> UpdateModel(int modelId, ModelDto dto)
+        public async Task<IActionResult> UpdateModel(string locale, int modelId, ModelDto dto)
         {
-            await _baseInfoService.UpdateModel(modelId, dto);
+            await _baseInfoService.UpdateModel(locale, modelId, dto);
             return Ok();
         }
 

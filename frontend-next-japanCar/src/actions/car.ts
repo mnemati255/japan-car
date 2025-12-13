@@ -2,6 +2,7 @@
 
 import { CONFIG, swrOptions } from '@/global-config';
 import axiosInstance, { fetcher } from '@/lib/axios';
+import { LangCode } from '@/locales';
 import { ICar } from '@/types/car';
 import { IGrid } from '@/types/common';
 import useSWR, { mutate } from 'swr';
@@ -16,13 +17,19 @@ function mutateCars() {
   });
 }
 
-export function useGetCars(page: number, filters: any, auctionId?: number) {
+export function useGetCars(
+  locale: LangCode,
+  page: number,
+  filters: any,
+  auctionId?: number
+) {
   const skip = (page - 1) * CONFIG.appSettings.pageSize;
   const take = CONFIG.appSettings.pageSize;
 
   const query = new URLSearchParams({
-    skip: skip,
-    take: take,
+    skip,
+    take,
+    locale,
     ...filters,
   }).toString();
 

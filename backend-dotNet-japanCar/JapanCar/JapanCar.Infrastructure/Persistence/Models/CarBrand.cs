@@ -11,11 +11,6 @@ public partial class CarBrand
     public int BrandId { get; set; }
 
     /// <summary>
-    /// نام برند خودرو
-    /// </summary>
-    public string BrandName { get; set; } = null!;
-
-    /// <summary>
     /// تاریخ ایجاد
     /// </summary>
     public DateTime CreatedDate { get; set; }
@@ -34,6 +29,8 @@ public partial class CarBrand
     /// ویرایش شده توسط
     /// </summary>
     public int? ModifiedBy { get; set; }
+
+    public virtual ICollection<CarBrandTranslation> CarBrandTranslations { get; set; } = new List<CarBrandTranslation>();
 
     public virtual ICollection<CarModel> CarModels { get; set; } = new List<CarModel>();
 

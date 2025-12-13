@@ -24,6 +24,8 @@ import { useAuthContext } from '../../hooks';
 import { getErrorMessage } from '../../utils';
 import { FormHead } from '../../components/form-head';
 import { signInWithPassword } from '../../context/jwt';
+import { useGetTranslations } from '@/actions/translation';
+import { setTranslations } from '@/locales/utils/translations';
 
 // ----------------------------------------------------------------------
 
@@ -38,6 +40,11 @@ export const SignInSchema = z.object({
 
 export function JwtSignInView() {
   const router = useRouter();
+  
+  const { translations, error } = useGetTranslations();
+  if (!error) {
+    setTranslations(translations);
+  }
 
   const showPassword = useBoolean();
 

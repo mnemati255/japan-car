@@ -12,6 +12,7 @@ import { paths } from '@/routes/paths';
 import { IAuctionItem } from '@/types/auction';
 import { useState } from 'react';
 import { fCurrency } from '@/utils/format-number';
+import { allLangs, useTranslate } from '@/locales';
 
 // ----------------------------------------------------------------------
 
@@ -22,15 +23,15 @@ type Props = {
 
 export function AuctionTableRow({ row, onDeleteRow }: Props) {
   const confirmDialog = useBoolean();
-
   const [loading, setLoading] = useState(false);
+  const { currentLang, t: tCommon } = useTranslate('common');
 
   const renderConfirmDialog = () => (
     <ConfirmDialog
       open={confirmDialog.value}
       onClose={confirmDialog.onFalse}
-      title="Delete"
-      content="Are you sure want to delete?"
+      title={tCommon('delete')}
+      content={tCommon('deleteText')}
       action={
         <Button
           variant="contained"
@@ -42,7 +43,7 @@ export function AuctionTableRow({ row, onDeleteRow }: Props) {
             confirmDialog.onFalse();
           }}
         >
-          Delete
+          {tCommon('delete')}
         </Button>
       }
     />
@@ -57,12 +58,27 @@ export function AuctionTableRow({ row, onDeleteRow }: Props) {
         <TableCell>{row.createdAt?.split('T')[0]}</TableCell>
 
         <TableCell>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
             <RouterLink href={paths.dashboard.auction.cars(row.auctionId!)}>
               <Button variant="outlined" color="info" size="small">
-                Cars
+                {tCommon('car.cars')}
               </Button>
             </RouterLink>
+            {allLangs
+              .filter((x) => x.value !== currentLang.value)
+              .map((x, i) => (
+                <Tooltip key={`lng_${i}`} title={x.label} placement="top" arrow>
+                  <RouterLink
+                    href={`${paths.dashboard.auction.edit(row.auctionId!)}?lang=${
+                      x.value
+                    }`}
+                  >
+                    <IconButton>
+                      <Iconify icon="custom:translation" />
+                    </IconButton>
+                  </RouterLink>
+                </Tooltip>
+              ))}
             <Tooltip title="Edit" placement="top" arrow>
               <RouterLink href={paths.dashboard.auction.edit(row.auctionId!)}>
                 <IconButton color="warning">

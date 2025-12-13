@@ -11,16 +11,6 @@ public partial class CarColor
     public int ColorId { get; set; }
 
     /// <summary>
-    /// نام رنگ خودرو
-    /// </summary>
-    public string ColorName { get; set; } = null!;
-
-    /// <summary>
-    /// تاریخ ایجاد
-    /// </summary>
-    public DateTime CreatedDate { get; set; }
-
-    /// <summary>
     /// تاریخ ویرایش
     /// </summary>
     public DateTime? ModifiedDate { get; set; }
@@ -34,6 +24,10 @@ public partial class CarColor
     /// ویرایش شده توسط
     /// </summary>
     public int? ModifiedBy { get; set; }
+
+    public DateTime CreatedDate { get; set; }
+
+    public virtual ICollection<CarColorTranslation> CarColorTranslations { get; set; } = new List<CarColorTranslation>();
 
     public virtual ICollection<Car> Cars { get; set; } = new List<Car>();
 

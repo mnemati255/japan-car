@@ -7,6 +7,8 @@ import { AuctionCreateEditForm } from '../auction-create-edit-form';
 import { IAuctionItem } from '@/types/auction';
 import { useEffect, useState } from 'react';
 import { getAuctionById } from '@/actions/auction';
+import { LangCode, useTranslate } from '@/locales';
+import { useSearchParams } from 'next/navigation';
 
 // ----------------------------------------------------------------------
 
@@ -16,35 +18,43 @@ type Props = {
 
 export function AuctionEditView({ auctionId }: Props) {
   const [currentAuction, setCurrentAuction] = useState<IAuctionItem | null>(null);
+  const { currentLang, t: tCommon } = useTranslate('common');
+  const lang = useSearchParams().get('lang') as LangCode | null;
 
   useEffect(() => {
     if (auctionId) {
-      const getAuction = async () => {
-        const { status, data } = await getAuctionById(auctionId);
+      const getCurrentAuction = async () => {
+        const { status, data } = await getAuctionById(
+          auctionId,
+          lang ?? currentLang.value
+        );
         if (status === 200) {
           setCurrentAuction(data);
         }
       };
-      getAuction();
+      getCurrentAuction();
     }
-  }, [auctionId]);
+  }, [auctionId, currentLang.value, lang]);
 
   if (!currentAuction) return null;
 
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Edit"
+        heading={tCommon('edit')}
         backHref={paths.dashboard.auction.root}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Auction', href: paths.dashboard.auction.root },
+          { name: tCommon('dashboard'), href: paths.dashboard.root },
+          { name: tCommon('auction.auction'), href: paths.dashboard.auction.root },
           { name: currentAuction?.auctionName },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <AuctionCreateEditForm currentAuction={currentAuction} />
+      <AuctionCreateEditForm
+        currentAuction={currentAuction}
+        lang={lang ?? currentLang.value}
+      />
     </DashboardContent>
   );
 }

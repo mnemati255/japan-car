@@ -11,6 +11,7 @@ import { ConfirmDialog } from '@/components/custom-dialog';
 import { paths } from '@/routes/paths';
 import { IUserItem } from '@/types/user';
 import { Label } from '@/components/label';
+import { useTranslate } from '@/locales';
 
 // ----------------------------------------------------------------------
 
@@ -21,13 +22,14 @@ type Props = {
 
 export function UserTableRow({ row, onDeleteRow }: Props) {
   const confirmDialog = useBoolean();
+  const { t: tCommon } = useTranslate('common');
 
   const renderConfirmDialog = () => (
     <ConfirmDialog
       open={confirmDialog.value}
       onClose={confirmDialog.onFalse}
-      title="Delete"
-      content="Are you sure want to delete?"
+      title={tCommon('delete')}
+      content={tCommon('deleteText')}
       action={
         <Button
           variant="contained"
@@ -37,7 +39,7 @@ export function UserTableRow({ row, onDeleteRow }: Props) {
             confirmDialog.onFalse();
           }}
         >
-          Delete
+          {tCommon('delete')}
         </Button>
       }
     />
@@ -48,7 +50,7 @@ export function UserTableRow({ row, onDeleteRow }: Props) {
       <TableRow key={row.userId}>
         <TableCell>{row.userName}</TableCell>
         <TableCell>{row.email}</TableCell>
-        <TableCell>{row.createdAt?.split("T")[0]}</TableCell>
+        <TableCell>{row.createdAt?.split('T')[0]}</TableCell>
 
         <TableCell>
           <Label
@@ -59,7 +61,7 @@ export function UserTableRow({ row, onDeleteRow }: Props) {
               'default'
             }
           >
-            {row.isActive ? 'active' : 'inactive'}
+            {row.isActive ? tCommon('user.active') : tCommon('user.inactive')}
           </Label>
         </TableCell>
 

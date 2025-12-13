@@ -61,12 +61,23 @@ export function MultiFilePreview({
                 (theme) => ({
                   width: 80,
                   height: 80,
-                  border: `solid 1px ${varAlpha(theme.vars.palette.grey['500Channel'], 0.16)}`,
+                  border: `solid 1px ${varAlpha(
+                    theme.vars.palette.grey['500Channel'],
+                    0.16
+                  )}`,
                 }),
-                ...(Array.isArray(thumbnailProps?.sx) ? thumbnailProps.sx : [thumbnailProps?.sx]),
+                ...(Array.isArray(thumbnailProps?.sx)
+                  ? thumbnailProps.sx
+                  : [thumbnailProps?.sx]),
               ]}
               slotProps={{
                 icon: { sx: { width: 36, height: 36 } },
+                img: {
+                  onClick: (e: React.MouseEvent) => {
+                    e.stopPropagation();
+                    if (previewUrl) window.open(previewUrl, '_blank');
+                  },
+                },
                 ...thumbnailProps?.slotProps,
               }}
             />

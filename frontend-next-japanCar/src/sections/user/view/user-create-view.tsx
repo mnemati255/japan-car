@@ -7,18 +7,21 @@ import { DashboardContent } from '@/layouts/dashboard';
 import { CustomBreadcrumbs } from '@/components/custom-breadcrumbs';
 
 import { UserCreateEditForm } from '../user-create-edit-form';
+import { useTranslate } from '@/locales';
 
 // ----------------------------------------------------------------------
 
 export function UserCreateView() {
+  const { t: tCommon } = useTranslate('common');
+
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Create a new user"
+        heading={tCommon('user.createNew')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'User', href: paths.dashboard.user.root },
-          { name: 'Create' },
+          { name: tCommon('dashboard'), href: paths.dashboard.root },
+          { name: tCommon('user.user'), href: paths.dashboard.user.root },
+          { name: tCommon('create') },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />

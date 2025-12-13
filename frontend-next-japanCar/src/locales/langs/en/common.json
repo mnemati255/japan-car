@@ -3,5 +3,41 @@
   "date": "Date",
   "createdDate": "Created date",
   "list": "List",
-  "dashboard": "Dashboard"
+  "dashboard": "Dashboard",
+  "edit": "Edit",
+  "save": "Save changes",
+  "create": "Create",
+  "delete": "Delete",
+  "deleteText": "Are you sure want to delete?",
+  "car": {
+    "car": "car",
+    "cars": "Cars",
+    "addCar": "Add car",
+    "noCars": "No cars",
+    "createNew": "Create a new car"
+  },
+  "search": "Search",
+  "clearFilters": "Clear filters",
+  "auction": {
+    "auction": "Action",
+    "addAuction": "Add auction",
+    "noAuctions": "No auctions",
+    "createNew": "Create a new auction"
+  },
+  "user": {
+    "user": "user",
+    "addUser": "Add user",
+    "createNew": "Create a new user",
+    "noUsers": "No users",
+    "active": "Active",
+    "inactive": "Inative",
+    "isUserActive": "Is user active?"
+  },
+  "role": {
+    "role": "Role",
+    "roles": "Roles",
+    "addRole": "Add role",
+    "createNew": "Create a new role",
+    "permissions": "Permissions"
+  }
 }

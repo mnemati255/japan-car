@@ -18,17 +18,25 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Auction> Auctions { get; set; }
 
+    public virtual DbSet<AuctionsTranslation> AuctionsTranslations { get; set; }
+
     public virtual DbSet<Car> Cars { get; set; }
 
     public virtual DbSet<CarAuctionDetail> CarAuctionDetails { get; set; }
 
     public virtual DbSet<CarBrand> CarBrands { get; set; }
 
+    public virtual DbSet<CarBrandTranslation> CarBrandTranslations { get; set; }
+
     public virtual DbSet<CarColor> CarColors { get; set; }
+
+    public virtual DbSet<CarColorTranslation> CarColorTranslations { get; set; }
 
     public virtual DbSet<CarImage> CarImages { get; set; }
 
     public virtual DbSet<CarModel> CarModels { get; set; }
+
+    public virtual DbSet<CarModelTranslation> CarModelTranslations { get; set; }
 
     public virtual DbSet<CarRepairHistory> CarRepairHistories { get; set; }
 
@@ -39,6 +47,8 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<Language> Languages { get; set; }
 
     public virtual DbSet<Mechanic> Mechanics { get; set; }
+
+    public virtual DbSet<Menu> Menus { get; set; }
 
     public virtual DbSet<Part> Parts { get; set; }
 
@@ -54,7 +64,7 @@ public partial class AppDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=185.231.115.136;Database=JapanCarDB;User Id=sa;Password=NewPassword@1;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=185.231.115.136;Database=JapanCarDB;TrustServerCertificate=true;user id=sa;password=NewPassword@1");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -63,13 +73,6 @@ public partial class AppDbContext : DbContext
             entity.HasKey(e => e.AuctionId).HasName("PK__Auctions__51004A4CBF5ED6CA");
 
             entity.Property(e => e.AuctionId).HasComment("شناسه حراج");
-            entity.Property(e => e.AuctionDate).HasComment("تاریخ برگزاری حراج");
-            entity.Property(e => e.AuctionFee)
-                .HasComment("کارمزد حراج")
-                .HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.AuctionName)
-                .HasMaxLength(400)
-                .HasComment("نام حراج");
             entity.Property(e => e.CreatedBy).HasComment("ایجاد شده توسط");
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
@@ -87,6 +90,27 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.ModifiedByNavigation).WithMany(p => p.AuctionModifiedByNavigations)
                 .HasForeignKey(d => d.ModifiedBy)
                 .HasConstraintName("FK_Auctions_ModifiedBy");
+        });
+
+        modelBuilder.Entity<AuctionsTranslation>(entity =>
+        {
+            entity.HasKey(e => e.AuctionTranslationId).HasName("PK__AuctionsTranslation__51004A4CBF5ED6CA");
+
+            entity.ToTable("AuctionsTranslation");
+
+            entity.Property(e => e.AuctionTranslationId).HasComment("شناسه حراج");
+            entity.Property(e => e.AuctionDate).HasComment("تاریخ برگزاری حراج");
+            entity.Property(e => e.AuctionFee)
+                .HasComment("کارمزد حراج")
+                .HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.AuctionName)
+                .HasMaxLength(400)
+                .HasComment("نام حراج");
+
+            entity.HasOne(d => d.Auction).WithMany(p => p.AuctionsTranslations)
+                .HasForeignKey(d => d.AuctionId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AuctionsTranslation_Auctions");
         });
 
         modelBuilder.Entity<Car>(entity =>
@@ -168,7 +192,6 @@ public partial class AppDbContext : DbContext
 
             entity.HasOne(d => d.Auction).WithMany(p => p.CarAuctionDetails)
                 .HasForeignKey(d => d.AuctionId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__CarAuctio__Aucti__5DCAEF64");
 
             entity.HasOne(d => d.Car).WithMany(p => p.CarAuctionDetails)
@@ -190,9 +213,6 @@ public partial class AppDbContext : DbContext
             entity.HasKey(e => e.BrandId).HasName("PK__CarBrand__DAD4F05E5FE11156");
 
             entity.Property(e => e.BrandId).HasComment("شناسه برند خودرو");
-            entity.Property(e => e.BrandName)
-                .HasMaxLength(200)
-                .HasComment("نام برند خودرو");
             entity.Property(e => e.CreatedBy).HasComment("ایجاد شده توسط");
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
@@ -212,18 +232,33 @@ public partial class AppDbContext : DbContext
                 .HasConstraintName("FK_CarBrands_ModifiedBy");
         });
 
+        modelBuilder.Entity<CarBrandTranslation>(entity =>
+        {
+            entity.ToTable("CarBrandTranslation");
+
+            entity.Property(e => e.BrandName)
+                .HasMaxLength(200)
+                .HasComment("نام برند خودرو");
+
+            entity.HasOne(d => d.Brand).WithMany(p => p.CarBrandTranslations)
+                .HasForeignKey(d => d.BrandId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CarBrandTranslation_CarBrands");
+
+            entity.HasOne(d => d.Language).WithMany(p => p.CarBrandTranslations)
+                .HasForeignKey(d => d.LanguageId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CarBrandTranslation_Languages");
+        });
+
         modelBuilder.Entity<CarColor>(entity =>
         {
             entity.HasKey(e => e.ColorId).HasName("PK__CarColor__8DA7674DCC0D73B3");
 
             entity.Property(e => e.ColorId).HasComment("شناسه رنگ خودرو");
-            entity.Property(e => e.ColorName)
-                .HasMaxLength(100)
-                .HasComment("نام رنگ خودرو");
             entity.Property(e => e.CreatedBy).HasComment("ایجاد شده توسط");
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
-                .HasComment("تاریخ ایجاد")
                 .HasColumnType("datetime");
             entity.Property(e => e.ModifiedBy).HasComment("ویرایش شده توسط");
             entity.Property(e => e.ModifiedDate)
@@ -237,6 +272,23 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.ModifiedByNavigation).WithMany(p => p.CarColorModifiedByNavigations)
                 .HasForeignKey(d => d.ModifiedBy)
                 .HasConstraintName("FK_CarColors_ModifiedBy");
+        });
+
+        modelBuilder.Entity<CarColorTranslation>(entity =>
+        {
+            entity.ToTable("CarColorTranslation");
+
+            entity.Property(e => e.ColorName).HasMaxLength(200);
+
+            entity.HasOne(d => d.CarColor).WithMany(p => p.CarColorTranslations)
+                .HasForeignKey(d => d.CarColorId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CarColorTranslation_CarColors");
+
+            entity.HasOne(d => d.Language).WithMany(p => p.CarColorTranslations)
+                .HasForeignKey(d => d.LanguageId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CarColorTranslation_Languages");
         });
 
         modelBuilder.Entity<CarImage>(entity =>
@@ -286,9 +338,6 @@ public partial class AppDbContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasComment("تاریخ ایجاد")
                 .HasColumnType("datetime");
-            entity.Property(e => e.ModelName)
-                .HasMaxLength(300)
-                .HasComment("نام مدل خودرو");
             entity.Property(e => e.ModifiedBy).HasComment("ویرایش شده توسط");
             entity.Property(e => e.ModifiedDate)
                 .HasComment("تاریخ ویرایش")
@@ -306,6 +355,25 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.ModifiedByNavigation).WithMany(p => p.CarModelModifiedByNavigations)
                 .HasForeignKey(d => d.ModifiedBy)
                 .HasConstraintName("FK_CarModels_ModifiedBy");
+        });
+
+        modelBuilder.Entity<CarModelTranslation>(entity =>
+        {
+            entity.ToTable("CarModelTranslation");
+
+            entity.Property(e => e.ModelName)
+                .HasMaxLength(300)
+                .HasComment("نام مدل خودرو");
+
+            entity.HasOne(d => d.CarModel).WithMany(p => p.CarModelTranslations)
+                .HasForeignKey(d => d.CarModelId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CarModelTranslation_CarModels");
+
+            entity.HasOne(d => d.Language).WithMany(p => p.CarModelTranslations)
+                .HasForeignKey(d => d.LanguageId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CarModelTranslation_Languages");
         });
 
         modelBuilder.Entity<CarRepairHistory>(entity =>
@@ -412,11 +480,11 @@ public partial class AppDbContext : DbContext
             entity.ToTable("GenericTranslation");
 
             entity.Property(e => e.TranslationId).HasComment("شناسه ترجمه");
+            entity.Property(e => e.Category).HasMaxLength(100);
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasComment("تاریخ ایجاد")
                 .HasColumnType("datetime");
-            entity.Property(e => e.EntityId).HasComment("شناسه موجودیت");
             entity.Property(e => e.EntityName)
                 .HasMaxLength(200)
                 .HasComment("نام موجودیت");
@@ -483,6 +551,19 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.ModifiedByNavigation).WithMany(p => p.MechanicModifiedByNavigations)
                 .HasForeignKey(d => d.ModifiedBy)
                 .HasConstraintName("FK_Mechanic_ModifiedBy");
+        });
+
+        modelBuilder.Entity<Menu>(entity =>
+        {
+            entity.HasKey(e => e.MenuId).HasName("PK__Menus__C99ED230F38E6BC4");
+
+            entity.Property(e => e.CreatedDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Icon).HasMaxLength(50);
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.MenuKey).HasMaxLength(100);
+            entity.Property(e => e.Url).HasMaxLength(255);
         });
 
         modelBuilder.Entity<Part>(entity =>

@@ -18,6 +18,7 @@ import messages from '@/lib/messages';
 import { useGetRoles } from '@/actions/role';
 import { createUser, updateUsere as updateUser } from '@/actions/user';
 import Typography from '@mui/material/Typography';
+import { useTranslate, useTranslateFromServer } from '@/locales';
 
 // ----------------------------------------------------------------------
 
@@ -26,8 +27,9 @@ type Props = {
 };
 
 export function UserCreateEditForm({ currentUser }: Props) {
-
   const router = useRouter();
+  const { t: tCommon } = useTranslate('common');
+  const { formFields } = useTranslateFromServer();
 
   const UserCreateSchema = z.object({
     userName: z.string().min(1, { error: messages.required() }),
@@ -98,22 +100,26 @@ export function UserCreateEditForm({ currentUser }: Props) {
             >
               <Field.Text
                 name="userName"
-                label="User name"
+                label={formFields['UserName']}
                 disabled={currentUser != null}
               />
-              <Field.Text name="password" label="Password" type="password" />
-              <Field.Text name="email" label="Email address" />
+              <Field.Text
+                name="password"
+                label={formFields['PasswordHash']}
+                type="password"
+              />
+              <Field.Text name="email" label={formFields['Email']} />
 
               <Stack sx={{ gridColumnStart: 1 }} direction={'row'} alignItems={'center'}>
                 <Typography variant="subtitle2" color="gray">
-                  Is user active?
+                  {tCommon('user.isUserActive')}
                 </Typography>
                 <Field.Switch name="isActive" label="" />
               </Stack>
 
               <Stack spacing={1} sx={{ gridColumnStart: 1 }}>
                 <Typography variant="subtitle2" color="gray">
-                  Roles:
+                  {tCommon('role.roles')}:
                 </Typography>
                 <Field.MultiCheckbox
                   row
@@ -129,7 +135,9 @@ export function UserCreateEditForm({ currentUser }: Props) {
 
             <Stack sx={{ mt: 3, alignItems: 'flex-end' }}>
               <Button type="submit" variant="contained" loading={isSubmitting}>
-                {!currentUser ? 'Create user' : 'Save changes'}
+                {!currentUser
+                  ? `${tCommon('create')} ${tCommon('user.user')}`
+                  : tCommon('save')}
               </Button>
             </Stack>
           </Card>

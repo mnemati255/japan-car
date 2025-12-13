@@ -38,18 +38,15 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 });
             }
 
-            if (car.AuctionId.HasValue)
+            newCar.CarAuctionDetails.Add(new CarAuctionDetail
             {
-                newCar.CarAuctionDetails.Add(new CarAuctionDetail
-                {
-                    AuctionId = car.AuctionId!.Value,
-                    PurchasePrice = car.PurchasePrice,
-                    TaxAmount = car.TaxAmount,
-                    FinalPrice = car.FinalPrice,
-                    TransportPrice = car.TransportPrice,
-                    AuctionPrice = car.AuctionPrice,
-                });
-            }
+                AuctionId = car.AuctionId,
+                PurchasePrice = car.PurchasePrice,
+                TaxAmount = car.TaxAmount,
+                FinalPrice = car.FinalPrice,
+                TransportPrice = car.TransportPrice,
+                AuctionPrice = car.AuctionPrice,
+            });
 
             _context.Cars.Add(newCar);
 
@@ -75,16 +72,19 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<PagedResult<CarEntity>> GetCars(CarFilterDto filterDto, int? auctionId = null)
+        public async Task<PagedResult<CarEntity>> GetCars(int languageId, CarFilterDto filterDto, int? auctionId = null)
         {
-            var query = from car in _context.Cars
-                        join cad in _context.CarAuctionDetails on car.CarId equals cad.CarId into cadGroup
+            var query = from car in _context.Cars.AsNoTracking()
+                        join cad in _context.CarAuctionDetails.AsNoTracking() on car.CarId equals cad.CarId into cadGroup
                         from cad in cadGroup.DefaultIfEmpty()
-                        join color in _context.CarColors on car.ColorId equals color.ColorId
-                        join model in _context.CarModels on car.ModelId equals model.ModelId
-                        join brand in _context.CarBrands on model.BrandId equals brand.BrandId
-                        join image in _context.CarImages on car.CarId equals image.CarId into imgs
-                        select new { cad, car, color, model, brand, imgs };
+                        join color in _context.CarColors.AsNoTracking() on car.ColorId equals color.ColorId
+                        join colorTr in _context.CarColorTranslations.AsNoTracking().Where(x => x.LanguageId == languageId) on color.ColorId equals colorTr.CarColorId
+                        join model in _context.CarModels.AsNoTracking() on car.ModelId equals model.ModelId
+                        join modelTr in _context.CarModelTranslations.AsNoTracking().Where(x => x.LanguageId == languageId) on model.ModelId equals modelTr.CarModelId
+                        join brand in _context.CarBrands.AsNoTracking() on model.BrandId equals brand.BrandId
+                        join brandTr in _context.CarBrandTranslations.AsNoTracking().Where(x => x.LanguageId == languageId) on brand.BrandId equals brandTr.BrandId
+                        join image in _context.CarImages.AsNoTracking() on car.CarId equals image.CarId into imgs
+                        select new { cad, car, color, colorTr, model, modelTr, brand, brandTr, imgs };
 
             if (auctionId.HasValue)
                 query = query.Where(x => x.cad.AuctionId == auctionId);
@@ -120,10 +120,10 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 {
                     CarId = x.car.CarId,
                     AuctionId = x.cad != null ? x.cad.AuctionId : null,
-                    AuctionName = x.cad != null ? x.cad.Auction.AuctionName : null,
-                    BrandName = x.brand.BrandName,
-                    ModelName = x.model.ModelName,
-                    ColorName = x.color.ColorName,
+                    //AuctionName = x.cad != null ? x.cad.Auction.AuctionName : null,
+                    BrandName = x.brandTr.BrandName,
+                    ModelName = x.modelTr.ModelName,
+                    ColorName = x.colorTr.ColorName,
                     FinalPrice = x.cad != null ? x.cad.FinalPrice : 0,
                     PurchasePrice = x.cad != null ? x.cad.PurchasePrice : 0,
                     TaxAmount = x.cad != null ? x.cad.TaxAmount : 0,
@@ -140,132 +140,6 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 TotalCount = totalCount
             };
         }
-
-
-        //public async Task<PagedResult<CarEntity>> GetAllCarsOfAuction(int auctionId, CarFilterDto filterDto)
-        //{
-        //    var query = from cad in _context.CarAuctionDetails
-        //                join car in _context.Cars on cad.CarId equals car.CarId
-        //                join color in _context.CarColors on car.ColorId equals color.ColorId
-        //                join model in _context.CarModels on car.ModelId equals model.ModelId
-        //                join brand in _context.CarBrands on model.BrandId equals brand.BrandId
-        //                join image in _context.CarImages on car.CarId equals image.CarId into imgs
-        //                where cad.AuctionId == auctionId
-        //                select new { cad, car, color, model, brand, imgs };
-
-        //    if (filterDto.BrandId.HasValue)
-        //        query = query.Where(x => x.brand.BrandId == filterDto.BrandId.Value);
-
-        //    if (filterDto.ModelId.HasValue)
-        //        query = query.Where(x => x.model.ModelId == filterDto.ModelId.Value);
-
-        //    if (filterDto.ColorId.HasValue)
-        //        query = query.Where(x => x.color.ColorId == filterDto.ColorId.Value);
-
-        //    if (filterDto.Year.HasValue)
-        //        query = query.Where(x => x.car.Year == filterDto.Year);
-
-        //    if (!string.IsNullOrEmpty(filterDto.ChasisNumber))
-        //        query = query.Where(x => x.car.ChassisNumber.Contains(filterDto.ChasisNumber));
-
-        //    if (!string.IsNullOrEmpty(filterDto.FuelType))
-        //        query = query.Where(x => x.car.FuelType == filterDto.FuelType);
-
-        //    var totalCount = await query.CountAsync();
-
-        //    if (filterDto.Skip.HasValue)
-        //        query = query.Skip(filterDto.Skip.Value);
-
-        //    if (filterDto.Take.HasValue)
-        //        query = query.Take(filterDto.Take.Value);
-
-        //    var items = await query
-        //        .Select(x => new CarEntity
-        //        {
-        //            CarId = x.car.CarId,
-        //            AuctionId = auctionId,
-        //            BrandName = x.brand.BrandName,
-        //            ModelName = x.model.ModelName,
-        //            ColorName = x.color.ColorName,
-        //            FinalPrice = x.cad.FinalPrice,
-        //            PurchasePrice = x.cad.PurchasePrice,
-        //            TaxAmount = x.cad.TaxAmount,
-        //            Year = x.car.Year,
-        //            CreatedDate = x.cad.CreatedDate,
-        //            ImageUrls = x.imgs.Select(i => i.ImageUrl).ToArray()
-        //        }).ToListAsync();
-
-
-        //    return new PagedResult<CarEntity>
-        //    {
-        //        Items = items,
-        //        TotalCount = totalCount
-        //    };
-        //}
-
-
-        //public async Task<IEnumerable<CarEntity>> GetAllCarsOfAuction(int auctionId, CarFilterDto filterDto)
-        //{
-        //    var query = from cad in _context.CarAuctionDetails
-        //                join car in _context.Cars on cad.CarId equals car.CarId
-        //                join color in _context.CarColors on car.ColorId equals color.ColorId
-        //                join model in _context.CarModels on car.ModelId equals model.ModelId
-        //                join brand in _context.CarBrands on model.BrandId equals brand.BrandId
-        //                join image in _context.CarImages on car.CarId equals image.CarId into imgs
-        //                where cad.AuctionId == auctionId
-        //                select new
-        //                {
-        //                    cad,
-        //                    car,
-        //                    color,
-        //                    model,
-        //                    brand,
-        //                    imgs
-        //                };
-
-        //    if (filterDto.BrandId.HasValue)
-        //        query = query.Where(x => x.brand.BrandId == filterDto.BrandId.Value);
-
-        //    if (filterDto.ModelId.HasValue)
-        //        query = query.Where(x => x.model.ModelId == filterDto.ModelId.Value);
-
-        //    if (filterDto.ColorId.HasValue)
-        //        query = query.Where(x => x.color.ColorId == filterDto.ColorId.Value);
-
-        //    if (filterDto.Year.HasValue)
-        //        query = query.Where(x => x.car.Year == filterDto.Year);
-
-        //    if (filterDto.Skip.HasValue)
-        //        query = query.Skip(filterDto.Skip.Value);
-
-        //    if (filterDto.Take.HasValue)
-        //        query = query.Take(filterDto.Take.Value);
-
-        //    var result = await query
-        //        .Select(x => new CarEntity
-        //        {
-        //            CarId = x.car.CarId,
-        //            AuctionId = auctionId,
-        //            BrandName = x.brand.BrandName,
-        //            ModelName = x.model.ModelName,
-        //            ColorName = x.color.ColorName,
-        //            FinalPrice = x.cad.FinalPrice,
-        //            PurchasePrice = x.cad.PurchasePrice,
-        //            TaxAmount = x.cad.TaxAmount,
-        //            Year = x.car.Year,
-        //            CreatedDate = x.cad.CreatedDate,
-        //            ImageUrls = x.imgs.Select(i => i.ImageUrl).ToArray()
-        //        })
-        //        .ToListAsync();
-
-        //    return result;
-        //}
-
-
-        //public async Task<int> GetAllCarsOfAuctionCount(int auctionId, CarFilterDto filterDto)
-        //{
-        //    return await _context.CarAuctionDetails.CountAsync(x => x.AuctionId == auctionId);
-        //}
 
 
         public async Task<CarEntity?> GetById(int id, bool withAuctionDetails, bool withImages)

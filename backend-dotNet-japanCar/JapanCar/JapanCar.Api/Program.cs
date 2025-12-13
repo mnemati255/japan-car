@@ -1,4 +1,5 @@
 using JapanCar.Api.Filters;
+using JapanCar.Api.Helpers;
 using JapanCar.Api.Middlewares;
 using JapanCar.Api.Services;
 using JapanCar.Application;
@@ -51,6 +52,8 @@ builder.Services.AddApplication();
 
 // Api DI
 builder.Services.AddScoped<IFileStorage, FileStorageService>();
+builder.Services.AddScoped<RequestContext>();
+builder.Services.AddScoped<IRequestContext>(sp => sp.GetRequiredService<RequestContext>());
 
 
 
@@ -67,4 +70,12 @@ app.UseAuthorization();
 app.MapControllers();
 app.UseStaticFiles();
 app.UseMiddleware<AppExceptionMiddleware>();
+app.Use(async (context, next) =>
+{
+    var locale = context.Request.Headers["X-Locale"].ToString() ?? "en";
+    var requestContext = context.RequestServices.GetRequiredService<RequestContext>();
+    requestContext.Locale = locale;
+
+    await next();
+});
 app.Run();

@@ -1,9 +1,0 @@
-{
-  "auction": "オークション",
-  "addAuction": "オークションを追加",
-  "noAuctions": "オークションがありません",
-  "columns": {
-    "fee": "手数料",
-    "cars": "車"
-  }
-}

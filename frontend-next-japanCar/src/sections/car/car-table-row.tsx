@@ -16,6 +16,7 @@ import Avatar from '@mui/material/Avatar';
 import { CONFIG } from '@/global-config';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { useTranslate } from '@/locales';
 
 // ----------------------------------------------------------------------
 
@@ -27,15 +28,15 @@ type Props = {
 
 export function CarTableRow({ row, onDeleteRow, auctionId }: Props) {
   const confirmDialog = useBoolean();
-
   const [loading, setLoading] = useState(false);
+  const { t: tCommon } = useTranslate('common');
 
   const renderConfirmDialog = () => (
     <ConfirmDialog
       open={confirmDialog.value}
       onClose={confirmDialog.onFalse}
-      title="Delete"
-      content="Are you sure want to delete?"
+      title={tCommon('delete')}
+      content={tCommon('deleteText')}
       action={
         <Button
           variant="contained"
@@ -47,7 +48,7 @@ export function CarTableRow({ row, onDeleteRow, auctionId }: Props) {
             confirmDialog.onFalse();
           }}
         >
-          Delete
+           {tCommon('delete')}
         </Button>
       }
     />
@@ -73,7 +74,7 @@ export function CarTableRow({ row, onDeleteRow, auctionId }: Props) {
             </Stack>
           </Stack>
         </TableCell>
-        {!auctionId && <TableCell>{row.auctionName}</TableCell>}
+        {/* {!auctionId && <TableCell>{row.auctionName}</TableCell>} */}
         <TableCell>{fCurrency(row.purchasePrice)}</TableCell>
         <TableCell>{fCurrency(row.finalPrice)}</TableCell>
         <TableCell>{row.createdAt?.split('T')[0]}</TableCell>

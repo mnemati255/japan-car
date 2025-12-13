@@ -10,6 +10,7 @@ import { getCarById } from '@/actions/car';
 import { convertUrlToFile } from '@/utils/convert-url-to-file';
 import { CONFIG } from '@/global-config';
 import { CreateEditCarForm } from '../car-create-edit-form';
+import { useTranslate, useTranslateFromServer } from '@/locales';
 
 // ----------------------------------------------------------------------
 
@@ -22,23 +23,20 @@ export function EditCarView({ carId }: Props) {
   const [colors, setColors] = useState<IColor[]>([]);
   const [brands, setBrands] = useState<IBrand[]>([]);
   const [files, setFiles] = useState<File[]>([]);
+  const { t: tCommon } = useTranslate('commo');
+  const { formFields } = useTranslateFromServer();
 
   useEffect(() => {
-    const getBaseInfo = async () => {
-      const { status, data } = await getColors();
-      if (status == 200) setColors(data.items);
-
-      const { status: status2, data: data2 } = await getBrands();
-      if (status2 == 200) setBrands(data2.items);
-    };
-    const getCar = async () => {
-      const { status, data } = await getCarById(carId);
-      if (status === 200) {
-        setCurrentCar(data);
-      }
-    };
-    getBaseInfo();
-    getCar();
+    (async () => {
+      const [brandsRes, colorsRes, carRes] = await Promise.all([
+        getBrands(),
+        getColors(),
+        getCarById(carId),
+      ]);
+      if (brandsRes.status == 200) setBrands(brandsRes.data.items);
+      if (colorsRes.status == 200) setColors(colorsRes.data.items);
+      if (carRes.status == 200) setCurrentCar(carRes.data);
+    })();
   }, [carId]);
 
   useEffect(() => {
@@ -60,12 +58,12 @@ export function EditCarView({ carId }: Props) {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Edit"
+        heading={tCommon('edit')}
         backHref={paths.dashboard.car.root}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Cars', href: paths.dashboard.car.root },
-          { name: `Chasis Num: ${currentCar?.chasisNumber}` },
+          { name: tCommon('dashboard'), href: paths.dashboard.root },
+          { name: tCommon('car.cars'), href: paths.dashboard.car.root },
+          { name: `${formFields['ChassisNumber']} : ${currentCar?.chasisNumber}` },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />

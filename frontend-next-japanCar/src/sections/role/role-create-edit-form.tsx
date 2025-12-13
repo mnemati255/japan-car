@@ -16,6 +16,7 @@ import { IRoleItem } from '@/types/role';
 import { createRole, updateRole, useGetPermissions } from '@/actions/role';
 import Typography from '@mui/material/Typography';
 import messages from '@/lib/messages';
+import { useTranslate, useTranslateFromServer } from '@/locales';
 
 // ----------------------------------------------------------------------
 
@@ -36,6 +37,8 @@ type Props = {
 
 export function RoleCreateEditForm({ currentRole }: Props) {
   const router = useRouter();
+  const { t: tCommon } = useTranslate('common');
+  const { formFields } = useTranslateFromServer();
 
   const methods = useForm({
     mode: 'onSubmit',
@@ -79,12 +82,12 @@ export function RoleCreateEditForm({ currentRole }: Props) {
               gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' },
             }}
           >
-            <Field.Text name="roleName" label="Role name" />
-            <Field.Text name="description" label="Description" />
+            <Field.Text name="roleName" label={formFields['RoleName']} />
+            <Field.Text name="description" label={formFields['Description']} />
 
-            <Stack spacing={1}>
+            <Stack spacing={1} sx={{ gridColumn: { xs: 'span 1', sm: 'span 2' } }}>
               <Typography variant="subtitle2" color="gray">
-                Permissions:
+                {tCommon('role.permissions')}:
               </Typography>
               <Field.MultiCheckbox
                 row
@@ -93,14 +96,16 @@ export function RoleCreateEditForm({ currentRole }: Props) {
                   label: x.permissionName,
                   value: x.permissionId.toString(),
                 }))}
-                sx={{ gap: 4 }}
+                sx={{ gap: 4, }}
               />
             </Stack>
           </Box>
 
           <Stack sx={{ mt: 3, alignItems: 'flex-end' }}>
             <Button type="submit" variant="contained" loading={isSubmitting}>
-              {!currentRole ? 'Create role' : 'Save changes'}
+              {!currentRole
+                ? `${tCommon('create')} ${tCommon('role.role')}`
+                : tCommon('save')}
             </Button>
           </Stack>
         </Card>

@@ -8,21 +8,30 @@ using System.Reflection;
 
 namespace JapanCar.Application.Services
 {
-    public class CarService
+    public class CarService : BaseService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IFileStorage _fileStorage;
+        private readonly IRequestContext _requestContext;
 
-        public CarService(IUnitOfWork unitOfWork, IFileStorage fileStorage)
+        public CarService(
+            IUnitOfWork unitOfWork, 
+            IFileStorage fileStorage, 
+            LanguageService languageService,
+            IRequestContext requestContext
+            ) : base(languageService)
         {
             _unitOfWork = unitOfWork;
             _fileStorage = fileStorage;
+            _requestContext = requestContext;
         }
 
 
         public async Task<GridDto<CarDto>> GetAllCars(CarFilterDto filterDto, int? auctionId = null)
         {
-            var entities = await _unitOfWork.CarRepository.GetCars(filterDto, auctionId);
+            var languageId = await GetLanguageId(_requestContext.Locale);
+
+            var entities = await _unitOfWork.CarRepository.GetCars(languageId, filterDto, auctionId);
 
             var cars = entities.Items.Select(x => new CarDto
             {
@@ -58,43 +67,6 @@ namespace JapanCar.Application.Services
         }
 
 
-        //public async Task<GridDto<CarDto>> GetAllCarsOfAuction(int auctionId, CarFilterDto filterDto)
-        //{
-        //    var entities = await _unitOfWork.CarRepository.GetAllCarsOfAuction(auctionId, filterDto);
-
-        //    var cars = entities.Items.Select(x => new CarDto
-        //    {
-        //        CarId = x.CarId,
-        //        AuctionId = auctionId,
-        //        BrandName = x.BrandName,
-        //        ModelName = x.ModelName,
-        //        ColorName = x.ColorName,
-        //        FinalPrice = x.FinalPrice,
-        //        PurchasePrice = x.PurchasePrice,
-        //        TaxAmount = x.TaxAmount,
-        //        TransportPrice = x.TransportPrice,
-        //        AuctionPrice = x.AuctionPrice,
-        //        Year = x.Year,
-        //        CreatedAt = x.CreatedDate,
-        //        Images = x.ImageUrls
-        //    });
-
-        //    var totalPage = 0;
-
-        //    if (filterDto.Take.HasValue)
-        //    {
-        //        var tp = int.Parse(Math.Floor(decimal.Divide(entities.TotalCount, Convert.ToDecimal(filterDto.Take))).ToString());
-        //        totalPage = tp + 1;
-        //    }
-
-        //    return new GridDto<CarDto>
-        //    {
-        //        Items = cars,
-        //        TotalPage = totalPage
-        //    };
-        //}
-
-
         public async Task CreateCar(CarDto dto, List<FileData> images)
         {
             var savedNames = await _fileStorage.SaveFilesAsync(images, Constants.CARS_IMAGES_FOLDER);
@@ -112,7 +84,7 @@ namespace JapanCar.Application.Services
                 PurchasePrice = dto.PurchasePrice,
                 TaxAmount = dto.TaxAmount,
                 TransportPrice = dto.TransportPrice,
-                AuctionPrice= dto.AuctionPrice,
+                AuctionPrice = dto.AuctionPrice,
                 Year = dto.Year,
                 ModelId = dto.ModelId,
             });
@@ -125,7 +97,7 @@ namespace JapanCar.Application.Services
 
             if (carWithImages != null)
                 _fileStorage.DeleteFiles(carWithImages.ImageUrls);
-            
+
             var savedNames = await _fileStorage.SaveFilesAsync(images, Constants.CARS_IMAGES_FOLDER);
 
             await _unitOfWork.CarRepository.Update(id, new CarEntity
@@ -139,7 +111,7 @@ namespace JapanCar.Application.Services
                 ImageUrls = savedNames.ToArray(),
                 Mileage = dto.Mileage,
                 PurchasePrice = dto.PurchasePrice,
-                TransportPrice= dto.TransportPrice,
+                TransportPrice = dto.TransportPrice,
                 AuctionPrice = dto.AuctionPrice,
                 TaxAmount = dto.TaxAmount,
                 Year = dto.Year,

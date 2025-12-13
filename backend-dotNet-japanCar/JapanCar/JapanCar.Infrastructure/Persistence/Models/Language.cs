@@ -30,5 +30,11 @@ public partial class Language
     /// </summary>
     public DateTime? ModifiedDate { get; set; }
 
+    public virtual ICollection<CarBrandTranslation> CarBrandTranslations { get; set; } = new List<CarBrandTranslation>();
+
+    public virtual ICollection<CarColorTranslation> CarColorTranslations { get; set; } = new List<CarColorTranslation>();
+
+    public virtual ICollection<CarModelTranslation> CarModelTranslations { get; set; } = new List<CarModelTranslation>();
+
     public virtual ICollection<GenericTranslation> GenericTranslations { get; set; } = new List<GenericTranslation>();
 }

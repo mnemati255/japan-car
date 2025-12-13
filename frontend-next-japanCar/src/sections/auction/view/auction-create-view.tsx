@@ -7,23 +7,26 @@ import { DashboardContent } from '@/layouts/dashboard';
 import { CustomBreadcrumbs } from '@/components/custom-breadcrumbs';
 
 import { AuctionCreateEditForm } from '../auction-create-edit-form';
+import { useTranslate } from '@/locales';
 
 // ----------------------------------------------------------------------
 
 export function AuctionCreateView() {
+  const { currentLang, t: tCommon } = useTranslate('common');
+
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Create a new auction"
+        heading={tCommon('auction.createNew')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Auction', href: paths.dashboard.auction.root },
-          { name: 'Create' },
+          { name: tCommon('dashboard'), href: paths.dashboard.root },
+          { name: tCommon('auction.auction'), href: paths.dashboard.auction.root },
+          { name: tCommon('create') },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <AuctionCreateEditForm />
+      <AuctionCreateEditForm lang={currentLang.value} />
     </DashboardContent>
   );
 }

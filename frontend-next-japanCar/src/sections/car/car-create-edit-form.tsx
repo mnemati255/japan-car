@@ -17,6 +17,7 @@ import { paths } from '@/routes/paths';
 import InputAdornment from '@mui/material/InputAdornment';
 import { useCallback, useEffect, useState } from 'react';
 import { getModelsOfBrand } from '@/actions/base-info';
+import { useTranslate, useTranslateFromServer } from '@/locales';
 
 // ----------------------------------------------------------------------
 
@@ -46,7 +47,8 @@ export function CreateEditCarForm({
   }));
 
   const router = useRouter();
-
+  const { formFields } = useTranslateFromServer();
+  const { t: tCommon } = useTranslate('common');
   const [models, setModels] = useState<IModel[]>([]);
 
   const AuctionCarCreateSchema = z.object({
@@ -148,7 +150,7 @@ export function CreateEditCarForm({
       );
       if (status == 200) {
         toast.success(currentCar ? 'Update success!' : 'Create success!');
-        if(!auctionId) router.push(paths.dashboard.car.root);
+        if (!auctionId) router.push(paths.dashboard.car.root);
         else router.push(paths.dashboard.auction.cars(auctionId));
       }
     } catch (error) {
@@ -166,12 +168,15 @@ export function CreateEditCarForm({
                 rowGap: 3,
                 columnGap: 2,
                 display: 'grid',
-                gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' },
+                gridTemplateColumns: {
+                  xs: 'repeat(1, 1fr)',
+                  sm: 'repeat(2, 1fr)',
+                },
               }}
             >
               <Field.Select
                 name="brandId"
-                label="Brand"
+                label={formFields['BrandName']}
                 onChange={(e) => {
                   const id = +e.target.value;
                   setValue('brandId', id, { shouldValidate: true });
@@ -185,7 +190,7 @@ export function CreateEditCarForm({
                 ))}
               </Field.Select>
 
-              <Field.Select name="modelId" label="Model">
+              <Field.Select name="modelId" label={formFields['ModelName']}>
                 {models.map((x) => (
                   <MenuItem key={x.modelId} value={x.modelId}>
                     {x.modelName}
@@ -193,7 +198,7 @@ export function CreateEditCarForm({
                 ))}
               </Field.Select>
 
-              <Field.Select name="colorId" label="Color">
+              <Field.Select name="colorId" label={formFields['ColorId']}>
                 {COLORS.map((x) => (
                   <MenuItem key={x.value} value={x.value}>
                     {x.label}
@@ -201,11 +206,15 @@ export function CreateEditCarForm({
                 ))}
               </Field.Select>
 
-              <Field.Text name="year" label="Year" type="number" />
-              <Field.Text name="mileage" label="KM" type="number" />
-              <Field.Text name="chasisNumber" label="Chasis number" />
-              <Field.Text name="engineVolume" label="Engine volume" type="number" />
-              <Field.Select name="fuelType" label="Fuel type">
+              <Field.Text name="year" label={formFields['Year']} type="number" />
+              <Field.Text name="mileage" label={formFields['Mileage']} type="number" />
+              <Field.Text name="chasisNumber" label={formFields['ChassisNumber']} />
+              <Field.Text
+                name="engineVolume"
+                label={formFields['EngineVolume']}
+                type="number"
+              />
+              <Field.Select name="fuelType" label={formFields['FuelType']}>
                 {['CNG', 'G', 'D'].map((x) => (
                   <MenuItem key={x} value={x}>
                     {x}
@@ -215,14 +224,14 @@ export function CreateEditCarForm({
 
               <Field.Text
                 name="purchasePrice"
-                label="Purchase price"
+                label={formFields['PurchasePrice']}
                 type="number"
                 slotProps={{
                   input: {
                     startAdornment: (
                       <InputAdornment position="start">
                         <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>
-                          $
+                          ¥
                         </Box>
                       </InputAdornment>
                     ),
@@ -232,14 +241,14 @@ export function CreateEditCarForm({
 
               <Field.Text
                 name="transportPrice"
-                label="transport price"
+                label={formFields['TransportPrice']}
                 type="number"
                 slotProps={{
                   input: {
                     startAdornment: (
                       <InputAdornment position="start">
                         <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>
-                          $
+                          ¥
                         </Box>
                       </InputAdornment>
                     ),
@@ -249,14 +258,14 @@ export function CreateEditCarForm({
 
               <Field.Text
                 name="auctionPrice"
-                label="Auction Price"
+                label={formFields['AuctionPrice']}
                 type="number"
                 slotProps={{
                   input: {
                     startAdornment: (
                       <InputAdornment position="start">
                         <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>
-                          $
+                          ¥
                         </Box>
                       </InputAdornment>
                     ),
@@ -266,7 +275,7 @@ export function CreateEditCarForm({
 
               <Field.Text
                 name="taxAmount"
-                label="Tax amount"
+                label={formFields['TaxAmount']}
                 type="number"
                 disabled
                 slotProps={{
@@ -274,7 +283,7 @@ export function CreateEditCarForm({
                     startAdornment: (
                       <InputAdornment position="start">
                         <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>
-                          $
+                          ¥
                         </Box>
                       </InputAdornment>
                     ),
@@ -284,7 +293,7 @@ export function CreateEditCarForm({
 
               <Field.Text
                 name="finalPrice"
-                label="Final price"
+                label={formFields['FinalPrice']}
                 type="number"
                 disabled
                 slotProps={{
@@ -292,14 +301,14 @@ export function CreateEditCarForm({
                     startAdornment: (
                       <InputAdornment position="start">
                         <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>
-                          $
+                          ¥
                         </Box>
                       </InputAdornment>
                     ),
                   },
                 }}
               />
-              <Grid sx={{ gridColumn: 'span 2' }}>
+              <Box sx={{ gridColumn: { xs: 'span 1', sm: 'span 2' } }}>
                 <Field.Upload
                   multiple
                   name="images"
@@ -313,12 +322,14 @@ export function CreateEditCarForm({
                   }
                   onRemoveAll={() => setValue('images', [], { shouldValidate: true })}
                 />
-              </Grid>
+              </Box>
             </Box>
 
             <Stack sx={{ mt: 3, alignItems: 'flex-end' }}>
               <Button type="submit" variant="contained" loading={isSubmitting}>
-                {!currentCar ? 'Create car' : 'Save changes'}
+                {!currentCar
+                  ? `${tCommon('create')} ${tCommon('car.car')}`
+                  : tCommon('save')}
               </Button>
             </Stack>
           </Card>

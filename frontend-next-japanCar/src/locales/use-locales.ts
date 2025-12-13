@@ -8,12 +8,13 @@ import { useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // import { useRouter } from '@/routes/hooks';
-import { useRouter } from 'next/navigation';
 
-import { toast } from '@/components/snackbar';
+// import { toast } from '@/components/snackbar';
 import { useSettingsContext } from '@/components/settings';
 
 import { fallbackLng, getCurrentLang } from './locales-config';
+import { getFormFields, getSystemMessages } from './utils/translations';
+import { useRouter } from '@/routes/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -22,7 +23,7 @@ export function useTranslate(namespace?: Namespace) {
   const settings = useSettingsContext();
 
   const { t, i18n } = useTranslation(namespace);
-  const { t: tMessages } = useTranslation('messages');
+  // const { t: tMessages } = useTranslation('messages');
 
   const currentLang = getCurrentLang(i18n.resolvedLanguage);
 
@@ -43,11 +44,11 @@ export function useTranslate(namespace?: Namespace) {
       try {
         const changeLangPromise = i18n.changeLanguage(lang);
 
-        toast.promise(changeLangPromise, {
-          loading: tMessages('languageSwitch.loading'),
-          success: () => tMessages('languageSwitch.success'),
-          error: () => tMessages('languageSwitch.error'),
-        });
+        // toast.promise(changeLangPromise, {
+        //   loading: tMessages('languageSwitch.loading'),
+        //   success: () => tMessages('languageSwitch.success'),
+        //   error: () => tMessages('languageSwitch.error'),
+        // });
 
         await changeLangPromise;
 
@@ -55,11 +56,12 @@ export function useTranslate(namespace?: Namespace) {
         updateDayjsLocale(lang);
 
         router.refresh(); // only nextjs
+        // window.location.reload();
       } catch (error) {
         console.error(error);
       }
     },
-    [i18n, router, tMessages, updateDayjsLocale, updateDirection]
+    [i18n, router, updateDayjsLocale, updateDirection]
   );
 
   const handleResetLang = useCallback(() => {
@@ -72,6 +74,22 @@ export function useTranslate(namespace?: Namespace) {
     currentLang,
     onChangeLang: handleChangeLang,
     onResetLang: handleResetLang,
+  };
+}
+
+// ----------------------------------------------------------------------
+
+export function useTranslateFromServer(namespace?: Namespace) {
+  const { i18n } = useTranslation(namespace);
+
+  const currentLang = getCurrentLang(i18n.resolvedLanguage);
+
+  const formFields = getFormFields(currentLang.value);
+  const systemMessages = getSystemMessages(currentLang.value);
+
+  return {
+    formFields,
+    systemMessages,
   };
 }
 

@@ -2,27 +2,26 @@
 using JapanCar.Application.DTOs;
 using JapanCar.Application.Interfaces;
 using JapanCar.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JapanCar.Application.Services
 {
-    public class AuctionService
+    public class AuctionService : BaseService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IRequestContext _requestContext;
 
-        public AuctionService(IUnitOfWork unitOfWork)
+        public AuctionService(IUnitOfWork unitOfWork, LanguageService languageService, IRequestContext requestContext) : base(languageService)
         {
             _unitOfWork = unitOfWork;
+            _requestContext = requestContext;
         }
 
         public async Task<IEnumerable<AuctionDto>> GetAllAuctions()
         {
-            var auctions = await _unitOfWork.AuctionRepository.GetAll();
+            var languageId = await GetLanguageId(_requestContext.Locale);
+
+            var auctions = await _unitOfWork.AuctionRepository.GetAll((int)languageId);
 
             return auctions.Select(x => new AuctionDto
             {
@@ -34,9 +33,11 @@ namespace JapanCar.Application.Services
             });
         }
 
-        public async Task<AuctionDto> GetAuctionById(int id)
+        public async Task<AuctionDto> GetAuctionById(int id, string locale)
         {
-            var auction = await _unitOfWork.AuctionRepository.GetById(id);
+            var languageId = await GetLanguageId(locale);
+
+            var auction = await _unitOfWork.AuctionRepository.GetById(languageId, id);
 
             if (auction == null)
                 throw new AppException("Not found", HttpStatusCode.NotFound);
@@ -52,19 +53,23 @@ namespace JapanCar.Application.Services
 
         public async Task CreateAuction(AuctionDto dto)
         {
-            await _unitOfWork.AuctionRepository.Create(new AuctionEntity
+            var languageId = await GetLanguageId(_requestContext.Locale);
+
+            await _unitOfWork.AuctionRepository.Create((int)languageId, new AuctionEntity
             {
                 AuctionName = dto.AuctionName,
                 AuctionDate = DateOnly.Parse(dto.AuctionDate.Split("T")[0]),
-                AuctionFee= dto.AuctionFee,
+                AuctionFee = dto.AuctionFee,
             });
         }
 
-        public async Task UpdateAuction(int id, AuctionDto dto)
+        public async Task UpdateAuction(string locale, int id, AuctionDto dto)
         {
-            var result = await _unitOfWork.AuctionRepository.Update(id, new AuctionEntity
+            var languageId = await GetLanguageId(locale);
+
+            var result = await _unitOfWork.AuctionRepository.Update(languageId, id, new AuctionEntity
             {
-                AuctionName= dto.AuctionName,
+                AuctionName = dto.AuctionName,
                 AuctionDate = DateOnly.Parse(dto.AuctionDate.Split("T")[0]),
                 AuctionFee = dto.AuctionFee,
                 ModifiedDate = DateTime.Now

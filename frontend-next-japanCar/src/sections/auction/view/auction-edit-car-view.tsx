@@ -25,22 +25,18 @@ export function AuctionEditCarView({ auctionId, carId }: Props) {
   const [files, setFiles] = useState<File[]>([]);
 
   useEffect(() => {
+    console.log(333)
     if (auctionId) {
-      const getBaseInfo = async () => {
-        const { status, data } = await getColors();
-        if (status == 200) setColors(data.items);
-
-        const { status: status2, data: data2 } = await getBrands();
-        if (status2 == 200) setBrands(data2.items);
-      };
-      const getCar = async () => {
-        const { status, data } = await getCarById(carId);
-        if (status === 200) {
-          setCurrentCar(data);
-        }
-      };
-      getBaseInfo();
-      getCar();
+      (async () => {
+        const [brandsRes, colorsRes, carRes] = await Promise.all([
+          getBrands(),
+          getColors(),
+          getCarById(carId),
+        ]);
+        if (brandsRes.status == 200) setBrands(brandsRes.data.items);
+        if (colorsRes.status == 200) setColors(colorsRes.data.items);
+        if (carRes.status == 200) setCurrentCar(carRes.data);
+      })();
     }
   }, [auctionId, carId]);
 

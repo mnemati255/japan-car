@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { IBrand, IColor } from '@/types/car';
 import { getBrands, getColors } from '@/actions/base-info';
 import { CreateEditCarForm } from '../car-create-edit-form';
+import { useTranslate } from '@/locales';
 
 // ----------------------------------------------------------------------
 
@@ -17,26 +18,24 @@ type Props = {
 export function CreateCarView({ auctionId }: Props) {
   const [colors, setColors] = useState<IColor[]>([]);
   const [brands, setBrands] = useState<IBrand[]>([]);
+  const { t: tCommon } = useTranslate('common');
 
   useEffect(() => {
-    const getBaseInfo = async () => {
-      const { status, data } = await getColors();
-      if (status == 200) setColors(data.items);
-
-      const { status: status2, data: data2 } = await getBrands();
-      if (status2 == 200) setBrands(data2.items);
-    };
-    getBaseInfo();
+    (async () => {
+      const [brandsRes, colorsRes] = await Promise.all([getBrands(), getColors()]);
+      if (brandsRes.status === 200) setBrands(brandsRes.data.items);
+      if (colorsRes.status === 200) setColors(colorsRes.data.items);
+    })();
   }, []);
 
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Create a new car"
+        heading={tCommon('car.createNew')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Cars', href: paths.dashboard.car.root },
-          { name: 'Create' },
+          { name: tCommon('dashboard'), href: paths.dashboard.root },
+          { name: tCommon('car.cars'), href: paths.dashboard.car.root },
+          { name: tCommon('create') },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />

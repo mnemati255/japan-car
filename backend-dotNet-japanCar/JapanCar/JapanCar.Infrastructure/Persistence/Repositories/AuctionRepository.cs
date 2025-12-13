@@ -14,24 +14,35 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
-        public async Task Create(AuctionEntity auction)
+
+        public async Task Create(int languageId, AuctionEntity auction)
         {
-            var entity = new Auction
+            var entity = new Auction();
+
+            entity.AuctionsTranslations.Add(new AuctionsTranslation
             {
-                AuctionName = auction.AuctionName,
                 AuctionDate = auction.AuctionDate,
                 AuctionFee = auction.AuctionFee,
-            };
+                AuctionName = auction.AuctionName,
+                LanguageId = languageId
+            });
 
             _context.Auctions.Add(entity);
+
             await _context.SaveChangesAsync();
         }
 
+
         public async Task<bool> Delete(int id)
         {
-            var entity = await _context.Auctions.SingleOrDefaultAsync(x => x.AuctionId == id);
+            var entity = await _context.Auctions
+                .Include(x => x.AuctionsTranslations)
+                .FirstOrDefaultAsync(x => x.AuctionId == id);
+
             if (entity == null)
                 return false;
+
+            _context.AuctionsTranslations.RemoveRange(entity.AuctionsTranslations);
 
             _context.Auctions.Remove(entity);
 
@@ -40,50 +51,84 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
             return true;
         }
 
-        public async Task<IEnumerable<AuctionEntity>> GetAll()
-        {
-            var entities = await _context.Auctions.ToListAsync();
 
-            return entities.Select(x => new AuctionEntity
-            {
-                AuctionId = x.AuctionId,
-                AuctionName = x.AuctionName,
-                AuctionDate = x.AuctionDate,
-                AuctionFee = x.AuctionFee,
-                CreatedDate = x.CreatedDate
-            });
+        public async Task<IEnumerable<AuctionEntity>> GetAll(int languageId)
+        {
+            var query = from auc in _context.Auctions
+                        join aucTr in _context.AuctionsTranslations on auc.AuctionId equals aucTr.AuctionId
+                        where aucTr.LanguageId == languageId
+                        select new AuctionEntity
+                        {
+                            AuctionId = auc.AuctionId,
+                            AuctionName = aucTr.AuctionName,
+                            AuctionDate = aucTr.AuctionDate,
+                            AuctionFee = aucTr.AuctionFee,
+                            CreatedDate = auc.CreatedDate
+                        };
+
+            return await query.ToListAsync();
         }
 
-        public async Task<AuctionEntity?> GetById(int id)
+
+        public async Task<AuctionEntity?> GetById(int languageId, int id)
         {
-            var entity = await _context.Auctions.SingleOrDefaultAsync(x => x.AuctionId == id);
+            var entity = await _context
+                .Auctions
+                .Include(x => x.AuctionsTranslations.Where(t => t.LanguageId == languageId))
+                .SingleOrDefaultAsync(x => x.AuctionId == id);
 
             if (entity == null)
                 return null;
 
-            return new AuctionEntity
+            var translation = entity.AuctionsTranslations.FirstOrDefault();
+
+            var result = new AuctionEntity
             {
                 AuctionId = entity.AuctionId,
-                AuctionName = entity.AuctionName,
-                AuctionDate = entity.AuctionDate,
-                AuctionFee = entity.AuctionFee,
+                AuctionName = translation != null ? translation.AuctionName : "",
+                AuctionFee = translation?.AuctionFee,
             };
+            if (translation != null)
+                result.AuctionDate = translation.AuctionDate;
+
+            return result;
         }
 
-        public async Task<bool> Update(int id, AuctionEntity auction)
+
+        public async Task<bool> Update(int languageId, int id, AuctionEntity auction)
         {
-            var entity = await _context.Auctions.SingleOrDefaultAsync(x => x.AuctionId == id);
+            var entity = await _context
+                .Auctions
+                .Include(x => x.AuctionsTranslations.Where(t => t.LanguageId == languageId))
+                .FirstOrDefaultAsync(x => x.AuctionId == id);
 
             if (entity == null)
                 return false;
 
-            entity.AuctionName = auction.AuctionName;
-            entity.AuctionDate = auction.AuctionDate;
-            entity.AuctionFee = auction.AuctionFee;
+            entity.ModifiedDate = DateTime.Now;
 
-            _context.Auctions.Update(entity);
+            var trEntity = entity.AuctionsTranslations.FirstOrDefault();
+            if (trEntity != null)
+            {
+                trEntity.AuctionName = auction.AuctionName;
+                trEntity.AuctionDate = auction.AuctionDate;
+                trEntity.AuctionFee = auction.AuctionFee;
+            }
+            else
+            {
+                entity.AuctionsTranslations.Add(new AuctionsTranslation
+                {
+                    AuctionName = auction.AuctionName,
+                    AuctionFee = auction.AuctionFee,
+                    AuctionDate = auction.AuctionDate,
+                    LanguageId = languageId,
+                });
+            }
+
+            _context.Update(entity);
 
             await _context.SaveChangesAsync();
+
             return true;
         }
     }

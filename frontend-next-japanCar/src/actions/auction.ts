@@ -1,5 +1,6 @@
 import { CONFIG } from '@/global-config';
 import axiosInstance, { fetcher } from '@/lib/axios';
+import { LangCode } from '@/locales';
 import { IAuctionItem } from '@/types/auction';
 import useSWR, { mutate, SWRConfiguration } from 'swr';
 
@@ -13,10 +14,16 @@ const swrOptions: SWRConfiguration = {
 
 const BASE_URL = `${CONFIG.serverUrl}/auction`;
 
+function mutateAuctions() {
+  mutate((key) => typeof key === 'string' && key.startsWith(BASE_URL), undefined, {
+    revalidate: true,
+  });
+}
+
 // ----------------------------------------------------------------------
 
-export function useGetAuctions() {
-  const url = BASE_URL;
+export function useGetAuctions(locale: LangCode) {
+  const url = `${BASE_URL}?locale=${locale}`;
   const { data, isLoading, error, isValidating } = useSWR<IAuctionItem[]>(url, fetcher, {
     ...swrOptions,
   });
@@ -32,8 +39,8 @@ export function useGetAuctions() {
 
 // ----------------------------------------------------------------------
 
-export async function getAuctionById(id: number) {
-  const res = await axiosInstance.get(`${BASE_URL}/${id}`);
+export async function getAuctionById(id: number, locale: LangCode) {
+  const res = await axiosInstance.get(`${BASE_URL}/${id}?locale=${locale}`);
   return res;
 }
 
@@ -41,21 +48,24 @@ export async function getAuctionById(id: number) {
 
 export async function createAuction(rowData: IAuctionItem) {
   const url = BASE_URL;
-  const response = await axiosInstance.post(url, rowData);
+  const response = await axiosInstance.post(`${url}`, rowData);
   if (response && response.status == 200) {
-    mutate(BASE_URL, () => {});
+    mutateAuctions();
   }
-
   return response;
 }
 
 // ----------------------------------------------------------------------
 
-export async function updateAuction(userId: number, rowData: IAuctionItem) {
-  const url = `${BASE_URL}/${userId}`;
+export async function updateAuction(
+  locale: LangCode,
+  auctionId: number,
+  rowData: IAuctionItem
+) {
+  const url = `${BASE_URL}/${auctionId}?locale=${locale}`;
   const response = await axiosInstance.put(url, rowData);
   if (response && response.status == 200) {
-    mutate(BASE_URL, () => {});
+    mutateAuctions();
   }
 
   return response;
@@ -67,6 +77,6 @@ export async function deleteAuction(userId: number) {
   const url = `${BASE_URL}/${userId}`;
   const response = await axiosInstance.delete(url);
   if (response && response.status === 200) {
-    mutate(BASE_URL, () => {});
+    mutateAuctions();
   }
 }

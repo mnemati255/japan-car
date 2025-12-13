@@ -25,6 +25,8 @@ import { LanguagePopover } from '../components/language-popover';
 import { navData as dashboardNavData } from '../nav-config-dashboard';
 import { dashboardLayoutVars, dashboardNavColorVars } from './css-vars';
 import { MainSection, layoutClasses, HeaderSection, LayoutSection } from '../core';
+import { useEffect } from 'react';
+import { usePathname } from '@/routes/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -62,7 +64,12 @@ export function DashboardLayout({
 
   const { value: open, onFalse: onClose, onTrue: onOpen } = useBoolean();
 
-  const { t } = useTranslate('navbar');
+  const { t, currentLang } = useTranslate('navbar');
+  const pathname = usePathname();
+
+  useEffect(() => {
+    sessionStorage.setItem('locale', currentLang.value);
+  }, [currentLang.value, pathname]);
 
   const navData = slotProps?.nav?.data ?? dashboardNavData(t);
 
