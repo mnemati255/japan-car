@@ -15,8 +15,8 @@ namespace JapanCar.Application.Services
         private readonly IRequestContext _requestContext;
 
         public CarService(
-            IUnitOfWork unitOfWork, 
-            IFileStorage fileStorage, 
+            IUnitOfWork unitOfWork,
+            IFileStorage fileStorage,
             LanguageService languageService,
             IRequestContext requestContext
             ) : base(languageService)
@@ -87,6 +87,15 @@ namespace JapanCar.Application.Services
                 AuctionPrice = dto.AuctionPrice,
                 Year = dto.Year,
                 ModelId = dto.ModelId,
+                ManufactureMonth = dto.ManufactureMonth,
+                ScrapCost = dto.ScrapCost,
+                HasInsurance = dto.HasInsurance,
+                InsuranceStartDate = !string.IsNullOrEmpty(dto.InsuranceStartDate) ? DateTime.Parse(dto.InsuranceStartDate.Split("T")[0]) : null,
+                InsuranceEndDate = !string.IsNullOrEmpty(dto.InsuranceEndDate) ? DateTime.Parse(dto.InsuranceEndDate.Split("T")[0]) : null,
+                InsurancePolicyNumber = dto.InsurancePolicyNumber,
+                TransmissionType = dto.TransmissionType,
+                PlateTypeTemp = dto.PlateTypeTemp,
+                PurchaseDate = !string.IsNullOrEmpty(dto.PurchaseDate) ? DateTime.Parse(dto.PurchaseDate.Split("T")[0]) : null
             });
         }
 
@@ -116,6 +125,15 @@ namespace JapanCar.Application.Services
                 TaxAmount = dto.TaxAmount,
                 Year = dto.Year,
                 ModelId = dto.ModelId,
+                ManufactureMonth = dto.ManufactureMonth,
+                ScrapCost = dto.ScrapCost,
+                HasInsurance = dto.HasInsurance,
+                InsuranceStartDate = !string.IsNullOrEmpty(dto.InsuranceStartDate) ? DateTime.Parse(dto.InsuranceStartDate.Split("T")[0]) : null,
+                InsuranceEndDate = !string.IsNullOrEmpty(dto.InsuranceEndDate) ? DateTime.Parse(dto.InsuranceEndDate.Split("T")[0]) : null,
+                InsurancePolicyNumber = dto.InsurancePolicyNumber,
+                TransmissionType = dto.TransmissionType,
+                PlateTypeTemp = dto.PlateTypeTemp,
+                PurchaseDate = !string.IsNullOrEmpty(dto.PurchaseDate) ? DateTime.Parse(dto.PurchaseDate.Split("T")[0]) : null
             });
         }
 
@@ -162,6 +180,15 @@ namespace JapanCar.Application.Services
                 Mileage = car.Mileage,
                 EngineVolume = car.EngineVolume,
                 FuelType = car.FuelType,
+                ManufactureMonth = car.ManufactureMonth ?? 0,
+                PurchaseDate = car.PurchaseDate?.ToString(),
+                ScrapCost = car.ScrapCost,
+                HasInsurance = car.HasInsurance,
+                InsuranceStartDate = car.InsuranceStartDate?.ToString(),
+                InsuranceEndDate = car.InsuranceEndDate?.ToString(),
+                InsurancePolicyNumber = car.InsurancePolicyNumber,
+                PlateTypeTemp = car.PlateTypeTemp,
+                TransmissionType = car.TransmissionType
             };
         }
     }

@@ -47,7 +47,7 @@ export const allLangs: LangOption[] = [
   {
     value: 'en',
     label: 'English',
-    countryCode: 'GB',
+    countryCode: 'US',
     adapterLocale: 'en',
     numberFormat: { code: 'en-US', currency: 'USD' },
     systemValue: {

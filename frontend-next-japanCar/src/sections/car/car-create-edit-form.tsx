@@ -17,7 +17,9 @@ import { paths } from '@/routes/paths';
 import InputAdornment from '@mui/material/InputAdornment';
 import { useCallback, useEffect, useState } from 'react';
 import { getModelsOfBrand } from '@/actions/base-info';
-import { useTranslate, useTranslateFromServer } from '@/locales';
+import { LocalizationProvider, useTranslate, useTranslateFromServer } from '@/locales';
+import { PLATES } from '@/constants/plate-types';
+import Typography from '@mui/material/Typography';
 
 // ----------------------------------------------------------------------
 
@@ -51,24 +53,66 @@ export function CreateEditCarForm({
   const { t: tCommon } = useTranslate('common');
   const [models, setModels] = useState<IModel[]>([]);
 
-  const AuctionCarCreateSchema = z.object({
-    brandId: z.coerce.number().min(1, { error: messages.required() }),
-    modelId: z.coerce.number().min(1, { error: messages.required() }),
-    colorId: z.coerce.number().min(1, { error: messages.required() }),
-    year: z.coerce.number().min(1, { error: messages.required() }),
-    mileage: z.coerce.number().min(1, { error: messages.required() }),
-    chasisNumber: z.string().min(1, { error: messages.required() }),
-    purchasePrice: z.coerce.number().min(1, { error: messages.required() }),
-    taxAmount: z.coerce.number().nullable().optional(),
-    finalPrice: z.coerce.number().nullable().optional(),
-    transportPrice: z.coerce.number().nullable().optional(),
-    auctionPrice: z.coerce.number().nullable().optional(),
-    engineVolume: z.coerce.number().nullable().optional(),
-    fuelType: z.string().nullable().optional(),
-    technicalTestResult: z.string().nullable().optional(),
-    usageStatus: z.string().nullable().optional(),
-    images: z.array(z.instanceof(File)).default([]),
-  });
+  const AuctionCarCreateSchema = z
+    .object({
+      brandId: z.coerce.number().min(1, { error: messages.required() }),
+      modelId: z.coerce.number().min(1, { error: messages.required() }),
+      colorId: z.coerce.number().min(1, { error: messages.required() }),
+      year: z.coerce
+        .number()
+        .min(1900, { error: messages.invalid() })
+        .max(9999, { error: messages.invalid() }),
+      mileage: z.coerce.number().min(1, { error: messages.required() }),
+      chasisNumber: z.string().min(1, { error: messages.required() }),
+      purchasePrice: z.coerce.number().min(1, { error: messages.required() }),
+      transportPrice: z.coerce.number().nullable().optional(),
+      auctionPrice: z.coerce.number().nullable().optional(),
+      taxAmount: z.coerce.number().nullable().optional(),
+      finalPrice: z.coerce.number().nullable().optional(),
+      engineVolume: z.coerce.number().nullable().optional(),
+      fuelType: z.string().nullable().optional(),
+      images: z
+        .array(z.instanceof(File))
+        .min(3, { error: messages.minCount(3) })
+        .default([]),
+      scrapCost: z.coerce.number().nullable().optional(),
+      manufactureMonth: z.coerce
+        .number()
+        .min(1, { error: messages.invalid() })
+        .max(12, { error: messages.invalid() }),
+      transmissionType: z.string().nullable().optional(),
+      plateTypeTemp: z.coerce.number(),
+      purchaseDate: z.string(),
+      hasInsurance: z.boolean({ error: messages.required() }),
+      insuranceStartDate: z.string().optional(),
+      insuranceEndDate: z.string().optional(),
+      insurancePolicyNumber: z.string().optional(),
+    })
+    .superRefine((data, ctx) => {
+      if (data.hasInsurance) {
+        if (!data.insuranceStartDate) {
+          ctx.addIssue({
+            path: ['insuranceStartDate'],
+            code: 'custom',
+            message: messages.required(),
+          });
+        }
+        if (!data.insuranceEndDate) {
+          ctx.addIssue({
+            path: ['insuranceEndDate'],
+            code: 'custom',
+            message: messages.required(),
+          });
+        }
+        if (!data.insurancePolicyNumber) {
+          ctx.addIssue({
+            path: ['insurancePolicyNumber'],
+            code: 'custom',
+            message: messages.required(),
+          });
+        }
+      }
+    });
 
   const methods = useForm({
     mode: 'onSubmit',
@@ -88,6 +132,14 @@ export function CreateEditCarForm({
       auctionPrice: currentCar?.auctionPrice ?? 0,
       finalPrice: currentCar?.finalPrice ?? 0,
       images: [],
+      manufactureMonth: currentCar?.manufactureMonth ?? '',
+      transmissionType: currentCar?.transmissionType ?? '',
+      plateTypeTemp: currentCar?.plateTypeTemp ?? '',
+      purchaseDate: currentCar?.purchaseDate ?? '',
+      hasInsurance: currentCar?.hasInsurance ?? false,
+      insuranceStartDate: currentCar?.insuranceStartDate ?? '',
+      insuranceEndDate: currentCar?.insuranceEndDate ?? '',
+      insurancePolicyNumber: currentCar?.insurancePolicyNumber ?? '',
     },
   });
 
@@ -125,21 +177,24 @@ export function CreateEditCarForm({
     }
   }, [files, setValue]);
 
+  const hasInsurance = useWatch({ control, name: 'hasInsurance' });
   const purchasePrice = useWatch({ control, name: 'purchasePrice' });
   const transportPrice = useWatch({ control, name: 'transportPrice' });
+  const scrapCost = useWatch({ control, name: 'scrapCost' });
   const auctionPrice = useWatch({ control, name: 'auctionPrice' });
 
   useEffect(() => {
     const p1 = Number(purchasePrice) || 0;
     const p2 = Number(transportPrice) || 0;
     const p3 = Number(auctionPrice) || 0;
+    const p4 = Number(scrapCost) || 0;
 
-    const total = p1 + p2 + p3;
+    const total = p1 + p2 + p3 + p4;
     const tax = total * 0.1;
 
     setValue('taxAmount', tax);
     setValue('finalPrice', total + tax);
-  }, [purchasePrice, transportPrice, auctionPrice, setValue]);
+  }, [purchasePrice, transportPrice, auctionPrice, setValue, scrapCost]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -184,7 +239,7 @@ export function CreateEditCarForm({
                 }}
               >
                 {BRANDS.map((x) => (
-                  <MenuItem key={x.value} value={x.value}>
+                  <MenuItem key={`brand_${x.value}`} value={x.value}>
                     {x.label}
                   </MenuItem>
                 ))}
@@ -192,7 +247,7 @@ export function CreateEditCarForm({
 
               <Field.Select name="modelId" label={formFields['ModelName']}>
                 {models.map((x) => (
-                  <MenuItem key={x.modelId} value={x.modelId}>
+                  <MenuItem key={`model_${x.modelId}`} value={x.modelId}>
                     {x.modelName}
                   </MenuItem>
                 ))}
@@ -200,24 +255,61 @@ export function CreateEditCarForm({
 
               <Field.Select name="colorId" label={formFields['ColorId']}>
                 {COLORS.map((x) => (
-                  <MenuItem key={x.value} value={x.value}>
+                  <MenuItem key={`color_${x.value}`} value={x.value}>
                     {x.label}
                   </MenuItem>
                 ))}
               </Field.Select>
 
-              <Field.Text name="year" label={formFields['Year']} type="number" />
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Field.Text name="year" label={formFields['Year']} type="number" />
+                <Field.Text
+                  name="manufactureMonth"
+                  label={formFields['ManufactureMonth']}
+                  type="number"
+                />
+              </Box>
+
+              <LocalizationProvider>
+                <Field.DatePicker
+                  name="purchaseDate"
+                  label={formFields['PurchaseDate']}
+                />
+              </LocalizationProvider>
+
               <Field.Text name="mileage" label={formFields['Mileage']} type="number" />
+
               <Field.Text name="chasisNumber" label={formFields['ChassisNumber']} />
+
               <Field.Text
                 name="engineVolume"
                 label={formFields['EngineVolume']}
                 type="number"
               />
+
               <Field.Select name="fuelType" label={formFields['FuelType']}>
                 {['CNG', 'G', 'D'].map((x) => (
                   <MenuItem key={x} value={x}>
                     {x}
+                  </MenuItem>
+                ))}
+              </Field.Select>
+
+              <Field.Select
+                name="transmissionType"
+                label={formFields['TransmissionType']}
+              >
+                {['A', 'M', 'CVT'].map((x) => (
+                  <MenuItem key={x} value={x}>
+                    {x}
+                  </MenuItem>
+                ))}
+              </Field.Select>
+
+              <Field.Select name="plateTypeTemp" label={formFields['PlateType']}>
+                {PLATES.map((x) => (
+                  <MenuItem key={x.value} value={x.value}>
+                    {x.title}
                   </MenuItem>
                 ))}
               </Field.Select>
@@ -242,6 +334,23 @@ export function CreateEditCarForm({
               <Field.Text
                 name="transportPrice"
                 label={formFields['TransportPrice']}
+                type="number"
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>
+                          ¥
+                        </Box>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+              />
+
+              <Field.Text
+                name="scrapCost"
+                label={formFields['ScrapCost']}
                 type="number"
                 slotProps={{
                   input: {
@@ -308,6 +417,37 @@ export function CreateEditCarForm({
                   },
                 }}
               />
+
+              <Stack direction={'row'} alignItems={'center'}>
+                <Typography variant="subtitle2" color="gray">
+                  {tCommon('car.hasInsurance')}
+                </Typography>
+                <Field.Switch name="hasInsurance" label="" />
+              </Stack>
+
+              {hasInsurance && (
+                <>
+                  <Field.Text
+                    name="insurancePolicyNumber"
+                    label={formFields['InsurancePolicyNumber']}
+                  />
+
+                  <LocalizationProvider>
+                    <Field.DatePicker
+                      name="insuranceStartDate"
+                      label={formFields['InsuranceStartDate']}
+                    />
+                  </LocalizationProvider>
+
+                  <LocalizationProvider>
+                    <Field.DatePicker
+                      name="insuranceEndDate"
+                      label={formFields['InsuranceEndDate']}
+                    />
+                  </LocalizationProvider>
+                </>
+              )}
+
               <Box sx={{ gridColumn: { xs: 'span 1', sm: 'span 2' } }}>
                 <Field.Upload
                   multiple

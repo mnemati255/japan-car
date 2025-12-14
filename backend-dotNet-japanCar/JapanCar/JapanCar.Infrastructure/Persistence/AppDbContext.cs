@@ -64,7 +64,7 @@ public partial class AppDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=185.231.115.136;Database=JapanCarDB;TrustServerCertificate=true;user id=sa;password=NewPassword@1");
+        => optionsBuilder.UseSqlServer("Server=185.231.115.136;Database=JapanCarDB;User id=sa;Password=NewPassword@1;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -131,12 +131,30 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.FuelType)
                 .HasMaxLength(100)
                 .HasComment("نوع سوخت");
+            entity.Property(e => e.HasInsurance).HasComment("وضعیت داشتن بیمه‌نامه (1 = دارد، 0 = ندارد)");
+            entity.Property(e => e.InsuranceEndDate)
+                .HasComment("تاریخ پایان اعتبار بیمه خودرو")
+                .HasColumnType("datetime");
+            entity.Property(e => e.InsurancePolicyNumber)
+                .HasMaxLength(100)
+                .HasComment("شماره بیمه‌نامه خودرو");
+            entity.Property(e => e.InsuranceStartDate)
+                .HasComment("تاریخ شروع اعتبار بیمه خودرو")
+                .HasColumnType("datetime");
+            entity.Property(e => e.ManufactureMonth).HasComment("ماه ساخت خودرو (عدد بین 1 تا 12)");
             entity.Property(e => e.Mileage).HasComment("کارکرد خودرو");
             entity.Property(e => e.ModelId).HasComment("شناسه مدل خودرو");
             entity.Property(e => e.ModifiedBy).HasComment("ویرایش شده توسط");
             entity.Property(e => e.ModifiedDate)
                 .HasComment("تاریخ ویرایش")
                 .HasColumnType("datetime");
+            entity.Property(e => e.PlateType)
+                .HasMaxLength(50)
+                .HasComment("نوع پلاک خودرو (شخصی، عمومی/کار، اجاره‌ای، صادراتی و ...)");
+            entity.Property(e => e.PlateTypeTemp).HasColumnName("PlateType_Temp");
+            entity.Property(e => e.TransmissionType)
+                .HasMaxLength(50)
+                .HasComment("نوع گیربکس خودرو (اتوماتیک، دستی، CVT و ...)");
             entity.Property(e => e.Year).HasComment("سال ساخت");
 
             entity.HasOne(d => d.Color).WithMany(p => p.Cars)
@@ -180,8 +198,14 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.ModifiedDate)
                 .HasComment("تاریخ ویرایش")
                 .HasColumnType("datetime");
+            entity.Property(e => e.PurchaseDate)
+                .HasComment("تاریخ نهایی خرید خودرو در فرآیند مزایده / معامله")
+                .HasColumnType("datetime");
             entity.Property(e => e.PurchasePrice)
                 .HasComment("قیمت خرید")
+                .HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.ScrapCost)
+                .HasComment("هزینه اسقاط خودرو در فرآیند مزایده")
                 .HasColumnType("decimal(18, 2)");
             entity.Property(e => e.TaxAmount)
                 .HasComment("مبلغ مالیات")

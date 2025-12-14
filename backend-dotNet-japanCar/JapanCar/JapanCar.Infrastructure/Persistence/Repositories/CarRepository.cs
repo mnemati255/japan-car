@@ -28,6 +28,13 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 EngineVolume = car.EngineVolume,
                 FuelType = car.FuelType,
                 Mileage = car.Mileage,
+                ManufactureMonth = car.ManufactureMonth,
+                PlateTypeTemp = car.PlateTypeTemp,
+                TransmissionType = car.TransmissionType,
+                HasInsurance = car.HasInsurance,
+                InsuranceStartDate = car.InsuranceStartDate,
+                InsuranceEndDate = car.InsuranceEndDate,
+                InsurancePolicyNumber = car.InsurancePolicyNumber,
             };
 
             foreach (var item in car.ImageUrls)
@@ -46,6 +53,8 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 FinalPrice = car.FinalPrice,
                 TransportPrice = car.TransportPrice,
                 AuctionPrice = car.AuctionPrice,
+                ScrapCost = car.ScrapCost,
+                PurchaseDate = car.PurchaseDate
             });
 
             _context.Cars.Add(newCar);
@@ -106,6 +115,15 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
 
             if (!string.IsNullOrEmpty(filterDto.FuelType))
                 query = query.Where(x => x.car.FuelType == filterDto.FuelType);
+
+            if (filterDto.Month.HasValue)
+                query = query.Where(x => x.car.ManufactureMonth == filterDto.Month);
+
+            if (!string.IsNullOrEmpty(filterDto.TransmissionType))
+                query = query.Where(x => x.car.TransmissionType == filterDto.TransmissionType);
+
+            if (filterDto.PlateTypeTemp.HasValue)
+                query = query.Where(x => x.car.PlateTypeTemp == filterDto.PlateTypeTemp);
 
             var totalCount = await query.CountAsync();
 
@@ -170,12 +188,21 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 ChassisNumber = car.ChassisNumber,
                 EngineVolume = car.EngineVolume,
                 FuelType = car.FuelType,
-                PurchasePrice = car.CarAuctionDetails.Any() ? car.CarAuctionDetails.ToList()[0].PurchasePrice : 0,
-                TaxAmount = car.CarAuctionDetails.Any() ? car.CarAuctionDetails.ToList()[0].TaxAmount : null,
-                FinalPrice = car.CarAuctionDetails.Any() ? car.CarAuctionDetails.ToList()[0].FinalPrice : null,
-                TransportPrice = car.CarAuctionDetails.Any() ? car.CarAuctionDetails.ToList()[0].TransportPrice : null,
-                AuctionPrice = car.CarAuctionDetails.Any() ? car.CarAuctionDetails.ToList()[0].AuctionPrice : null,
-                ImageUrls = car.CarImages.Any() ? car.CarImages.Select(x => x.ImageUrl).ToArray() : []
+                PurchasePrice = car.CarAuctionDetails.Any() ? car.CarAuctionDetails.First().PurchasePrice : 0,
+                TaxAmount = car.CarAuctionDetails.Any() ? car.CarAuctionDetails.First().TaxAmount : null,
+                FinalPrice = car.CarAuctionDetails.Any() ? car.CarAuctionDetails.First().FinalPrice : null,
+                TransportPrice = car.CarAuctionDetails.Any() ? car.CarAuctionDetails.First().TransportPrice : null,
+                AuctionPrice = car.CarAuctionDetails.Any() ? car.CarAuctionDetails.First().AuctionPrice : null,
+                ImageUrls = car.CarImages.Any() ? car.CarImages.Select(x => x.ImageUrl).ToArray() : [],
+                PurchaseDate = car.CarAuctionDetails.Any() ? car.CarAuctionDetails.First().PurchaseDate : null,
+                ScrapCost = car.CarAuctionDetails.Any() ? car.CarAuctionDetails.First().ScrapCost : null,
+                ManufactureMonth = car.ManufactureMonth,
+                HasInsurance = car.HasInsurance,
+                InsuranceStartDate = car.InsuranceStartDate,
+                InsuranceEndDate = car.InsuranceEndDate,
+                InsurancePolicyNumber = car.InsurancePolicyNumber,
+                PlateTypeTemp = car.PlateTypeTemp,
+                TransmissionType = car.TransmissionType
             };
         }
 
@@ -197,6 +224,13 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 entity.EngineVolume = car.EngineVolume;
                 entity.FuelType = car.FuelType;
                 entity.Mileage = car.Mileage;
+                entity.ManufactureMonth = car.ManufactureMonth;
+                entity.PlateTypeTemp = car.PlateTypeTemp;
+                entity.TransmissionType = car.TransmissionType;
+                entity.HasInsurance = car.HasInsurance;
+                entity.InsuranceStartDate = car.InsuranceStartDate;
+                entity.InsuranceEndDate = car.InsuranceEndDate;
+                entity.InsurancePolicyNumber = car.InsurancePolicyNumber;
 
                 _context.CarAuctionDetails.RemoveRange(entity.CarAuctionDetails);
                 _context.CarImages.RemoveRange(entity.CarImages);
@@ -218,7 +252,9 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                         TaxAmount = car.TaxAmount,
                         FinalPrice = car.FinalPrice,
                         TransportPrice = car.TransportPrice,
-                        AuctionPrice = car.AuctionPrice
+                        AuctionPrice = car.AuctionPrice,
+                        ScrapCost = car.ScrapCost,
+                        PurchaseDate = car.PurchaseDate
                     });
                 }
 

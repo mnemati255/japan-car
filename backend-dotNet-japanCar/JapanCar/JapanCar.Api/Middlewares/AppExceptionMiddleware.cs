@@ -37,6 +37,7 @@ namespace JapanCar.Api.Middlewares
             var response = new
             {
                 message = exception.Message,
+                details = exception.InnerException != null ? exception.InnerException.Message : "",
                 code = exception.StatusCode
             };
 

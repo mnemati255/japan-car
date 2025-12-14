@@ -20,6 +20,16 @@ export interface ICar {
   brandName?: string;
   colorName?: string;
   auctionName?: string;
+
+  manufactureMonth: number;
+  transmissionType?: string | null | undefined;
+  hasInsurance: boolean;
+  insuranceStartDate?: string;
+  insuranceEndDate?: string;
+  insurancePolicyNumber?: string;
+  plateTypeTemp?: number;
+  scrapCost?: number | null | undefined;
+  purchaseDate?: string;
 }
 
 export interface IColor {

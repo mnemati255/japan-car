@@ -14,9 +14,11 @@
     "cars": "車",
     "addCar": "車を追加",
     "noCars": "車がありません",
-    "createNew": "新しい車を作成"
+    "createNew": "新しい車を作成",
+    "hasInsurance": "この車に保険はありますか？"
   },
   "search": "検索",
+  "applyFilters": "フィルターを適用",
   "clearFilters": "フィルターをクリア",
   "auction": {
     "auction": "オークション",

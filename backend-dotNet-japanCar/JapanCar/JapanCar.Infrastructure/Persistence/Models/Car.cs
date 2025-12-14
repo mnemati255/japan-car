@@ -65,6 +65,43 @@ public partial class Car
     /// </summary>
     public int? ModifiedBy { get; set; }
 
+    /// <summary>
+    /// نوع گیربکس خودرو (اتوماتیک، دستی، CVT و ...)
+    /// </summary>
+    public string? TransmissionType { get; set; }
+
+    /// <summary>
+    /// شماره بیمه‌نامه خودرو
+    /// </summary>
+    public string? InsurancePolicyNumber { get; set; }
+
+    /// <summary>
+    /// تاریخ شروع اعتبار بیمه خودرو
+    /// </summary>
+    public DateTime? InsuranceStartDate { get; set; }
+
+    /// <summary>
+    /// تاریخ پایان اعتبار بیمه خودرو
+    /// </summary>
+    public DateTime? InsuranceEndDate { get; set; }
+
+    /// <summary>
+    /// وضعیت داشتن بیمه‌نامه (1 = دارد، 0 = ندارد)
+    /// </summary>
+    public bool HasInsurance { get; set; }
+
+    /// <summary>
+    /// ماه ساخت خودرو (عدد بین 1 تا 12)
+    /// </summary>
+    public byte? ManufactureMonth { get; set; }
+
+    /// <summary>
+    /// نوع پلاک خودرو (شخصی، عمومی/کار، اجاره‌ای، صادراتی و ...)
+    /// </summary>
+    public string? PlateType { get; set; }
+
+    public byte? PlateTypeTemp { get; set; }
+
     public virtual ICollection<CarAuctionDetail> CarAuctionDetails { get; set; } = new List<CarAuctionDetail>();
 
     public virtual ICollection<CarImage> CarImages { get; set; } = new List<CarImage>();

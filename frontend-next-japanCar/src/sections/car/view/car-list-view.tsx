@@ -34,6 +34,9 @@ const DEFAULT_FILTERS = {
   year: '',
   chasisNumber: '',
   fuelType: '',
+  month: '',
+  transmissionType:'',
+  plateTypeTemp:'',
 };
 
 // ----------------------------------------------------------------------

@@ -14,7 +14,10 @@ namespace JapanCar.Application.DTOs
         public int? ModelId { get; set; }
         public int? ColorId { get; set; }
         public int? Year { get; set; }
+        public int? Month { get; set; }
         public string? ChasisNumber { get; set; }
         public string? FuelType { get; set; }
+        public string? TransmissionType { get; set; }
+        public byte? PlateTypeTemp { get; set; }
     }
 }

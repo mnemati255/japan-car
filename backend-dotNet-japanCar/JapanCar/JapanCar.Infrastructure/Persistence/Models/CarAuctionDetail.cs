@@ -65,6 +65,16 @@ public partial class CarAuctionDetail
     /// </summary>
     public int? ModifiedBy { get; set; }
 
+    /// <summary>
+    /// هزینه اسقاط خودرو در فرآیند مزایده
+    /// </summary>
+    public decimal? ScrapCost { get; set; }
+
+    /// <summary>
+    /// تاریخ نهایی خرید خودرو در فرآیند مزایده / معامله
+    /// </summary>
+    public DateTime? PurchaseDate { get; set; }
+
     public virtual Auction? Auction { get; set; }
 
     public virtual Car Car { get; set; } = null!;

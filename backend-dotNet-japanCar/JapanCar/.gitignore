@@ -76,6 +76,7 @@ _ReSharper*/
 iisexpress/
 wwwroot/dist/
 wwwroot/lib/
+**/wwwroot/cars-images/
 
 # Docker
 **/Dockerfile.*

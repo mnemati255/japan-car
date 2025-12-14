@@ -55,5 +55,24 @@ namespace JapanCar.Domain.Entities
         public decimal? FinalPrice { get; set; }
 
         public string[] ImageUrls { get; set; } = [];
+
+        public decimal? ScrapCost { get; set; }
+
+        public DateTime? PurchaseDate { get; set; }
+
+        public byte? PlateTypeTemp { get; set; }
+
+        public byte? ManufactureMonth { get; set; }
+
+        public string? TransmissionType { get; set; }
+
+        public bool HasInsurance { get; set; }
+
+        public string? InsurancePolicyNumber { get; set; }
+
+        public DateTime? InsuranceStartDate { get; set; }
+
+        public DateTime? InsuranceEndDate { get; set; }
+
     }
 }

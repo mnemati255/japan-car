@@ -14,9 +14,11 @@
     "cars": "Cars",
     "addCar": "Add car",
     "noCars": "No cars",
-    "createNew": "Create a new car"
+    "createNew": "Create a new car",
+    "hasInsurance": "Does the car have insurance?"
   },
   "search": "Search",
+  "applyFilters": "Apply filters",
   "clearFilters": "Clear filters",
   "auction": {
     "auction": "Action",

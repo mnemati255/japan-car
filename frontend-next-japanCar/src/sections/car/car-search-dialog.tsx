@@ -1,4 +1,6 @@
 import { getBrands, getColors, getModelsOfBrand } from '@/actions/base-info';
+import { PLATES } from '@/constants/plate-types';
+import { useTranslate, useTranslateFromServer } from '@/locales';
 import { IBrand, IColor, IModel } from '@/types/car';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -29,17 +31,16 @@ export default function CarSearchDialog({
   const [models, setModels] = useState<IModel[]>([]);
   const [colors, setColors] = useState<IColor[]>([]);
   const [localFilters, setLocalFilters] = useState(filters);
-  
+  const { formFields } = useTranslateFromServer();
+  const { t: tCommon } = useTranslate('common');
+
   useEffect(() => {
     setLocalFilters(filters);
   }, [filters]);
 
   useEffect(() => {
     (async () => {
-      const [brandsRes, colorsRes] = await Promise.all([
-        getBrands(),
-        getColors(),
-      ]);
+      const [brandsRes, colorsRes] = await Promise.all([getBrands(), getColors()]);
       if (brandsRes.status === 200) setBrands(brandsRes.data.items);
       if (colorsRes.status === 200) setColors(colorsRes.data.items);
     })();
@@ -58,7 +59,7 @@ export default function CarSearchDialog({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
-      <DialogTitle>Search in cars</DialogTitle>
+      <DialogTitle>{tCommon('search')}</DialogTitle>
       <DialogContent>
         <Box
           sx={{
@@ -70,10 +71,10 @@ export default function CarSearchDialog({
           }}
         >
           <FormControl>
-            <InputLabel>Brand</InputLabel>
+            <InputLabel>{formFields['BrandName']}</InputLabel>
             <Select
               name="brandId"
-              label="Brand"
+              label={formFields['BrandName']}
               value={localFilters.brandId}
               onChange={(e) => {
                 const brandId = +e.target.value;
@@ -90,10 +91,10 @@ export default function CarSearchDialog({
           </FormControl>
 
           <FormControl>
-            <InputLabel>Model</InputLabel>
+            <InputLabel>{formFields['ModelName']}</InputLabel>
             <Select
               name="modelId"
-              label="Model"
+              label={formFields['ModelName']}
               value={localFilters.modelId}
               onChange={(e) =>
                 setLocalFilters({ ...localFilters, modelId: e.target.value })
@@ -108,10 +109,10 @@ export default function CarSearchDialog({
           </FormControl>
 
           <FormControl>
-            <InputLabel>Color</InputLabel>
+            <InputLabel>{formFields['ColorId']}</InputLabel>
             <Select
               name="colorId"
-              label="Color"
+              label={formFields['ColorId']}
               value={localFilters.colorId}
               onChange={(e) =>
                 setLocalFilters({ ...localFilters, colorId: e.target.value })
@@ -127,24 +128,34 @@ export default function CarSearchDialog({
 
           <TextField
             name="year"
-            label="Year"
+            label={formFields['Year']}
             type="number"
             value={localFilters.year}
             onChange={(e) => setLocalFilters({ ...localFilters, year: e.target.value })}
           />
+
+          <TextField
+            name="month"
+            label={formFields['ManufactureMonth']}
+            type="number"
+            value={localFilters.month}
+            onChange={(e) => setLocalFilters({ ...localFilters, month: e.target.value })}
+          />
+
           <TextField
             name="chasisNumber"
-            label="Chasis number"
+            label={formFields['ChassisNumber']}
             value={localFilters.chasisNumber}
             onChange={(e) =>
               setLocalFilters({ ...localFilters, chasisNumber: e.target.value })
             }
           />
+
           <FormControl>
-            <InputLabel>Fuel type</InputLabel>
+            <InputLabel>{formFields['FuelType']}</InputLabel>
             <Select
               name="fuelType"
-              label="Fuel type"
+              label={formFields['FuelType']}
               value={localFilters.fuelType}
               onChange={(e) =>
                 setLocalFilters({ ...localFilters, fuelType: e.target.value })
@@ -158,12 +169,48 @@ export default function CarSearchDialog({
             </Select>
           </FormControl>
 
+          <FormControl>
+            <InputLabel>{formFields['TransmissionType']}</InputLabel>
+            <Select
+              name="transmissionType"
+              label={formFields['TransmissionType']}
+              value={localFilters.transmissionType}
+              onChange={(e) =>
+                setLocalFilters({ ...localFilters, transmissionType: e.target.value })
+              }
+            >
+              {['A', 'M', 'CVT'].map((x) => (
+                <MenuItem key={x} value={x}>
+                  {x}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl>
+            <InputLabel>{formFields['PlateType']}</InputLabel>
+            <Select
+              name="plateTypeTemp"
+              label={formFields['PlateType']}
+              value={localFilters.plateTypeTemp}
+              onChange={(e) =>
+                setLocalFilters({ ...localFilters, plateTypeTemp: e.target.value })
+              }
+            >
+              {PLATES.map((x) => (
+                <MenuItem key={x.value} value={x.value}>
+                  {x.title}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
           <Button
             variant="contained"
             sx={{ gridColumn: 'span 2' }}
             onClick={() => onApplyFilters(localFilters)}
           >
-            Apply filters
+            {tCommon('applyFilters')}
           </Button>
         </Box>
       </DialogContent>
