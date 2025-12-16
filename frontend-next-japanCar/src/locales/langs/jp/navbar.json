@@ -4,7 +4,13 @@
   "cars": "車",
   "users": "ユーザー",
   "roles": "ロール",
-  "baseInfo": "基本情報",
+  "baseInfo": {
+    "title": "基本情報",
+    "brands": "ブランド",
+    "models": "モデル",
+    "colors": "色",
+    "parts": "部品"
+  },
   "list": "一覧",
   "create": "作成"
 }

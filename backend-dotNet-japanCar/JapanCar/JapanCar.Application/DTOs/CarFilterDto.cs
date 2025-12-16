@@ -18,6 +18,7 @@ namespace JapanCar.Application.DTOs
         public string? ChasisNumber { get; set; }
         public string? FuelType { get; set; }
         public string? TransmissionType { get; set; }
-        public byte? PlateTypeTemp { get; set; }
+        public byte? PlateType { get; set; }
+        public string? PlateNumber { get; set; }
     }
 }

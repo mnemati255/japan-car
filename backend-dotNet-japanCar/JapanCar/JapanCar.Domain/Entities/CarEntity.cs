@@ -60,7 +60,9 @@ namespace JapanCar.Domain.Entities
 
         public DateTime? PurchaseDate { get; set; }
 
-        public byte? PlateTypeTemp { get; set; }
+        public byte PlateType { get; set; }
+
+        public string? PlateNumber { get; set; }
 
         public byte? ManufactureMonth { get; set; }
 

@@ -1,5 +1,6 @@
 ﻿using Common.Exceptions;
 using JapanCar.Application.DTOs;
+using JapanCar.Application.Helpers;
 using JapanCar.Application.Interfaces;
 using JapanCar.Application.Models;
 using JapanCar.Common;
@@ -51,13 +52,7 @@ namespace JapanCar.Application.Services
                 Images = x.ImageUrls
             });
 
-            var totalPage = 0;
-
-            if (filterDto.Take.HasValue)
-            {
-                var tp = int.Parse(Math.Floor(decimal.Divide(entities.TotalCount, Convert.ToDecimal(filterDto.Take))).ToString());
-                totalPage = tp + 1;
-            }
+            var totalPage = filterDto.Take.HasValue ? PagingHelper.GetTotalPages(entities.TotalCount, filterDto.Take.Value) : 0;
 
             return new GridDto<CarDto>
             {
@@ -94,7 +89,8 @@ namespace JapanCar.Application.Services
                 InsuranceEndDate = !string.IsNullOrEmpty(dto.InsuranceEndDate) ? DateTime.Parse(dto.InsuranceEndDate.Split("T")[0]) : null,
                 InsurancePolicyNumber = dto.InsurancePolicyNumber,
                 TransmissionType = dto.TransmissionType,
-                PlateTypeTemp = dto.PlateTypeTemp,
+                PlateType = dto.PlateType,
+                PlateNumber = dto.PlateNumber,
                 PurchaseDate = !string.IsNullOrEmpty(dto.PurchaseDate) ? DateTime.Parse(dto.PurchaseDate.Split("T")[0]) : null
             });
         }
@@ -132,7 +128,8 @@ namespace JapanCar.Application.Services
                 InsuranceEndDate = !string.IsNullOrEmpty(dto.InsuranceEndDate) ? DateTime.Parse(dto.InsuranceEndDate.Split("T")[0]) : null,
                 InsurancePolicyNumber = dto.InsurancePolicyNumber,
                 TransmissionType = dto.TransmissionType,
-                PlateTypeTemp = dto.PlateTypeTemp,
+                PlateType = dto.PlateType,
+                PlateNumber = dto.PlateNumber,
                 PurchaseDate = !string.IsNullOrEmpty(dto.PurchaseDate) ? DateTime.Parse(dto.PurchaseDate.Split("T")[0]) : null
             });
         }
@@ -187,7 +184,7 @@ namespace JapanCar.Application.Services
                 InsuranceStartDate = car.InsuranceStartDate?.ToString(),
                 InsuranceEndDate = car.InsuranceEndDate?.ToString(),
                 InsurancePolicyNumber = car.InsurancePolicyNumber,
-                PlateTypeTemp = car.PlateTypeTemp,
+                PlateType = car.PlateType,
                 TransmissionType = car.TransmissionType
             };
         }

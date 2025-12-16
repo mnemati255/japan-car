@@ -69,9 +69,12 @@ export function PhoneInput({
     handleChangeInput('' as PhoneValue);
   }, [handleChangeInput]);
 
-  const handleSearchCountry = useCallback((inputQuery: string) => {
-    setSearchCountry(inputQuery);
-  }, []);
+  const handleSearchCountry = useCallback(
+    (inputQuery: string) => {
+      setSearchCountry(inputQuery);
+    },
+    [setSearchCountry]
+  );
 
   const handleSelectedCountry = useCallback(
     (countryCode: PhoneCountry) => {
@@ -79,7 +82,7 @@ export function PhoneInput({
       handleClearInput();
       setSelectedCountry(countryCode);
     },
-    [handleClearInput]
+    [handleClearInput, setSearchCountry, setSelectedCountry]
   );
 
   const renderSelect = () => (
@@ -92,11 +95,13 @@ export function PhoneInput({
       disabled={isCountryLocked}
       sx={{
         pl: variant === 'standard' ? 0 : 1.5,
-        ...(variant === 'standard' && hasLabel && { mt: size === 'small' ? '16px' : '20px' }),
+        ...(variant === 'standard' &&
+          hasLabel && { mt: size === 'small' ? '16px' : '20px' }),
         ...((variant === 'filled' || variant === 'outlined') && {
           mt: size === 'small' ? '8px' : '16px',
         }),
-        ...(variant === 'filled' && hasLabel && { mt: size === 'small' ? '21px' : '25px' }),
+        ...(variant === 'filled' &&
+          hasLabel && { mt: size === 'small' ? '21px' : '25px' }),
       }}
     />
   );
@@ -127,7 +132,9 @@ export function PhoneInput({
       value: normalizedValue,
       onChange: handleChangeInput,
       inputComponent: CustomInput,
-      ...(isCountryLocked ? { country: activeCountry } : { defaultCountry: activeCountry }),
+      ...(isCountryLocked
+        ? { country: activeCountry }
+        : { defaultCountry: activeCountry }),
     };
 
     return <PhoneNumberInput {...textFieldProps} {...phoneInputProps} {...other} />;
@@ -169,7 +176,9 @@ function CustomInput({ ref, ...other }: TextFieldProps) {
 
 // ----------------------------------------------------------------------
 
-function parseCountryFromPhone(inputValue?: PhoneInputProps['value']): PhoneCountry | undefined {
+function parseCountryFromPhone(
+  inputValue?: PhoneInputProps['value']
+): PhoneCountry | undefined {
   const parsed = inputValue ? parsePhoneNumber(inputValue) : undefined;
   return parsed?.country ?? undefined;
 }

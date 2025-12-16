@@ -1,10 +1,16 @@
 {
   "subheader": "Management",
   "auctions": "Auctions",
-  "cars":"Cars",
+  "cars": "Cars",
   "users": "Users",
   "roles": "Roles",
-  "baseInfo": "Base informations",
+  "baseInfo": {
+    "title": "Base informations",
+    "brands": "Brands",
+    "models": "Models",
+    "colors": "Colors",
+    "parts": "Parts"
+  },
   "list": "List",
   "create": "Create"
 }

@@ -1,7 +1,8 @@
-import { createColor, updateColor } from '@/actions/base-info';
+import { createItem, updateItem } from '@/actions/base-action';
 import { Field, Form } from '@/components/hook-form';
+import { endpoints } from '@/lib/axios';
 import messages from '@/lib/messages';
-import { LangCode, useTranslate } from '@/locales';
+import { LangCode, useTranslate, useTranslateFromServer } from '@/locales';
 import { IColor } from '@/types/car';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Button from '@mui/material/Button';
@@ -25,7 +26,8 @@ type Props = {
 };
 
 export function ColorCreateEditForm({ onClose, open, currentItem, locale }: Props) {
-  const { currentLang } = useTranslate();
+  const { currentLang, t: tCommon } = useTranslate('common');
+  const { formFields } = useTranslateFromServer();
 
   const methods = useForm({
     mode: 'all',
@@ -55,8 +57,13 @@ export function ColorCreateEditForm({ onClose, open, currentItem, locale }: Prop
   const onSubmit = handleSubmit(async (data) => {
     try {
       const api = !currentItem
-        ? createColor(data)
-        : updateColor(locale, currentItem.colorId!, data);
+        ? createItem<IColor>(endpoints.baseInfo.color, data)
+        : updateItem<IColor>(
+            endpoints.baseInfo.color,
+            currentItem.colorId!,
+            data,
+            locale
+          );
       const { status } = await api;
       if (status == 200) {
         onClose();
@@ -71,17 +78,19 @@ export function ColorCreateEditForm({ onClose, open, currentItem, locale }: Prop
       <DialogTitle>
         {currentItem
           ? locale == currentLang.value
-            ? 'Update color'
-            : 'Translation'
-          : 'Create color'}
+            ? `${tCommon('update')} ${tCommon('baseInfo.color')}`
+            : tCommon('translation')
+          : `${tCommon('create')} ${tCommon('baseInfo.color')}`}
       </DialogTitle>
       <Form methods={methods} onSubmit={onSubmit}>
         <DialogContent sx={{ py: 3 }}>
-          <Field.Text name="colorName" label="Color name" />
+          <Field.Text name="colorName" label={formFields['ColorName']} />
 
           <Stack sx={{ alignItems: 'end', mt: 3 }}>
             <Button type="submit" variant="contained" loading={isSubmitting}>
-              {!currentItem ? 'Create color' : 'Save changes'}
+              {!currentItem
+                ? `${tCommon('create')} ${tCommon('baseInfo.color')}`
+                : tCommon('save')}
             </Button>
           </Stack>
         </DialogContent>

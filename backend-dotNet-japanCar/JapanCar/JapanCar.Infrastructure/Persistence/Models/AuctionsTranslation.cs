@@ -30,4 +30,6 @@ public partial class AuctionsTranslation
     public decimal? AuctionFee { get; set; }
 
     public virtual Auction Auction { get; set; } = null!;
+
+    public virtual Language Language { get; set; } = null!;
 }

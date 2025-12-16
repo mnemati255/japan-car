@@ -11,16 +11,6 @@ public partial class Part
     public int PartId { get; set; }
 
     /// <summary>
-    /// نام قطعه
-    /// </summary>
-    public string PartName { get; set; } = null!;
-
-    /// <summary>
-    /// توضیحات قطعه
-    /// </summary>
-    public string? PartDescription { get; set; }
-
-    /// <summary>
     /// قیمت قطعه
     /// </summary>
     public decimal PartPrice { get; set; }
@@ -45,9 +35,11 @@ public partial class Part
     /// </summary>
     public int? ModifiedBy { get; set; }
 
-    public virtual ICollection<CarRepairHistory> CarRepairHistories { get; set; } = new List<CarRepairHistory>();
+    public virtual ICollection<CarPart> CarParts { get; set; } = new List<CarPart>();
 
     public virtual User? CreatedByNavigation { get; set; }
 
     public virtual User? ModifiedByNavigation { get; set; }
+
+    public virtual ICollection<PartTranslation> PartTranslations { get; set; } = new List<PartTranslation>();
 }

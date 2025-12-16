@@ -16,6 +16,12 @@ namespace JapanCar.Application.Interfaces
         IBaseInfoRepository BaseInfoRepository { get; }
         ILanguageRepository LanguageRepository { get; }
         ITranslationRepository GenericTranslationRepository { get; }
-        Task<int> CompleteAsync();
+        IPartRepository PartRepository { get; }
+        IRepairRepository RepairRepository { get; }
+        IMechanicRepository MechanicRepository { get; }
+        ICarPartRepository CarPartRepository { get; }
+
+        Task ExecuteInTransactionAsync(Func<Task> action);
+        Task<int> SaveChangesAsync();
     }
 }

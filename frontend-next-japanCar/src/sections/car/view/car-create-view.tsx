@@ -15,7 +15,7 @@ type Props = {
   auctionId: number;
 };
 
-export function CreateCarView({ auctionId }: Props) {
+export function CarCreateView({ auctionId }: Props) {
   const [colors, setColors] = useState<IColor[]>([]);
   const [brands, setBrands] = useState<IBrand[]>([]);
   const { t: tCommon } = useTranslate('common');

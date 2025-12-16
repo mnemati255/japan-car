@@ -20,14 +20,14 @@ export interface ICar {
   brandName?: string;
   colorName?: string;
   auctionName?: string;
-
   manufactureMonth: number;
   transmissionType?: string | null | undefined;
   hasInsurance: boolean;
   insuranceStartDate?: string;
   insuranceEndDate?: string;
   insurancePolicyNumber?: string;
-  plateTypeTemp?: number;
+  plateType?: number;
+  plateNumber?: string;
   scrapCost?: number | null | undefined;
   purchaseDate?: string;
 }

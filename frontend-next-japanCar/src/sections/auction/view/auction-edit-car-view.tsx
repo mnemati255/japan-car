@@ -5,11 +5,12 @@ import { DashboardContent } from '@/layouts/dashboard';
 import { CustomBreadcrumbs } from '@/components/custom-breadcrumbs';
 import { useEffect, useState } from 'react';
 import { IBrand, ICar, IColor } from '@/types/car';
-import { getBrands, getColors } from '@/actions/base-info';
-import { getCarById } from '@/actions/car';
 import { convertUrlToFile } from '@/utils/convert-url-to-file';
 import { CONFIG } from '@/global-config';
 import { CreateEditCarForm } from '@/sections/car/car-create-edit-form';
+import { getItemById, getItems } from '@/actions/base-action';
+import { IGrid } from '@/types/common';
+import { endpoints } from '@/lib/axios';
 
 // ----------------------------------------------------------------------
 
@@ -25,13 +26,13 @@ export function AuctionEditCarView({ auctionId, carId }: Props) {
   const [files, setFiles] = useState<File[]>([]);
 
   useEffect(() => {
-    console.log(333)
+    console.log(333);
     if (auctionId) {
       (async () => {
         const [brandsRes, colorsRes, carRes] = await Promise.all([
-          getBrands(),
-          getColors(),
-          getCarById(carId),
+          getItems<IGrid<IBrand>>(endpoints.baseInfo.brand),
+          getItems<IGrid<IColor>>(endpoints.baseInfo.color),
+          getItemById<ICar>(endpoints.car, carId)
         ]);
         if (brandsRes.status == 200) setBrands(brandsRes.data.items);
         if (colorsRes.status == 200) setColors(colorsRes.data.items);

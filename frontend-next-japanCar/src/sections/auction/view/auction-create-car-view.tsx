@@ -5,9 +5,11 @@ import { DashboardContent } from '@/layouts/dashboard';
 import { CustomBreadcrumbs } from '@/components/custom-breadcrumbs';
 import { useEffect, useState } from 'react';
 import { IBrand, IColor } from '@/types/car';
-import { getBrands, getColors } from '@/actions/base-info';
 import { CreateEditCarForm } from '@/sections/car/car-create-edit-form';
 import { useTranslate } from '@/locales';
+import { getItems } from '@/actions/base-action';
+import { endpoints } from '@/lib/axios';
+import { IGrid } from '@/types/common';
 
 // ----------------------------------------------------------------------
 
@@ -23,8 +25,8 @@ export function AuctionCreateCarView({ auctionId }: Props) {
   useEffect(() => {
     (async () => {
       const [brandsRes, colorsRes] = await Promise.all([
-        getBrands(),
-        getColors(),
+        getItems<IGrid<IBrand>>(endpoints.baseInfo.brand),
+        getItems<IGrid<IColor>>(endpoints.baseInfo.color),
       ]);
       if(brandsRes.status == 200) setBrands(brandsRes.data.items);
       if(colorsRes.status == 200) setColors(colorsRes.data.items);

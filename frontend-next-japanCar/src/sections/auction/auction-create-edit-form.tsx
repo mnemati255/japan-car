@@ -32,7 +32,7 @@ type Props = {
 export function AuctionCreateEditForm({ currentAuction, lang }: Props) {
   const router = useRouter();
   const { t: tCommon } = useTranslate('common');
-  const { formFields } = useTranslateFromServer();
+  const { formFields, systemMessages } = useTranslateFromServer();
 
   const AuctionCreateSchema = z.object({
     auctionName: z.string().min(1, { error: messages.required() }),
@@ -74,7 +74,11 @@ export function AuctionCreateEditForm({ currentAuction, lang }: Props) {
 
       const { status } = await api;
       if (status == 200) {
-        toast.success(currentAuction ? 'Update success!' : 'Create success!');
+        toast.success(
+          currentAuction
+            ? systemMessages['update_success']
+            : systemMessages['create_success']
+        );
         router.push(paths.dashboard.auction.root);
       }
     } catch (error) {

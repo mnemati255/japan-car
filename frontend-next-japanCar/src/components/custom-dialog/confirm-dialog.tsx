@@ -5,6 +5,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import { useTranslate } from '@/locales';
 
 // ----------------------------------------------------------------------
 
@@ -16,6 +17,8 @@ export function ConfirmDialog({
   onClose,
   ...other
 }: ConfirmDialogProps) {
+  const { t: tCommon } = useTranslate('common');
+
   return (
     <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose} {...other}>
       <DialogTitle sx={{ pb: 2 }}>{title}</DialogTitle>
@@ -26,7 +29,7 @@ export function ConfirmDialog({
         {action}
 
         <Button variant="outlined" color="inherit" onClick={onClose}>
-          Cancel
+          {tCommon('cancel')}
         </Button>
       </DialogActions>
     </Dialog>

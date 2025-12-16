@@ -5,22 +5,25 @@ import Tooltip from '@mui/material/Tooltip';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
+import { RouterLink } from '@/routes/components';
 import { Iconify } from '@/components/iconify';
 import { ConfirmDialog } from '@/components/custom-dialog';
-import { IBrand } from '@/types/car';
-import { allLangs, LangCode, useTranslate } from '@/locales';
+import { paths } from '@/routes/paths';
+import { useState } from 'react';
+import { allLangs, useTranslate } from '@/locales';
+import { IRepair } from '@/types/repair';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: IBrand;
-  onDeleteRow: () => void;
-  onShowEditDialog: (locale?: LangCode) => void;
+  row: IRepair;
+  onDeleteRow: () => Promise<void>;
 };
 
-export function BrandTableRow({ row, onDeleteRow, onShowEditDialog }: Props) {
+export function RepairTableRow({ row, onDeleteRow }: Props) {
   const confirmDialog = useBoolean();
-  const { currentLang, t: tCommon } = useTranslate('common');
+  const [loading, setLoading] = useState(false);
+  const { t: tCommon, currentLang } = useTranslate('common');
 
   const renderConfirmDialog = () => (
     <ConfirmDialog
@@ -32,8 +35,10 @@ export function BrandTableRow({ row, onDeleteRow, onShowEditDialog }: Props) {
         <Button
           variant="contained"
           color="error"
-          onClick={() => {
-            onDeleteRow();
+          loading={loading}
+          onClick={async () => {
+            setLoading(true);
+            await onDeleteRow();
             confirmDialog.onFalse();
           }}
         >
@@ -45,24 +50,37 @@ export function BrandTableRow({ row, onDeleteRow, onShowEditDialog }: Props) {
 
   return (
     <>
-      <TableRow key={row.brandId}>
-        <TableCell>{row.brandName}</TableCell>
+      <TableRow>
+        <TableCell>{row.repairDate}</TableCell>
+        <TableCell>{row.mechanicName}</TableCell>
         <TableCell>{row.createdAt?.split('T')[0]}</TableCell>
+
         <TableCell>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             {allLangs
               .filter((x) => x.value !== currentLang.value)
               .map((x, i) => (
                 <Tooltip key={`lng_${i}`} title={x.label} placement="top" arrow>
-                  <IconButton onClick={() => onShowEditDialog(x.value)}>
-                    <Iconify icon="custom:translation" />
-                  </IconButton>
+                  <RouterLink
+                    href={`${paths.dashboard.car.editRepair(
+                      row.carId,
+                      row.repairId!
+                    )}?lang=${x.value}`}
+                  >
+                    <IconButton>
+                      <Iconify icon="custom:translation" />
+                    </IconButton>
+                  </RouterLink>
                 </Tooltip>
               ))}
             <Tooltip title="Edit" placement="top" arrow>
-              <IconButton color="warning" onClick={() => onShowEditDialog()}>
-                <Iconify icon="solar:pen-bold" />
-              </IconButton>
+              <RouterLink
+                href={paths.dashboard.car.editRepair(row.carId!, row.repairId!)}
+              >
+                <IconButton color="warning">
+                  <Iconify icon="solar:pen-bold" />
+                </IconButton>
+              </RouterLink>
             </Tooltip>
             <Tooltip title="Delete" placement="top" arrow>
               <IconButton color="error" onClick={confirmDialog.onTrue}>
@@ -72,7 +90,6 @@ export function BrandTableRow({ row, onDeleteRow, onShowEditDialog }: Props) {
           </Box>
         </TableCell>
       </TableRow>
-
       {renderConfirmDialog()}
     </>
   );

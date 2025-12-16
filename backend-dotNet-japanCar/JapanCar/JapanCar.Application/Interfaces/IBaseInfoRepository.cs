@@ -23,8 +23,8 @@ namespace JapanCar.Application.Interfaces
         Task UpdateBrand(int languageId, int id, CarBrandEntity entity);
         Task UpdateColor(int languageId, int id, CarColorEntity entity);
         Task UpdateModel(int languageId, int id, CarModelEntity entity);
-        Task DeleteBrand(int id);
-        Task DeleteColor(int id);
-        Task DeleteModel(int id);
+        Task<bool> DeleteBrand(int id);
+        Task<bool> DeleteColor(int id);
+        Task<bool> DeleteModel(int id);
     }
 }

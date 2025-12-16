@@ -27,12 +27,16 @@ export function getFormFields(locale: LangCode): Record<FieldNameType, string> {
   return result;
 }
 
-export function getSystemMessages(locale: LangCode) {
+export function getSystemMessages(locale: LangCode): Record<FieldNameType, string> {
   const translations = getTranslations().filter(
     (x) => x.category === 'SystemMessage' && x.languageCode == locale
   );
-  return translations.map((x) => ({
-    fieldName: x.fieldName,
-    translatedValue: x.translatedValue,
-  }));
+
+  const result: Record<FieldNameType, string> = {} as Record<FieldNameType, string>;
+
+  translations.forEach((x) => {
+    result[x.fieldName] = x.translatedValue || x.fieldName;
+  });
+
+  return result;
 }

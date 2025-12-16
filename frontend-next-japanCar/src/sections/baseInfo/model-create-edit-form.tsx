@@ -1,8 +1,10 @@
-import { createModel, getBrands, updateModel } from '@/actions/base-info';
+import { createItem, getItems, updateItem } from '@/actions/base-action';
 import { Field, Form } from '@/components/hook-form';
+import { endpoints } from '@/lib/axios';
 import messages from '@/lib/messages';
-import { LangCode, useTranslate } from '@/locales';
+import { LangCode, useTranslate, useTranslateFromServer } from '@/locales';
 import { IBrand, IModel } from '@/types/car';
+import { IGrid } from '@/types/common';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -27,12 +29,13 @@ type Props = {
 };
 
 export function ModelCreateEditForm({ onClose, open, currentItem, locale }: Props) {
-  const { currentLang } = useTranslate();
   const [brands, setBrands] = useState<IBrand[]>([]);
+  const { currentLang, t: tCommon } = useTranslate('common');
+  const { formFields } = useTranslateFromServer();
 
   useEffect(() => {
     const getAllBrands = async () => {
-      const { status, data } = await getBrands();
+      const { status, data } = await getItems<IGrid<IBrand>>(endpoints.baseInfo.brand);
       if (status == 200) {
         setBrands(data.items);
       }
@@ -63,14 +66,19 @@ export function ModelCreateEditForm({ onClose, open, currentItem, locale }: Prop
         reset({ modelName: '', brandId: '' });
       }, 300);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ open, reset]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
       const api = !currentItem
-        ? createModel(data)
-        : updateModel(locale, currentItem.modelId!, data);
+        ? createItem<IModel>(endpoints.baseInfo.model, data)
+        : updateItem<IModel>(
+            endpoints.baseInfo.model,
+            currentItem.modelId!,
+            data,
+            locale
+          );
       const { status } = await api;
       if (status == 200) {
         onClose();
@@ -85,24 +93,26 @@ export function ModelCreateEditForm({ onClose, open, currentItem, locale }: Prop
       <DialogTitle>
         {currentItem
           ? locale == currentLang.value
-            ? 'Update model'
-            : 'Translation'
-          : 'Create model'}
+            ? `${tCommon('update')} ${tCommon('baseInfo.model')}`
+            : tCommon('translation')
+          : `${tCommon('create')} ${tCommon('baseInfo.model')}`}
       </DialogTitle>
       <Form methods={methods} onSubmit={onSubmit}>
         <DialogContent sx={{ py: 3, rowGap: 3, display: 'grid' }}>
-          <Field.Select name="brandId" label="Brand">
+          <Field.Select name="brandId" label={formFields['BrandName']}>
             {brands.map((x) => (
               <MenuItem key={x.brandId} value={x.brandId}>
                 {x.brandName}
               </MenuItem>
             ))}
           </Field.Select>
-          <Field.Text name="modelName" label="Model name" />
+          <Field.Text name="modelName" label={formFields['ModelName']} />
 
           <Stack sx={{ alignItems: 'end', mt: 3 }}>
             <Button type="submit" variant="contained" loading={isSubmitting}>
-              {!currentItem ? 'Create model' : 'Save changes'}
+              {!currentItem
+                ? `${tCommon('create')} ${tCommon('baseInfo.model')}`
+                : tCommon('save')}
             </Button>
           </Stack>
         </DialogContent>

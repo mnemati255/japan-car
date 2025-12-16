@@ -20,6 +20,10 @@ namespace JapanCar.Infrastructure
         public IBaseInfoRepository BaseInfoRepository { get; private set; }
         public ILanguageRepository LanguageRepository { get; private set; }
         public ITranslationRepository GenericTranslationRepository { get; private set; }
+        public IPartRepository PartRepository { get; private set; }
+        public IRepairRepository RepairRepository { get; private set; }
+        public IMechanicRepository MechanicRepository { get; private set; }
+        public ICarPartRepository CarPartRepository { get; private set; }
 
 
         public UnitOfWork(AppDbContext context)
@@ -32,12 +36,37 @@ namespace JapanCar.Infrastructure
             BaseInfoRepository = new BaseInfoRepository(_context);
             LanguageRepository = new LanguageRepository(_context);
             GenericTranslationRepository = new TranslationRepository(_context);
+            PartRepository = new PartRepository(_context);
+            RepairRepository = new RepairRepository(_context);
+            MechanicRepository = new MechanicRepository(_context);
+            CarPartRepository = new CarPartRepository(_context);
         }
 
-        public async Task<int> CompleteAsync()
+
+        public async Task ExecuteInTransactionAsync(Func<Task> action)
+        {
+            await using var transaction =
+                await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                await action();
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+
+        public async Task<int> SaveChangesAsync()
         {
             return await _context.SaveChangesAsync();
         }
+
 
         public void Dispose()
         {

@@ -81,9 +81,9 @@ public partial class Car
     public DateTime? InsuranceStartDate { get; set; }
 
     /// <summary>
-    /// تاریخ پایان اعتبار بیمه خودرو
+    /// تاریخ انقضای بیمه خودرو
     /// </summary>
-    public DateTime? InsuranceEndDate { get; set; }
+    public DateTime? InsuranceExpireDate { get; set; }
 
     /// <summary>
     /// وضعیت داشتن بیمه‌نامه (1 = دارد، 0 = ندارد)
@@ -98,9 +98,12 @@ public partial class Car
     /// <summary>
     /// نوع پلاک خودرو (شخصی، عمومی/کار، اجاره‌ای، صادراتی و ...)
     /// </summary>
-    public string? PlateType { get; set; }
+    public byte PlateType { get; set; }
 
-    public byte? PlateTypeTemp { get; set; }
+    /// <summary>
+    /// Vehicle plate number (may include letters and numbers)
+    /// </summary>
+    public string? PlateNumber { get; set; }
 
     public virtual ICollection<CarAuctionDetail> CarAuctionDetails { get; set; } = new List<CarAuctionDetail>();
 

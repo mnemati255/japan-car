@@ -1,7 +1,8 @@
-import { createBrand, updateBrand } from '@/actions/base-info';
+import { createItem, updateItem } from '@/actions/base-action';
 import { Field, Form } from '@/components/hook-form';
+import { endpoints } from '@/lib/axios';
 import messages from '@/lib/messages';
-import { LangCode, useTranslate } from '@/locales';
+import { LangCode, useTranslate, useTranslateFromServer } from '@/locales';
 import { IBrand } from '@/types/car';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Button from '@mui/material/Button';
@@ -25,7 +26,8 @@ type Props = {
 };
 
 export function BrandCreateEditForm({ onClose, open, currentItem, locale }: Props) {
-  const { currentLang } = useTranslate();
+  const { currentLang, t: tCommon } = useTranslate('common');
+  const { formFields } = useTranslateFromServer();
 
   const methods = useForm({
     mode: 'all',
@@ -55,8 +57,13 @@ export function BrandCreateEditForm({ onClose, open, currentItem, locale }: Prop
   const onSubmit = handleSubmit(async (data) => {
     try {
       const api = !currentItem
-        ? createBrand(data)
-        : updateBrand(locale, currentItem.brandId!, data);
+        ? createItem<IBrand>(endpoints.baseInfo.brand, data)
+        : updateItem<IBrand>(
+            endpoints.baseInfo.brand,
+            currentItem.brandId!,
+            data,
+            locale
+          );
       const { status } = await api;
       if (status == 200) {
         onClose();
@@ -71,17 +78,19 @@ export function BrandCreateEditForm({ onClose, open, currentItem, locale }: Prop
       <DialogTitle>
         {currentItem
           ? locale == currentLang.value
-            ? 'Update brand'
-            : 'Translation'
-          : 'Create brand'}
+            ? `${tCommon('update')} ${tCommon('baseInfo.brand')}`
+            : tCommon('translation')
+          : `${tCommon('create')} ${tCommon('baseInfo.brand')}`}
       </DialogTitle>
       <Form methods={methods} onSubmit={onSubmit}>
         <DialogContent sx={{ py: 3 }}>
-          <Field.Text name="brandName" label="Brand name" />
+          <Field.Text name="brandName" label={formFields['BrandName']} />
 
           <Stack sx={{ alignItems: 'end', mt: 3 }}>
             <Button type="submit" variant="contained" loading={isSubmitting}>
-              {!currentItem ? 'Create brand' : 'Save changes'}
+              {!currentItem
+                ? `${tCommon('create')} ${tCommon('baseInfo.brand')}`
+                : tCommon('save')}
             </Button>
           </Stack>
         </DialogContent>

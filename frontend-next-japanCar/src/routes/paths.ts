@@ -84,6 +84,10 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/car`,
       new: `${ROOTS.DASHBOARD}/car/new`,
       edit: (id: number) => `${ROOTS.DASHBOARD}/car/${id}/edit`,
+      repair: (id: number) => `${ROOTS.DASHBOARD}/car/${id}/repair`,
+      newRepair: (id: number) => `${ROOTS.DASHBOARD}/car/${id}/repair/new`,
+      editRepair: (carId: number, repairId: number) =>
+        `${ROOTS.DASHBOARD}/car/${carId}/repair/${repairId}/edit`,
     },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
@@ -97,6 +101,11 @@ export const paths = {
     },
     baseInfo: {
       root: `${ROOTS.DASHBOARD}/baseInfo`,
+      brand: `${ROOTS.DASHBOARD}/baseInfo/brand`,
+      model: `${ROOTS.DASHBOARD}/baseInfo/model`,
+      color: `${ROOTS.DASHBOARD}/baseInfo/color`,
+      part: `${ROOTS.DASHBOARD}/baseInfo/part`,
+      mechanic: `${ROOTS.DASHBOARD}/baseInfo/mechanic`,
     },
     // product: {
     //   root: `${ROOTS.DASHBOARD}/product`,

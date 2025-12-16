@@ -29,11 +29,11 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 FuelType = car.FuelType,
                 Mileage = car.Mileage,
                 ManufactureMonth = car.ManufactureMonth,
-                PlateTypeTemp = car.PlateTypeTemp,
+                PlateType = car.PlateType,
                 TransmissionType = car.TransmissionType,
                 HasInsurance = car.HasInsurance,
                 InsuranceStartDate = car.InsuranceStartDate,
-                InsuranceEndDate = car.InsuranceEndDate,
+                InsuranceExpireDate = car.InsuranceEndDate,
                 InsurancePolicyNumber = car.InsurancePolicyNumber,
             };
 
@@ -63,13 +63,15 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task Delete(int id)
+        public async Task<bool> Delete(int id)
         {
             var car = await _context.Cars
                 .Include(x => x.CarAuctionDetails)
                 .Include(x => x.CarImages)
-                .Where(x => x.CarId == id)
-                .SingleAsync();
+                .FirstOrDefaultAsync(x => x.CarId == id);
+
+            if (car == null)
+                return false;
 
             _context.CarAuctionDetails.RemoveRange(car.CarAuctionDetails);
 
@@ -78,6 +80,8 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
             _context.Cars.Remove(car);
 
             await _context.SaveChangesAsync();
+
+            return true;
         }
 
 
@@ -122,8 +126,11 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
             if (!string.IsNullOrEmpty(filterDto.TransmissionType))
                 query = query.Where(x => x.car.TransmissionType == filterDto.TransmissionType);
 
-            if (filterDto.PlateTypeTemp.HasValue)
-                query = query.Where(x => x.car.PlateTypeTemp == filterDto.PlateTypeTemp);
+            if (filterDto.PlateType.HasValue)
+                query = query.Where(x => x.car.PlateType == filterDto.PlateType);
+
+            if (!string.IsNullOrEmpty(filterDto.PlateNumber))
+                query = query.Where(x => !string.IsNullOrEmpty(x.car.PlateNumber) && x.car.PlateNumber.Contains(filterDto.PlateNumber));
 
             var totalCount = await query.CountAsync();
 
@@ -199,9 +206,10 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 ManufactureMonth = car.ManufactureMonth,
                 HasInsurance = car.HasInsurance,
                 InsuranceStartDate = car.InsuranceStartDate,
-                InsuranceEndDate = car.InsuranceEndDate,
+                InsuranceEndDate = car.InsuranceExpireDate,
                 InsurancePolicyNumber = car.InsurancePolicyNumber,
-                PlateTypeTemp = car.PlateTypeTemp,
+                PlateType = car.PlateType,
+                PlateNumber = car.PlateNumber,
                 TransmissionType = car.TransmissionType
             };
         }
@@ -225,11 +233,12 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 entity.FuelType = car.FuelType;
                 entity.Mileage = car.Mileage;
                 entity.ManufactureMonth = car.ManufactureMonth;
-                entity.PlateTypeTemp = car.PlateTypeTemp;
+                entity.PlateType = car.PlateType;
+                entity.PlateNumber = car.PlateNumber;
                 entity.TransmissionType = car.TransmissionType;
                 entity.HasInsurance = car.HasInsurance;
                 entity.InsuranceStartDate = car.InsuranceStartDate;
-                entity.InsuranceEndDate = car.InsuranceEndDate;
+                entity.InsuranceExpireDate = car.InsuranceEndDate;
                 entity.InsurancePolicyNumber = car.InsurancePolicyNumber;
 
                 _context.CarAuctionDetails.RemoveRange(entity.CarAuctionDetails);

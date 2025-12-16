@@ -36,7 +36,8 @@ const DEFAULT_FILTERS = {
   fuelType: '',
   month: '',
   transmissionType:'',
-  plateTypeTemp:'',
+  plateType:'',
+  plateNumber:'',
 };
 
 // ----------------------------------------------------------------------
@@ -45,7 +46,7 @@ type Props = {
   auctionId?: number;
 };
 
-export function CarsListView({ auctionId }: Props) {
+export function CarListView({ auctionId }: Props) {
   const { formFields } = useTranslateFromServer();
   
   const TABLE_HEAD: TableHeadCellProps[] = [

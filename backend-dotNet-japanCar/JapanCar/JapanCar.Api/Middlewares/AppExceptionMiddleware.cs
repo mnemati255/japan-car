@@ -51,7 +51,8 @@ namespace JapanCar.Api.Middlewares
 
             var response = new
             {
-                message = exception.Message
+                message = exception.Message,
+                details = exception.InnerException != null ? exception.InnerException.Message : "",
             };
 
             return context.Response.WriteAsync(JsonSerializer.Serialize(response));

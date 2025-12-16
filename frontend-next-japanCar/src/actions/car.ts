@@ -79,7 +79,8 @@ export async function createEditCar(
   fd.append('dto.dto.ScrapCost', car.scrapCost?.toString() ?? "");
   fd.append('dto.dto.ManufactureMonth', car.manufactureMonth.toString());
   fd.append('dto.dto.TransmissionType', car.transmissionType ?? "");
-  fd.append('dto.dto.PlateTypeTemp', car.plateTypeTemp?.toString() ?? "");
+  fd.append('dto.dto.PlateType', car.plateType?.toString() ?? "");
+  fd.append('dto.dto.PlateNumber', car.plateNumber ?? "");
   fd.append('dto.dto.PurchaseDate', car.purchaseDate ?? "");
   fd.append('dto.dto.HasInsurance', car.hasInsurance.toString());
   fd.append('dto.dto.InsuranceStartDate', car.insuranceStartDate ?? "");

@@ -23,7 +23,7 @@ public partial class Auction
     /// <summary>
     /// ایجاد شده توسط
     /// </summary>
-    public int? CreatedBy { get; set; }
+    public int CreatedBy { get; set; }
 
     /// <summary>
     /// ویرایش شده توسط
@@ -34,7 +34,7 @@ public partial class Auction
 
     public virtual ICollection<CarAuctionDetail> CarAuctionDetails { get; set; } = new List<CarAuctionDetail>();
 
-    public virtual User? CreatedByNavigation { get; set; }
+    public virtual User CreatedByNavigation { get; set; } = null!;
 
     public virtual User? ModifiedByNavigation { get; set; }
 }

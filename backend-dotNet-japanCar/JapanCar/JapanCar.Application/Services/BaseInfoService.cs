@@ -185,7 +185,9 @@ namespace JapanCar.Application.Services
 
         public async Task DeleteBrand(int brandId)
         {
-            await _unitOfWork.BaseInfoRepository.DeleteBrand(brandId);
+            var deleted = await _unitOfWork.BaseInfoRepository.DeleteBrand(brandId);
+            if (!deleted)
+                throw new AppException("Not found.", System.Net.HttpStatusCode.NotFound);
         }
 
 
@@ -217,7 +219,9 @@ namespace JapanCar.Application.Services
 
         public async Task DeleteColor(int colorId)
         {
-            await _unitOfWork.BaseInfoRepository.DeleteColor(colorId);
+            var deleted = await _unitOfWork.BaseInfoRepository.DeleteColor(colorId);
+            if (!deleted)
+                throw new AppException("Not found.", System.Net.HttpStatusCode.NotFound);
         }
 
 
@@ -251,7 +255,9 @@ namespace JapanCar.Application.Services
 
         public async Task DeleteModel(int modelId)
         {
-            await _unitOfWork.BaseInfoRepository.DeleteModel(modelId);
+            var deleted = await _unitOfWork.BaseInfoRepository.DeleteModel(modelId);
+            if (!deleted)
+                throw new AppException("Not found.", System.Net.HttpStatusCode.NotFound);
         }
     }
 }

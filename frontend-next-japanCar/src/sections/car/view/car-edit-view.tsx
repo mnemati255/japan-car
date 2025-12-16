@@ -18,7 +18,7 @@ type Props = {
   carId: number;
 };
 
-export function EditCarView({ carId }: Props) {
+export function CarEditView({ carId }: Props) {
   const [currentCar, setCurrentCar] = useState<ICar | null>(null);
   const [colors, setColors] = useState<IColor[]>([]);
   const [brands, setBrands] = useState<IBrand[]>([]);
@@ -63,7 +63,7 @@ export function EditCarView({ carId }: Props) {
         links={[
           { name: tCommon('dashboard'), href: paths.dashboard.root },
           { name: tCommon('car.cars'), href: paths.dashboard.car.root },
-          { name: `${formFields['ChassisNumber']} : ${currentCar?.chasisNumber}` },
+          { name: `${formFields['ChassisNumber']} : ${currentCar?.chasisNumber ?? ''}` },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />

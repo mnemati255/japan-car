@@ -51,7 +51,7 @@ export function NavVertical({
           data={data}
           cssVars={cssVars}
           checkPermissions={checkPermissions}
-          sx={{ px: 2, flex: '1 1 auto' }}
+          sx={{ px: 2, flex: '1 1 auto', height: '80vh' }}
         />
       </Scrollbar>
     </>
@@ -88,7 +88,11 @@ export function NavVertical({
     <NavRoot
       isNavMini={isNavMini}
       layoutQuery={layoutQuery}
-      className={mergeClasses([layoutClasses.nav.root, layoutClasses.nav.vertical, className])}
+      className={mergeClasses([
+        layoutClasses.nav.root,
+        layoutClasses.nav.vertical,
+        className,
+      ])}
       sx={sx}
       {...other}
     >
@@ -121,8 +125,13 @@ const NavRoot = styled('div', {
     flexDirection: 'column',
     zIndex: 'var(--layout-nav-zIndex)',
     backgroundColor: 'var(--layout-nav-bg)',
-    width: isNavMini ? 'var(--layout-nav-mini-width)' : 'var(--layout-nav-vertical-width)',
-    borderRight: `1px solid var(--layout-nav-border-color, ${varAlpha(theme.vars.palette.grey['500Channel'], 0.12)})`,
+    width: isNavMini
+      ? 'var(--layout-nav-mini-width)'
+      : 'var(--layout-nav-vertical-width)',
+    borderRight: `1px solid var(--layout-nav-border-color, ${varAlpha(
+      theme.vars.palette.grey['500Channel'],
+      0.12
+    )})`,
     transition: theme.transitions.create(['width'], {
       easing: 'var(--layout-transition-easing)',
       duration: 'var(--layout-transition-duration)',

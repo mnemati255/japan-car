@@ -49,7 +49,7 @@ export function CreateEditCarForm({
   }));
 
   const router = useRouter();
-  const { formFields } = useTranslateFromServer();
+  const { formFields, systemMessages } = useTranslateFromServer();
   const { t: tCommon } = useTranslate('common');
   const [models, setModels] = useState<IModel[]>([]);
 
@@ -62,7 +62,10 @@ export function CreateEditCarForm({
         .number()
         .min(1900, { error: messages.invalid() })
         .max(9999, { error: messages.invalid() }),
-      mileage: z.coerce.number().min(1, { error: messages.required() }),
+      mileage: z.preprocess((val) => {
+        if (val === '' || val === null || val === undefined) return undefined;
+        return Number(val);
+      }, z.number({ error: messages.required() })),
       chasisNumber: z.string().min(1, { error: messages.required() }),
       purchasePrice: z.coerce.number().min(1, { error: messages.required() }),
       transportPrice: z.coerce.number().nullable().optional(),
@@ -81,7 +84,8 @@ export function CreateEditCarForm({
         .min(1, { error: messages.invalid() })
         .max(12, { error: messages.invalid() }),
       transmissionType: z.string().nullable().optional(),
-      plateTypeTemp: z.coerce.number(),
+      plateType: z.coerce.number().min(1, { error: messages.required() }),
+      plateNumber: z.string(),
       purchaseDate: z.string(),
       hasInsurance: z.boolean({ error: messages.required() }),
       insuranceStartDate: z.string().optional(),
@@ -134,7 +138,8 @@ export function CreateEditCarForm({
       images: [],
       manufactureMonth: currentCar?.manufactureMonth ?? '',
       transmissionType: currentCar?.transmissionType ?? '',
-      plateTypeTemp: currentCar?.plateTypeTemp ?? '',
+      plateType: currentCar?.plateType ?? '',
+      plateNumber: currentCar?.plateNumber ?? '',
       purchaseDate: currentCar?.purchaseDate ?? '',
       hasInsurance: currentCar?.hasInsurance ?? false,
       insuranceStartDate: currentCar?.insuranceStartDate ?? '',
@@ -204,7 +209,9 @@ export function CreateEditCarForm({
         currentCar ? currentCar.carId! : null
       );
       if (status == 200) {
-        toast.success(currentCar ? 'Update success!' : 'Create success!');
+        toast.success(
+          currentCar ? systemMessages['update_success'] : systemMessages['create_success']
+        );
         if (!auctionId) router.push(paths.dashboard.car.root);
         else router.push(paths.dashboard.auction.cars(auctionId));
       }
@@ -306,13 +313,15 @@ export function CreateEditCarForm({
                 ))}
               </Field.Select>
 
-              <Field.Select name="plateTypeTemp" label={formFields['PlateType']}>
+              <Field.Select name="plateType" label={formFields['PlateType']}>
                 {PLATES.map((x) => (
                   <MenuItem key={x.value} value={x.value}>
                     {x.title}
                   </MenuItem>
                 ))}
               </Field.Select>
+
+              <Field.Text name="plateNumber" label={formFields['PlateNumber']} />
 
               <Field.Text
                 name="purchasePrice"

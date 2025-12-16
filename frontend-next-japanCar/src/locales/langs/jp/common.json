@@ -6,9 +6,19 @@
   "dashboard": "ダッシュボード",
   "edit": "編集",
   "save": "変更を保存",
+  "translation": "翻訳",
   "create": "作成",
+  "update": "更新",
   "delete": "削除",
   "deleteText": "本当に削除しますか？",
+  "history": "履歴",
+  "cancel": "キャンセル",
+  "search": "検索",
+  "applyFilters": "フィルターを適用",
+  "clearFilters": "フィルターをクリア",
+  "count": "件数",
+  "by": "担当",
+  "cost": "費用",
   "car": {
     "car": "車",
     "cars": "車",
@@ -17,9 +27,14 @@
     "createNew": "新しい車を作成",
     "hasInsurance": "この車に保険はありますか？"
   },
-  "search": "検索",
-  "applyFilters": "フィルターを適用",
-  "clearFilters": "フィルターをクリア",
+  "repair": {
+    "repair": "修理",
+    "repairs": "修理",
+    "addRepair": "修理を追加",
+    "noRepairs": "修理がありません",
+    "createNew": "新しい修理を作成",
+    "parts": "修理した部品"
+  },
   "auction": {
     "auction": "オークション",
     "addAuction": "オークションを追加",
@@ -41,5 +56,28 @@
     "addRole": "ロールを追加",
     "createNew": "新しいロールを作成",
     "permissions": "権限"
+  },
+  "baseInfo": {
+    "title": "基本情報",
+    "brand": "ブランド",
+    "color": "色",
+    "model": "モデル",
+    "part": "部品",
+    "mechanic": "整備士",
+    "brands": "ブランド",
+    "colors": "色",
+    "models": "モデル",
+    "parts": "部品",
+    "mechanics": "整備士",
+    "addBrand": "ブランドを追加",
+    "addColor": "色を追加",
+    "addModel": "モデルを追加",
+    "addPart": "部品を追加",
+    "addMechanic": "整備士を追加",
+    "noBrands": "ブランドがありません",
+    "noColors": "色がありません",
+    "noModels": "モデルがありません",
+    "noParts": "部品がありません",
+    "noMechanics": "整備士がいません"
   }
 }

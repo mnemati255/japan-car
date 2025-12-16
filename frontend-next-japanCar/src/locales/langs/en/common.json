@@ -6,9 +6,19 @@
   "dashboard": "Dashboard",
   "edit": "Edit",
   "save": "Save changes",
+  "translation": "Translation",
   "create": "Create",
+  "update": "Update",
   "delete": "Delete",
   "deleteText": "Are you sure want to delete?",
+  "history": "history",
+  "cancel":"Cancel",
+  "search": "Search",
+  "applyFilters": "Apply filters",
+  "clearFilters": "Clear filters",
+  "count":"Count",
+  "by":"By",
+  "cost":"Cost",
   "car": {
     "car": "car",
     "cars": "Cars",
@@ -17,9 +27,14 @@
     "createNew": "Create a new car",
     "hasInsurance": "Does the car have insurance?"
   },
-  "search": "Search",
-  "applyFilters": "Apply filters",
-  "clearFilters": "Clear filters",
+  "repair": {
+    "repair": "Repair",
+    "repairs": "Repairs",
+    "addRepair": "Add repair",
+    "noRepairs": "No repairs",
+    "createNew": "Create a new repair",
+    "parts":"Repaired parts"
+  },
   "auction": {
     "auction": "Action",
     "addAuction": "Add auction",
@@ -41,5 +56,28 @@
     "addRole": "Add role",
     "createNew": "Create a new role",
     "permissions": "Permissions"
+  },
+  "baseInfo": {
+    "title": "Base informations",
+    "brand": "brand",
+    "color": "color",
+    "model": "model",
+    "part": "Part",
+    "mechanic": "Mechanic",
+    "brands": "Brands",
+    "colors": "Colors",
+    "models": "Models",
+    "parts": "Parts",
+    "mechanics": "Mechanics",
+    "addBrand": "Add brand",
+    "addColor": "Add color",
+    "addModel": "Add model",
+    "addPart": "Add part",
+    "addMechanic": "Add mechanic",
+    "noBrands": "No brands",
+    "noColors": "No colors",
+    "noModels": "No models",
+    "noParts": "No parts",
+    "noMechanics": "No mechanics"
   }
 }

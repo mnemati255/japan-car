@@ -3,11 +3,60 @@ import axiosInstance, { fetcher } from '@/lib/axios';
 import { LangCode } from '@/locales';
 import { IBrand, IColor, IModel } from '@/types/car';
 import { IGrid } from '@/types/common';
+import { ListResult } from '@/types/list-result';
 import useSWR, { mutate } from 'swr';
 
 // ----------------------------------------------------------------------
 
 const BASE_URL = `${CONFIG.serverUrl}/BaseInfo`;
+
+export function useBrandList(
+  locale: LangCode,
+  page: number,
+  keyword: string
+): ListResult<IBrand> {
+  const res = useGetBrands(locale, page, keyword);
+
+  return {
+    items: res.brands,
+    totalPage: res.totalPage,
+    empty: res.empty,
+    isLoading: res.isLoading,
+    error: res.error
+  };
+}
+
+export function useColorList(
+  locale: LangCode,
+  page: number,
+  keyword: string
+): ListResult<IColor> {
+  const res = useGetColors(locale, page, keyword);
+
+  return {
+    items: res.colors,
+    totalPage: res.totalPage,
+    empty: res.empty,
+    isLoading: res.isLoading,
+    error: res.error
+  };
+}
+
+export function useModelList(
+  locale: LangCode,
+  page: number,
+  keyword: string
+): ListResult<IModel> {
+  const res = useGetModels(locale, page, keyword);
+
+  return {
+    items: res.models,
+    totalPage: res.totalPage,
+    empty: res.empty,
+    isLoading: res.isLoading,
+    error: res.error
+  };
+}
 
 // ----------------------------------------------------------------------
 
@@ -88,7 +137,7 @@ export async function getBrands() {
   return res;
 }
 
-export function useGetBrands(locale:LangCode, page: number, keyword: string) {
+export function useGetBrands(locale: LangCode, page: number, keyword: string) {
   const skip = (page - 1) * CONFIG.appSettings.pageSize;
   const take = CONFIG.appSettings.pageSize;
   const url = `${BRAND_BASE_URL}?locale=${locale}&keyword=${keyword}&skip=${skip}&take=${take}`;
@@ -158,7 +207,7 @@ export async function getModels() {
   return res;
 }
 
-export function useGetModels(locale:LangCode,page: number, keyword: string) {
+export function useGetModels(locale: LangCode, page: number, keyword: string) {
   const skip = (page - 1) * CONFIG.appSettings.pageSize;
   const take = CONFIG.appSettings.pageSize;
   const url = `${MODEL_BASE_URL}?locale=${locale}&keyword=${keyword}&skip=${skip}&take=${take}`;

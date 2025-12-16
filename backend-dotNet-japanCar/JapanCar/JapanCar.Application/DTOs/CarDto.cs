@@ -50,7 +50,9 @@ namespace JapanCar.Application.DTOs
 
         public string? PurchaseDate { get; set; } = null!;
 
-        public byte? PlateTypeTemp { get; set; }
+        public byte PlateType { get; set; }
+
+        public string? PlateNumber { get; set; }
 
         public byte ManufactureMonth { get; set; }
 
@@ -81,6 +83,8 @@ namespace JapanCar.Application.DTOs
             RuleFor(x => x.Mileage).NotEmpty().WithMessage("Mileage is required.");
             
             RuleFor(x => x.ChasisNumber).NotEmpty().WithMessage("Chasis number is required.");
+
+            RuleFor(x => x.PlateType).NotEmpty();
             
             When(x => x.HasInsurance, () => {
                 RuleFor(y => y.InsurancePolicyNumber).NotEmpty();

@@ -15,7 +15,7 @@ namespace JapanCar.Application.Interfaces
         Task<CarEntity?> GetById(int id, bool withAuctionDetails, bool withImages);
         Task Create(CarEntity car);
         Task Update(int id, CarEntity car);
-        Task Delete(int id);
+        Task<bool> Delete(int id);
         Task<bool> ExistsCar(int carId);
 
     }

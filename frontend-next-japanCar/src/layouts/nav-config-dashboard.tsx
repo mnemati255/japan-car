@@ -69,6 +69,18 @@ export function navData(t: TFunction<any, any>): NavSectionProps['data'] {
           ],
         },
         {
+          title: t('baseInfo.title'),
+          path: paths.dashboard.baseInfo.root,
+          icon: ICONS.menuItem,
+          children: [
+            { title: t('baseInfo.brands'), path: paths.dashboard.baseInfo.brand },
+            { title: t('baseInfo.models'), path: paths.dashboard.baseInfo.model },
+            { title: t('baseInfo.colors'), path: paths.dashboard.baseInfo.color },
+            { title: t('baseInfo.parts'), path: paths.dashboard.baseInfo.part },
+            { title: t('baseInfo.mechanics'), path: paths.dashboard.baseInfo.mechanic },
+          ],
+        },
+        {
           title: t('users'),
           path: paths.dashboard.user.root,
           icon: ICONS.user,
@@ -85,11 +97,6 @@ export function navData(t: TFunction<any, any>): NavSectionProps['data'] {
             { title: t('list'), path: paths.dashboard.role.root },
             { title: t('create'), path: paths.dashboard.role.new },
           ],
-        },
-        {
-          title: t('baseInfo'),
-          path: paths.dashboard.baseInfo.root,
-          icon: ICONS.menuItem,
         },
       ],
     },

@@ -1,7 +1,10 @@
-import { getBrands, getColors, getModelsOfBrand } from '@/actions/base-info';
+import { getItems } from '@/actions/base-action';
+import { getModelsOfBrand } from '@/actions/base-info';
 import { PLATES } from '@/constants/plate-types';
+import { endpoints } from '@/lib/axios';
 import { useTranslate, useTranslateFromServer } from '@/locales';
 import { IBrand, IColor, IModel } from '@/types/car';
+import { IGrid } from '@/types/common';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -40,7 +43,10 @@ export default function CarSearchDialog({
 
   useEffect(() => {
     (async () => {
-      const [brandsRes, colorsRes] = await Promise.all([getBrands(), getColors()]);
+      const [brandsRes, colorsRes] = await Promise.all([
+        getItems<IGrid<IBrand>>(endpoints.baseInfo.brand),
+        getItems<IGrid<IColor>>(endpoints.baseInfo.color),
+      ]);
       if (brandsRes.status === 200) setBrands(brandsRes.data.items);
       if (colorsRes.status === 200) setColors(colorsRes.data.items);
     })();
@@ -190,11 +196,11 @@ export default function CarSearchDialog({
           <FormControl>
             <InputLabel>{formFields['PlateType']}</InputLabel>
             <Select
-              name="plateTypeTemp"
+              name="plateType"
               label={formFields['PlateType']}
-              value={localFilters.plateTypeTemp}
+              value={localFilters.plateType}
               onChange={(e) =>
-                setLocalFilters({ ...localFilters, plateTypeTemp: e.target.value })
+                setLocalFilters({ ...localFilters, plateType: e.target.value })
               }
             >
               {PLATES.map((x) => (
@@ -204,6 +210,13 @@ export default function CarSearchDialog({
               ))}
             </Select>
           </FormControl>
+
+          <TextField
+            name="plateNumber"
+            label={formFields['PlateNumber']}
+            value={localFilters.plateNumber}
+            onChange={(e) => setLocalFilters({ ...localFilters, plateNumber: e.target.value })}
+          />
 
           <Button
             variant="contained"

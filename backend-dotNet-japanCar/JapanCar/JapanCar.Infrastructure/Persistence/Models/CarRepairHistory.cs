@@ -16,21 +16,6 @@ public partial class CarRepairHistory
     public int CarId { get; set; }
 
     /// <summary>
-    /// شناسه قطعه
-    /// </summary>
-    public int PartId { get; set; }
-
-    /// <summary>
-    /// هزینه قطعه
-    /// </summary>
-    public decimal PartCost { get; set; }
-
-    /// <summary>
-    /// تعداد قطعه
-    /// </summary>
-    public int? PartCount { get; set; }
-
-    /// <summary>
     /// شناسه مکانیک
     /// </summary>
     public int? MechanicId { get; set; }
@@ -41,19 +26,14 @@ public partial class CarRepairHistory
     public DateOnly RepairDate { get; set; }
 
     /// <summary>
-    /// یادداشت فنی مکانیک
-    /// </summary>
-    public string? MechanicTechnicalNote { get; set; }
-
-    /// <summary>
     /// تعویض‌کننده فرمان
     /// </summary>
-    public string? SteeringReplacer { get; set; }
+    public int? SteeringReplacerId { get; set; }
 
     /// <summary>
     /// تعویض‌کننده داشبورد
     /// </summary>
-    public string? DashboardReplacer { get; set; }
+    public int? DashboardReplacerId { get; set; }
 
     /// <summary>
     /// تاریخ ایجاد
@@ -77,11 +57,17 @@ public partial class CarRepairHistory
 
     public virtual Car Car { get; set; } = null!;
 
+    public virtual ICollection<CarPart> CarParts { get; set; } = new List<CarPart>();
+
+    public virtual ICollection<CarRepairHistoryTranslation> CarRepairHistoryTranslations { get; set; } = new List<CarRepairHistoryTranslation>();
+
     public virtual User? CreatedByNavigation { get; set; }
+
+    public virtual Mechanic? DashboardReplacer { get; set; }
 
     public virtual Mechanic? Mechanic { get; set; }
 
     public virtual User? ModifiedByNavigation { get; set; }
 
-    public virtual Part Part { get; set; } = null!;
+    public virtual Mechanic? SteeringReplacer { get; set; }
 }

@@ -21,6 +21,7 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
             var query = from c in _context.CarColors.AsNoTracking()
                         join cTr in _context.CarColorTranslations.AsNoTracking() on c.ColorId equals cTr.CarColorId
                         where cTr.LanguageId == languageId
+                        orderby c.CreatedDate descending
                         select new { c, cTr };
 
             if (!string.IsNullOrEmpty(keyword))
@@ -54,6 +55,7 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
             var query = from b in _context.CarBrands.AsNoTracking()
                         join bTr in _context.CarBrandTranslations.AsNoTracking() on b.BrandId equals bTr.BrandId
                         where bTr.LanguageId == languageId
+                        orderby b.CreatedDate descending
                         select new { b, bTr };
 
             if (!string.IsNullOrEmpty(keyword))
@@ -85,11 +87,12 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
         public async Task<PagedResult<CarModelEntity>> GetModels(int languageId, string? keyword, int? skip = null, int? take = null)
         {
             var query = from m in _context.CarModels.AsNoTracking()
-                        join mTr in _context.CarModelTranslations.AsNoTracking() on m.ModelId equals mTr.CarModelId
-                        join b in _context.CarBrands.AsNoTracking() on m.BrandId equals b.BrandId
-                        join bTr in _context.CarBrandTranslations.AsNoTracking() on m.BrandId equals bTr.BrandId
-                        where mTr.LanguageId == languageId && bTr.LanguageId == languageId
-                        select new { m, mTr, b, bTr };
+                        join mTr in _context.CarModelTranslations.AsNoTracking().Where(x => x.LanguageId == languageId)
+                        on m.ModelId equals mTr.CarModelId
+                        join bTr in _context.CarBrandTranslations.AsNoTracking().Where(x => x.LanguageId == languageId)
+                        on m.BrandId equals bTr.BrandId
+                        orderby m.CreatedDate descending
+                        select new { m, mTr, bTr };
 
             if (!string.IsNullOrEmpty(keyword))
                 query = query.Where(x => x.mTr.ModelName.Contains(keyword));
@@ -262,7 +265,7 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                     b,
                     tr = b.CarBrandTranslations.First(t => t.LanguageId == languageId)
                 })
-                .FirstOrDefaultAsync(b => b.b.BrandId == id);
+                .FirstOrDefaultAsync();
 
             if (brand != null)
             {
@@ -352,57 +355,63 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task DeleteBrand(int id)
+        public async Task<bool> DeleteBrand(int id)
         {
             var brand = await _context.CarBrands
                 .Include(x => x.CarBrandTranslations)
                 .Include(x => x.CarModels)
                 .FirstOrDefaultAsync(x => x.BrandId == id);
 
-            if (brand != null)
-            {
-                _context.CarBrandTranslations.RemoveRange(brand.CarBrandTranslations);
-                _context.CarModels.RemoveRange(brand.CarModels);
-                _context.CarBrands.Remove(brand);
+            if (brand == null)
+                return false;
 
-                await _context.SaveChangesAsync();
-            }
+            _context.CarBrandTranslations.RemoveRange(brand.CarBrandTranslations);
+            _context.CarModels.RemoveRange(brand.CarModels);
+            _context.CarBrands.Remove(brand);
+
+            await _context.SaveChangesAsync();
+
+            return true;
         }
 
 
-        public async Task DeleteColor(int id)
+        public async Task<bool> DeleteColor(int id)
         {
             var color = await _context.CarColors
                 .Include(x => x.CarColorTranslations)
                 .Include(x => x.Cars)
                 .FirstOrDefaultAsync(x => x.ColorId == id);
 
-            if (color != null)
-            {
-                _context.CarColorTranslations.RemoveRange(color.CarColorTranslations);
-                _context.Cars.RemoveRange(color.Cars);
-                _context.CarColors.Remove(color);
+            if (color == null)
+                return false;
 
-                await _context.SaveChangesAsync();
-            }
+            _context.CarColorTranslations.RemoveRange(color.CarColorTranslations);
+            _context.Cars.RemoveRange(color.Cars);
+            _context.CarColors.Remove(color);
+
+            await _context.SaveChangesAsync();
+
+            return true;
         }
 
 
-        public async Task DeleteModel(int id)
+        public async Task<bool> DeleteModel(int id)
         {
             var model = await _context.CarModels
                 .Include(x => x.CarModelTranslations)
                 .Include(x => x.Cars)
                 .FirstOrDefaultAsync(x => x.ModelId == id);
 
-            if (model != null)
-            {
-                _context.CarModelTranslations.RemoveRange(model.CarModelTranslations);
-                _context.Cars.RemoveRange(model.Cars);
-                _context.CarModels.Remove(model);
+            if(model == null)
+                return false;
 
-                await _context.SaveChangesAsync();
-            }
+            _context.CarModelTranslations.RemoveRange(model.CarModelTranslations);
+            _context.Cars.RemoveRange(model.Cars);
+            _context.CarModels.Remove(model);
+
+            await _context.SaveChangesAsync();
+
+            return true;
         }
     }
 }

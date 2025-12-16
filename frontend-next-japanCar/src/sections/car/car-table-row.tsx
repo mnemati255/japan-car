@@ -48,7 +48,7 @@ export function CarTableRow({ row, onDeleteRow, auctionId }: Props) {
             confirmDialog.onFalse();
           }}
         >
-           {tCommon('delete')}
+          {tCommon('delete')}
         </Button>
       }
     />
@@ -81,6 +81,13 @@ export function CarTableRow({ row, onDeleteRow, auctionId }: Props) {
 
         <TableCell>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Tooltip title="Repairs" placement="top" arrow>
+              <RouterLink href={paths.dashboard.car.repair(row.carId!)}>
+                <IconButton>
+                  <Iconify icon="hugeicons:repair" />
+                </IconButton>
+              </RouterLink>
+            </Tooltip>
             <Tooltip title="Edit" placement="top" arrow>
               <RouterLink
                 href={

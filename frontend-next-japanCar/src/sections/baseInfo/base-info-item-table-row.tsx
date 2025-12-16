@@ -7,20 +7,33 @@ import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import { Iconify } from '@/components/iconify';
 import { ConfirmDialog } from '@/components/custom-dialog';
-import { IModel } from '@/types/car';
 import { allLangs, LangCode, useTranslate } from '@/locales';
+import React from 'react';
 
-// ----------------------------------------------------------------------
+type Column<T> = {
+  key: string;
+  render: (row: T) => React.ReactNode;
+};
 
-type Props = {
-  row: IModel;
+type Props<T> = {
+  row: T;
+  columns: Column<T>[];
+  multilanguage: boolean;
+  getRowId: (row: T) => string | number;
   onDeleteRow: () => void;
   onShowEditDialog: (locale?: LangCode) => void;
 };
 
-export function ModelTableRow({ row, onDeleteRow, onShowEditDialog }: Props) {
+export function BaseInfoItemTableRow<T>({
+  row,
+  columns,
+  multilanguage,
+  getRowId,
+  onDeleteRow,
+  onShowEditDialog,
+}: Props<T>) {
   const confirmDialog = useBoolean();
-  const { currentLang, t:tCommon } = useTranslate('common');
+  const { currentLang, t: tCommon } = useTranslate('common');
 
   const renderConfirmDialog = () => (
     <ConfirmDialog
@@ -45,21 +58,22 @@ export function ModelTableRow({ row, onDeleteRow, onShowEditDialog }: Props) {
 
   return (
     <>
-      <TableRow key={row.modelId}>
-        <TableCell>{row.modelName}</TableCell>
-        <TableCell>{row.brandName}</TableCell>
-        <TableCell>{row.createdAt?.split('T')[0]}</TableCell>
+      <TableRow key={getRowId(row)}>
+        {columns.map((col) => (
+          <TableCell key={col.key}>{col.render(row)}</TableCell>
+        ))}
         <TableCell>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {allLangs
-              .filter((x) => x.value !== currentLang.value)
-              .map((x, i) => (
-                <Tooltip key={`lng_${i}`} title={x.label} placement="top" arrow>
-                  <IconButton onClick={() => onShowEditDialog(x.value)}>
-                    <Iconify icon="custom:translation" />
-                  </IconButton>
-                </Tooltip>
-              ))}
+            {multilanguage &&
+              allLangs
+                .filter((x) => x.value !== currentLang.value)
+                .map((x, i) => (
+                  <Tooltip key={`lng_${i}`} title={x.label} placement="top" arrow>
+                    <IconButton onClick={() => onShowEditDialog(x.value)}>
+                      <Iconify icon="custom:translation" />
+                    </IconButton>
+                  </Tooltip>
+                ))}
             <Tooltip title="Edit" placement="top" arrow>
               <IconButton color="warning" onClick={() => onShowEditDialog()}>
                 <Iconify icon="solar:pen-bold" />
@@ -73,7 +87,6 @@ export function ModelTableRow({ row, onDeleteRow, onShowEditDialog }: Props) {
           </Box>
         </TableCell>
       </TableRow>
-
       {renderConfirmDialog()}
     </>
   );

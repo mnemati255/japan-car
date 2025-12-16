@@ -40,7 +40,11 @@ public partial class Mechanic
     /// </summary>
     public int? ModifiedBy { get; set; }
 
-    public virtual ICollection<CarRepairHistory> CarRepairHistories { get; set; } = new List<CarRepairHistory>();
+    public virtual ICollection<CarRepairHistory> CarRepairHistoryDashboardReplacers { get; set; } = new List<CarRepairHistory>();
+
+    public virtual ICollection<CarRepairHistory> CarRepairHistoryMechanics { get; set; } = new List<CarRepairHistory>();
+
+    public virtual ICollection<CarRepairHistory> CarRepairHistorySteeringReplacers { get; set; } = new List<CarRepairHistory>();
 
     public virtual User? CreatedByNavigation { get; set; }
 

@@ -31,8 +31,8 @@ namespace JapanCar.Api.Controllers
         [HttpGet("color/{locale}/{id}")]
         public async Task<IActionResult> GetColorById(string locale, int id)
         {
-            var models = await _baseInfoService.GetColorById(locale, id);
-            return Ok(models);
+            var color = await _baseInfoService.GetColorById(locale, id);
+            return Ok(color);
         }
 
 
@@ -63,16 +63,16 @@ namespace JapanCar.Api.Controllers
         [HttpGet("brand")]
         public async Task<IActionResult> GetBrands(string? keyword, int? skip = null, int? take = null)
         {
-            var models = await _baseInfoService.GetBrands(keyword, skip, take);
-            return Ok(models);
+            var brands = await _baseInfoService.GetBrands(keyword, skip, take);
+            return Ok(brands);
         }
 
 
         [HttpGet("brand/{locale}/{id}")]
         public async Task<IActionResult> GetBrandById(string locale, int id)
         {
-            var models = await _baseInfoService.GetBrandById(locale, id);
-            return Ok(models);
+            var brand = await _baseInfoService.GetBrandById(locale, id);
+            return Ok(brand);
         }
 
 
