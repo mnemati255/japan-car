@@ -61,7 +61,7 @@ export function UserTableRow({ row, onDeleteRow }: Props) {
               'default'
             }
           >
-            {row.isActive ? tCommon('user.active') : tCommon('user.inactive')}
+            {row.isActive ? tCommon('active') : tCommon('inactive')}
           </Label>
         </TableCell>
 

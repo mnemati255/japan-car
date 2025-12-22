@@ -22,7 +22,7 @@ import { useTranslate, useTranslateFromServer } from '@/locales';
 
 export function AuctionListView() {
   const { t: tCommon, currentLang } = useTranslate('common');
-  const { formFields } = useTranslateFromServer();
+  const { translations: formFields } = useTranslateFromServer();
 
   const TABLE_HEAD: TableHeadCellProps[] = [
     { id: 'auctionName', label: formFields['AuctionName'] },

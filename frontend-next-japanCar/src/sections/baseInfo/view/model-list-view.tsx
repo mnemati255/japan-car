@@ -9,7 +9,7 @@ import { deleteItem, getItemById, useList } from '@/actions/base-action';
 import { endpoints } from '@/lib/axios';
 
 export function ModelListView() {
-  const { formFields } = useTranslateFromServer();
+  const { translations: formFields } = useTranslateFromServer();
   const { t: tCommon } = useTranslate('common');
 
   const TABLE_HEAD: TableHeadCellProps[] = [

@@ -31,7 +31,7 @@ type Props = {
 export function ModelCreateEditForm({ onClose, open, currentItem, locale }: Props) {
   const [brands, setBrands] = useState<IBrand[]>([]);
   const { currentLang, t: tCommon } = useTranslate('common');
-  const { formFields } = useTranslateFromServer();
+  const { translations: formFields } = useTranslateFromServer();
 
   useEffect(() => {
     const getAllBrands = async () => {

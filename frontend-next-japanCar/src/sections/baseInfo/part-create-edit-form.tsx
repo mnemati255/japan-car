@@ -5,16 +5,19 @@ import messages from '@/lib/messages';
 import { LangCode, useTranslate, useTranslateFromServer } from '@/locales';
 import { IPart } from '@/types/part';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import InputAdornment from '@mui/material/InputAdornment';
 import Stack from '@mui/material/Stack';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 
 const PartSchema = z.object({
+  partPrice: z.coerce.number().min(1, { error: messages.required() }),
   partName: z.string().min(1, { error: messages.required() }),
   partDescription: z.string().nullable().optional(),
 });
@@ -28,12 +31,13 @@ type Props = {
 
 export function PartCreateEditForm({ onClose, open, currentItem, locale }: Props) {
   const { currentLang, t: tCommon } = useTranslate('common');
-  const { formFields } = useTranslateFromServer();
+  const { translations: formFields } = useTranslateFromServer();
 
   const methods = useForm({
     mode: 'all',
     resolver: zodResolver(PartSchema),
     defaultValues: {
+      partPrice: '',
       partName: '',
       partDescription: '',
     },
@@ -48,12 +52,13 @@ export function PartCreateEditForm({ onClose, open, currentItem, locale }: Props
   useEffect(() => {
     if (currentItem) {
       reset({
+        partPrice: currentItem.partPrice,
         partName: currentItem.partName,
         partDescription: currentItem.partDescription,
       });
     } else {
       setTimeout(() => {
-        reset({ partName: '', partDescription: '' });
+        reset({ partPrice: '', partName: '', partDescription: '' });
       }, 300);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -83,8 +88,30 @@ export function PartCreateEditForm({ onClose, open, currentItem, locale }: Props
           : `${tCommon('create')} ${tCommon('baseInfo.part')}`}
       </DialogTitle>
       <Form methods={methods} onSubmit={onSubmit}>
-        <DialogContent sx={{ py: 3 }}>
+        <DialogContent sx={{ py: 3, display: 'grid', rowGap: 3 }}>
+          <Field.Text
+            name="partPrice"
+            label={formFields['PartPrice']}
+            type="number"
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>¥</Box>
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+
           <Field.Text name="partName" label={formFields['PartName']} />
+
+          <Field.Text
+            name="partDescription"
+            label={formFields['PartDescription']}
+            multiline={true}
+            rows={2}
+          />
 
           <Stack sx={{ alignItems: 'end', mt: 3 }}>
             <Button type="submit" variant="contained" loading={isSubmitting}>

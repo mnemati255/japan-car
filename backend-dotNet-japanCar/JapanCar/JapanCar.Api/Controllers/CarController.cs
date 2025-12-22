@@ -69,9 +69,11 @@ namespace JapanCar.Api.Controllers
                 }
             }
 
-            await _carService.CreateCar(dto.Dto, files);
+            var userName = User.Identity?.Name ?? "";
 
-            return Ok();
+            var sukuraNumber = await _carService.CreateCar(dto.Dto, files, userName);
+
+            return Ok(sukuraNumber);
         }
 
 
@@ -104,9 +106,11 @@ namespace JapanCar.Api.Controllers
                 }
             }
 
-            await _carService.UpdateCar(id, dto.Dto, files);
+            var userName = User.Identity?.Name ?? "";
 
-            return Ok();
+            var sukuraNumber = await _carService.UpdateCar(id, dto.Dto, files, userName);
+
+            return Ok(sukuraNumber);
         }
     }
 }

@@ -7,6 +7,7 @@ import { CustomBreadcrumbs } from '@/components/custom-breadcrumbs';
 import { UserCreateEditForm } from '../user-create-edit-form';
 import { useEffect, useState } from 'react';
 import { getUserById } from '@/actions/user';
+import { useTranslate } from '@/locales';
 
 // ----------------------------------------------------------------------
 
@@ -15,7 +16,8 @@ type Props = {
 };
 
 export function UserEditView({ userId }: Props) {
-  const [currentUser, setCurrentUser] = useState<IUserItem | null>(null);
+  const [currentUser, setCurrentUser] = useState<IUserItem>();
+  const { t: tCommon } = useTranslate('common');
 
   useEffect(() => {
     if (userId) {
@@ -34,11 +36,11 @@ export function UserEditView({ userId }: Props) {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Edit"
+        heading={tCommon('edit')}
         backHref={paths.dashboard.user.root}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'User', href: paths.dashboard.user.root },
+          { name: tCommon('dashboard'), href: paths.dashboard.root },
+          { name: tCommon('user.user'), href: paths.dashboard.user.root },
           { name: currentUser?.userName },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

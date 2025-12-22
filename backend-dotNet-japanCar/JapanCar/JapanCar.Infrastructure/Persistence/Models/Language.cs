@@ -43,4 +43,6 @@ public partial class Language
     public virtual ICollection<GenericTranslation> GenericTranslations { get; set; } = new List<GenericTranslation>();
 
     public virtual ICollection<PartTranslation> PartTranslations { get; set; } = new List<PartTranslation>();
+
+    public virtual ICollection<SystemNotificationTranslation> SystemNotificationTranslations { get; set; } = new List<SystemNotificationTranslation>();
 }

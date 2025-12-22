@@ -12,6 +12,6 @@ namespace JapanCar.Application.Interfaces
         Task<IEnumerable<CarPartEntity>> GetPartsOfRepair(int repairId);
         Task CreateCarPart(CarPartEntity carPartEntity);
         Task<bool> DeleteCarPart(int id);
-        Task DeleteCarPartRange(int[] ids);
+        Task DeleteCarPartsOfRepair(int repairId);
     }
 }

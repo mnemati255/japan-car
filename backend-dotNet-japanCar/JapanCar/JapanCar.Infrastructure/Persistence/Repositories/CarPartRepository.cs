@@ -71,10 +71,10 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task DeleteCarPartRange(int[] ids)
+        public async Task DeleteCarPartsOfRepair(int repairId)
         {
             var carParts = await _context.CarParts
-                .Where(x => ids.Contains(x.CarPartId))
+                .Where(x => x.CarRepairHistoryId == repairId)
                 .ToListAsync();
 
             if (carParts.Any())

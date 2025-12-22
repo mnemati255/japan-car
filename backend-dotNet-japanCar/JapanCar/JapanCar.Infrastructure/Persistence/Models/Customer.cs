@@ -21,6 +21,11 @@ public partial class Customer
     public string LastName { get; set; } = null!;
 
     /// <summary>
+    /// آدرس مشتری
+    /// </summary>
+    public string? Address { get; set; }
+
+    /// <summary>
     /// ایمیل مشتری
     /// </summary>
     public string? Email { get; set; }
@@ -29,11 +34,6 @@ public partial class Customer
     /// شماره تماس مشتری
     /// </summary>
     public string? Phone { get; set; }
-
-    /// <summary>
-    /// آدرس مشتری
-    /// </summary>
-    public string? Address { get; set; }
 
     /// <summary>
     /// فعال/غیرفعال

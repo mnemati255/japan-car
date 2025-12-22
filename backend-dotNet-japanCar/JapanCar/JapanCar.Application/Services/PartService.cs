@@ -28,6 +28,7 @@ namespace JapanCar.Application.Services
             var colors = entities.Items.Select(x => new PartDto
             {
                 PartId = x.PartId,
+                PartPrice = x.PartPrice,
                 PartName = x.PartName,
                 PartDescription = x.PartDescription,
                 CreatedAt = x.CreatedDate
@@ -55,6 +56,7 @@ namespace JapanCar.Application.Services
             return new PartDto
             {
                 PartId = id,
+                PartPrice = entity.PartPrice,
                 PartName = entity.PartName,
                 PartDescription = entity.PartDescription,
             };
@@ -67,6 +69,7 @@ namespace JapanCar.Application.Services
 
             var entity = new PartEntity
             {
+                PartPrice = dto.PartPrice,
                 PartName = dto.PartName,
                 PartDescription = dto.PartDescription,
             };
@@ -81,6 +84,7 @@ namespace JapanCar.Application.Services
 
             var entity = new PartEntity
             {
+                PartPrice = dto.PartPrice,
                 PartName = dto.PartName,
                 PartDescription = dto.PartDescription,
             };
@@ -91,7 +95,9 @@ namespace JapanCar.Application.Services
 
         public async Task DeletePart(int partId)
         {
-            await _unitOfWork.PartRepository.DeletePart(partId);
+            var deleted = await _unitOfWork.PartRepository.DeletePart(partId);
+            if(!deleted)
+                throw new AppException("Not found", System.Net.HttpStatusCode.NotFound);
         }
     }
 }

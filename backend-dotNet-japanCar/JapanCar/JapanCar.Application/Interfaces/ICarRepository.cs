@@ -13,10 +13,11 @@ namespace JapanCar.Application.Interfaces
     {
         Task<PagedResult<CarEntity>> GetCars(int languageId, CarFilterDto filterDto, int? auctionId = null);
         Task<CarEntity?> GetById(int id, bool withAuctionDetails, bool withImages);
-        Task Create(CarEntity car);
-        Task Update(int id, CarEntity car);
+        Task<int?> Create(CarEntity car);
+        Task<int?> Update(int id, CarEntity car);
         Task<bool> Delete(int id);
         Task<bool> ExistsCar(int carId);
+        Task<int> GetSukuraNumber();
 
     }
 }

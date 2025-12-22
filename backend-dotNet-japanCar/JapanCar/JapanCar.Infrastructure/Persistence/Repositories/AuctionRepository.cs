@@ -15,7 +15,7 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task Create(int languageId, AuctionEntity auction)
+        public async Task CreateAuction(int languageId, AuctionEntity auction)
         {
             var entity = new Auction();
 
@@ -33,7 +33,7 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<bool> Delete(int id)
+        public async Task<bool> DeleteAuction(int id)
         {
             var entity = await _context.Auctions
                 .Include(x => x.AuctionsTranslations)
@@ -52,7 +52,7 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<IEnumerable<AuctionEntity>> GetAll(int languageId)
+        public async Task<IEnumerable<AuctionEntity>> GetAuctions(int languageId)
         {
             var query = from auc in _context.Auctions
                         join aucTr in _context.AuctionsTranslations on auc.AuctionId equals aucTr.AuctionId
@@ -70,7 +70,7 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<AuctionEntity?> GetById(int languageId, int id)
+        public async Task<AuctionEntity?> GetAuctionById(int languageId, int id)
         {
             var entity = await _context
                 .Auctions
@@ -95,7 +95,7 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<bool> Update(int languageId, int id, AuctionEntity auction)
+        public async Task<bool> UpdateAuction(int languageId, int id, AuctionEntity auction)
         {
             var entity = await _context
                 .Auctions

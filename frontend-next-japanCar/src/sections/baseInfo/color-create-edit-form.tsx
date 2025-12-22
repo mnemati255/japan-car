@@ -27,7 +27,7 @@ type Props = {
 
 export function ColorCreateEditForm({ onClose, open, currentItem, locale }: Props) {
   const { currentLang, t: tCommon } = useTranslate('common');
-  const { formFields } = useTranslateFromServer();
+  const { translations: formFields } = useTranslateFromServer();
 
   const methods = useForm({
     mode: 'all',

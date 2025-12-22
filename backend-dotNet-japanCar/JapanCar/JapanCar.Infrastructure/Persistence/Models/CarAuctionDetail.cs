@@ -65,7 +65,7 @@ public partial class CarAuctionDetail
     /// <summary>
     /// تاریخ نهایی خرید خودرو در فرآیند مزایده / معامله
     /// </summary>
-    public DateTime? PurchaseDate { get; set; }
+    public DateTime PurchaseDate { get; set; }
 
     public decimal? ScrapCost { get; set; }
 

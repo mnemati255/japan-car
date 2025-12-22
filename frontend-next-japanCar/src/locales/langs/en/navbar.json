@@ -1,7 +1,13 @@
 {
   "subheader": "Management",
+  "notification": {
+    "notifications": "Notifications",
+    "inbox": "Inbox",
+    "resolved": "Resolved"
+  },
   "auctions": "Auctions",
   "cars": "Cars",
+  "customers": "Customers",
   "users": "Users",
   "roles": "Roles",
   "baseInfo": {

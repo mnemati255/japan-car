@@ -10,15 +10,27 @@
   "create": "Create",
   "update": "Update",
   "delete": "Delete",
+  "yes": "Yes",
   "deleteText": "Are you sure want to delete?",
   "history": "history",
-  "cancel":"Cancel",
+  "cancel": "Cancel",
   "search": "Search",
   "applyFilters": "Apply filters",
   "clearFilters": "Clear filters",
-  "count":"Count",
-  "by":"By",
-  "cost":"Cost",
+  "count": "Count",
+  "by": "By",
+  "cost": "Cost",
+  "active": "Active",
+  "inactive": "Inative",
+  "notification": {
+    "notification": "notification",
+    "notifications": "Notifications",
+    "noNotifications": "No notifications",
+    "inbox": "Inbox",
+    "resolved": "Resolved",
+    "markAsDone":"Mark as done",
+    "markAsDoneText": "Are you sure want to mark?"
+  },
   "car": {
     "car": "car",
     "cars": "Cars",
@@ -33,7 +45,7 @@
     "addRepair": "Add repair",
     "noRepairs": "No repairs",
     "createNew": "Create a new repair",
-    "parts":"Repaired parts"
+    "parts": "Repaired parts"
   },
   "auction": {
     "auction": "Action",
@@ -41,13 +53,20 @@
     "noAuctions": "No auctions",
     "createNew": "Create a new auction"
   },
+  "customer": {
+    "customer": "customer",
+    "customers": "Customers",
+    "addCustomer": "Add customer",
+    "createNew": "Create a new customer",
+    "noCustomers": "No customers",
+    "isCustomerActive": "Is customer active?"
+  },
   "user": {
     "user": "user",
+    "users": "Users",
     "addUser": "Add user",
     "createNew": "Create a new user",
     "noUsers": "No users",
-    "active": "Active",
-    "inactive": "Inative",
     "isUserActive": "Is user active?"
   },
   "role": {

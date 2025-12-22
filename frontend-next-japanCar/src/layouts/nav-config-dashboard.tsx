@@ -14,33 +14,13 @@ const icon = (name: string) => (
 );
 
 const ICONS = {
-  job: icon('ic-job'),
-  blog: icon('ic-blog'),
-  chat: icon('ic-chat'),
-  mail: icon('ic-mail'),
   user: icon('ic-user'),
-  file: icon('ic-file'),
   lock: icon('ic-lock'),
-  tour: icon('ic-tour'),
-  order: icon('ic-order'),
-  label: icon('ic-label'),
-  blank: icon('ic-blank'),
-  kanban: icon('ic-kanban'),
   folder: icon('ic-folder'),
-  course: icon('ic-course'),
-  params: icon('ic-params'),
-  banking: icon('ic-banking'),
-  booking: icon('ic-booking'),
-  invoice: icon('ic-invoice'),
-  product: icon('ic-product'),
-  calendar: icon('ic-calendar'),
-  disabled: icon('ic-disabled'),
-  external: icon('ic-external'),
-  subpaths: icon('ic-subpaths'),
   menuItem: icon('ic-menu-item'),
-  ecommerce: icon('ic-ecommerce'),
-  analytics: icon('ic-analytics'),
+  customer: icon('ic-customer'),
   dashboard: icon('ic-dashboard'),
+  notif: icon('ic-notif'),
 };
 
 // ----------------------------------------------------------------------
@@ -50,6 +30,18 @@ export function navData(t: TFunction<any, any>): NavSectionProps['data'] {
     {
       subheader: t('subheader'),
       items: [
+        {
+          title: t('notification.notifications'),
+          path: paths.dashboard.notification.root,
+          icon: ICONS.notif,
+          children: [
+            { title: t('notification.inbox'), path: paths.dashboard.notification.inbox },
+            {
+              title: t('notification.resolved'),
+              path: paths.dashboard.notification.resolved,
+            },
+          ],
+        },
         {
           title: t('auctions'),
           path: paths.dashboard.auction.root,
@@ -69,15 +61,12 @@ export function navData(t: TFunction<any, any>): NavSectionProps['data'] {
           ],
         },
         {
-          title: t('baseInfo.title'),
-          path: paths.dashboard.baseInfo.root,
-          icon: ICONS.menuItem,
+          title: t('customers'),
+          path: paths.dashboard.customer.root,
+          icon: ICONS.customer,
           children: [
-            { title: t('baseInfo.brands'), path: paths.dashboard.baseInfo.brand },
-            { title: t('baseInfo.models'), path: paths.dashboard.baseInfo.model },
-            { title: t('baseInfo.colors'), path: paths.dashboard.baseInfo.color },
-            { title: t('baseInfo.parts'), path: paths.dashboard.baseInfo.part },
-            { title: t('baseInfo.mechanics'), path: paths.dashboard.baseInfo.mechanic },
+            { title: t('list'), path: paths.dashboard.customer.root },
+            { title: t('create'), path: paths.dashboard.customer.new },
           ],
         },
         {
@@ -96,6 +85,18 @@ export function navData(t: TFunction<any, any>): NavSectionProps['data'] {
           children: [
             { title: t('list'), path: paths.dashboard.role.root },
             { title: t('create'), path: paths.dashboard.role.new },
+          ],
+        },
+        {
+          title: t('baseInfo.title'),
+          path: paths.dashboard.baseInfo.root,
+          icon: ICONS.menuItem,
+          children: [
+            { title: t('baseInfo.brands'), path: paths.dashboard.baseInfo.brand },
+            { title: t('baseInfo.models'), path: paths.dashboard.baseInfo.model },
+            { title: t('baseInfo.colors'), path: paths.dashboard.baseInfo.color },
+            { title: t('baseInfo.parts'), path: paths.dashboard.baseInfo.part },
+            { title: t('baseInfo.mechanics'), path: paths.dashboard.baseInfo.mechanic },
           ],
         },
       ],

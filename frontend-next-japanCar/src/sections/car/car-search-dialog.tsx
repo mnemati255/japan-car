@@ -1,6 +1,6 @@
 import { getItems } from '@/actions/base-action';
 import { getModelsOfBrand } from '@/actions/base-info';
-import { PLATES } from '@/constants/plate-types';
+import { PLATETYPES } from '@/constants/car-constants';
 import { endpoints } from '@/lib/axios';
 import { useTranslate, useTranslateFromServer } from '@/locales';
 import { IBrand, IColor, IModel } from '@/types/car';
@@ -34,7 +34,7 @@ export default function CarSearchDialog({
   const [models, setModels] = useState<IModel[]>([]);
   const [colors, setColors] = useState<IColor[]>([]);
   const [localFilters, setLocalFilters] = useState(filters);
-  const { formFields } = useTranslateFromServer();
+  const { translations: formFields } = useTranslateFromServer();
   const { t: tCommon } = useTranslate('common');
 
   useEffect(() => {
@@ -203,7 +203,7 @@ export default function CarSearchDialog({
                 setLocalFilters({ ...localFilters, plateType: e.target.value })
               }
             >
-              {PLATES.map((x) => (
+              {PLATETYPES.map((x) => (
                 <MenuItem key={x.value} value={x.value}>
                   {x.title}
                 </MenuItem>

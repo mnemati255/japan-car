@@ -14,7 +14,12 @@ export type AccountButtonProps = IconButtonProps & {
   displayName: string;
 };
 
-export function AccountButton({ photoURL, displayName, sx, ...other }: AccountButtonProps) {
+export function AccountButton({
+  photoURL,
+  displayName,
+  sx,
+  ...other
+}: AccountButtonProps) {
   return (
     <IconButton
       component={m.button}

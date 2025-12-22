@@ -27,7 +27,7 @@ export function UserListView() {
   const [keyword, setKeyword] = useState('');
   const [searchKeyword, setSearchKeyword] = useState('');
   const { t: tCommon } = useTranslate('common');
-  const {formFields} = useTranslateFromServer();
+  const {translations: formFields} = useTranslateFromServer();
 
   const TABLE_HEAD: TableHeadCellProps[] = [
   { id: 'userName', label: formFields['UserName'] },
@@ -54,7 +54,7 @@ export function UserListView() {
           heading={tCommon('list')}
           links={[
             { name: tCommon('dashboard'), href: paths.dashboard.root },
-            { name: tCommon('user.user'), href: paths.dashboard.user.root },
+            { name: tCommon('user.users'), href: paths.dashboard.user.root },
             { name: tCommon('list') },
           ]}
           action={

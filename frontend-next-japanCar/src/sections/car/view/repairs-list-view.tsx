@@ -40,7 +40,7 @@ type Props = {
 };
 
 export function RepairsListView({ carId }: Props) {
-  const { formFields } = useTranslateFromServer();
+  const { translations: formFields } = useTranslateFromServer();
 
   const TABLE_HEAD: TableHeadCellProps[] = [
     { id: 'repairDate', label: formFields['RepairDate'] },

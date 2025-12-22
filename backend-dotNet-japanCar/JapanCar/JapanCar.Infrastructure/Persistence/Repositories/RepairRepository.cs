@@ -76,6 +76,8 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 MechanicId = entity.MechanicId,
                 RepairDate = entity.RepairDate,
                 SteeringReplacerId = entity.SteeringReplacerId,
+                MechanicWorkHours = entity.MechanicWorkHours,
+                MechanicLaborCost = entity.MechanicLaborCost
             };
 
             newModel.CarRepairHistoryTranslations.Add(new CarRepairHistoryTranslation
@@ -105,6 +107,8 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
             repair.MechanicId = entity.MechanicId;
             repair.RepairDate = entity.RepairDate;
             repair.SteeringReplacerId = entity.SteeringReplacerId;
+            repair.MechanicWorkHours = entity.MechanicWorkHours;
+            repair.MechanicLaborCost = entity.MechanicLaborCost;
 
             var translation = repair.CarRepairHistoryTranslations.FirstOrDefault();
 
@@ -165,6 +169,8 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 DashboardReplacerId = repair.DashboardReplacerId,
                 SteeringReplacerId = repair.SteeringReplacerId,
                 RepairDate = repair.RepairDate,
+                MechanicLaborCost = repair.MechanicLaborCost,
+                MechanicWorkHours = repair.MechanicWorkHours
             };
             if (translation != null)
                 result.MechanicTechnicalNote = translation.MechanicTechnicalNote;

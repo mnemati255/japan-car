@@ -25,7 +25,7 @@ type Props = {
 export function RepairEditView({ carId, repairId }: Props) {
   const [currentRepair, setCurrentRepair] = useState<IRepair>();
   const { currentLang, t: tCommon } = useTranslate('common');
-  const { formFields } = useTranslateFromServer();
+  const { translations: formFields } = useTranslateFromServer();
   const lang = useSearchParams().get('lang') as LangCode | null;
   const [car, setCar] = useState<ICar>();
   const [parts, setParts] = useState<IPart[]>([]);

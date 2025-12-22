@@ -49,7 +49,11 @@ namespace JapanCar.Application.Services
                 AuctionPrice = x.AuctionPrice,
                 Year = x.Year,
                 CreatedAt = x.CreatedDate,
-                Images = x.ImageUrls
+                Images = x.ImageUrls,
+                SukuraNumber = x.SukuraNumber,
+                PurchaseDate = x.PurchaseDate.ToString(),
+                ChasisNumber = x.ChassisNumber,
+                ForSale = x.ForSale
             });
 
             var totalPage = filterDto.Take.HasValue ? PagingHelper.GetTotalPages(entities.TotalCount, filterDto.Take.Value) : 0;
@@ -62,9 +66,17 @@ namespace JapanCar.Application.Services
         }
 
 
-        public async Task CreateCar(CarDto dto, List<FileData> images)
+        public async Task<int?> CreateCar(CarDto dto, List<FileData> images, string userName)
         {
             var savedNames = await _fileStorage.SaveFilesAsync(images, Constants.CARS_IMAGES_FOLDER);
+
+            int? sukuraNumber = null;
+            if (dto.ForSale == 1)
+                sukuraNumber = await _unitOfWork.CarRepository.GetSukuraNumber();
+
+            var currentUser = await _unitOfWork.UserRepository.GetUserByUserName(userName);
+            if (currentUser == null)
+                throw new AppException("User not found", System.Net.HttpStatusCode.NotFound);
 
             await _unitOfWork.CarRepository.Create(new CarEntity
             {
@@ -85,18 +97,42 @@ namespace JapanCar.Application.Services
                 ManufactureMonth = dto.ManufactureMonth,
                 ScrapCost = dto.ScrapCost,
                 HasInsurance = dto.HasInsurance,
-                InsuranceStartDate = !string.IsNullOrEmpty(dto.InsuranceStartDate) ? DateTime.Parse(dto.InsuranceStartDate.Split("T")[0]) : null,
-                InsuranceEndDate = !string.IsNullOrEmpty(dto.InsuranceEndDate) ? DateTime.Parse(dto.InsuranceEndDate.Split("T")[0]) : null,
-                InsurancePolicyNumber = dto.InsurancePolicyNumber,
+                InsuranceEndDate = dto.InsuranceEndDate.ToDateTime(),
                 TransmissionType = dto.TransmissionType,
                 PlateType = dto.PlateType,
                 PlateNumber = dto.PlateNumber,
-                PurchaseDate = !string.IsNullOrEmpty(dto.PurchaseDate) ? DateTime.Parse(dto.PurchaseDate.Split("T")[0]) : null
+                PurchaseDate = dto.PurchaseDate.ToDateTime()!.Value,
+                ForSale = dto.ForSale,
+                TransportConfirm = dto.TransportConfirm,
+                TransportDate = dto.TransportDate.ToDateTime(),
+                TransportDateReceived = dto.TransportDateReceived.ToDateTime(),
+                TransportFrom = dto.TransportFrom,
+                TransportTo = dto.TransportTo,
+                NeedsPoliceCertificate = dto.NeedsPoliceCertificate,
+                PoliceCertificateRequestedDate = dto.PoliceCertificateRequestedDate.ToDateTime(),
+                PoliceCertificateReceivedDate = dto.PoliceCertificateReceivedDate.ToDateTime(),
+                DeedRequestedDate = dto.DeedRequestedDate.ToDateTime(),
+                DeedIssuedDate = dto.DeedIssuedDate.ToDateTime(),
+                PlateRegisteredDate = dto.PlateRegisteredDate.ToDateTime(),
+                SukuraNumber = sukuraNumber,
+                SentToMunicipality = dto.SentToMunicipality,
+                MunicipalitySentDate = dto.MunicipalitySentDate.ToDateTime(),
+                MunicipalitySentToPerson = dto.MunicipalitySentToPerson,
+                MunicipalitySentByUserId = dto.SentToMunicipality ? currentUser.UserId : null,
+                SentToAuction = dto.SentToAuction,
+                AuctionSentDate = dto.AuctionSentDate.ToDateTime(),
+                AuctionSentToPerson = dto.AuctionSentToPerson,
+                AuctionSentByUserId = dto.SentToAuction ? currentUser.UserId : null,
+                PlateRevoked = dto.PlateRevoked,
+                PlateRevokedDate = dto.PlateRevokedDate.ToDateTime(),
+                PlateRevokedByUserId = dto.PlateRevoked ? currentUser.UserId : null
             });
+
+            return sukuraNumber;
         }
 
 
-        public async Task UpdateCar(int id, CarDto dto, List<FileData> images)
+        public async Task<int?> UpdateCar(int id, CarDto dto, List<FileData> images, string userName)
         {
             var carWithImages = await _unitOfWork.CarRepository.GetById(id, false, true);
 
@@ -105,7 +141,15 @@ namespace JapanCar.Application.Services
 
             var savedNames = await _fileStorage.SaveFilesAsync(images, Constants.CARS_IMAGES_FOLDER);
 
-            await _unitOfWork.CarRepository.Update(id, new CarEntity
+            var currentUser = await _unitOfWork.UserRepository.GetUserByUserName(userName);
+            if (currentUser == null)
+                throw new AppException("User not found", System.Net.HttpStatusCode.NotFound);
+
+            int? sukuraNumber = null;
+            if (dto.ForSale == 1)
+                sukuraNumber = await _unitOfWork.CarRepository.GetSukuraNumber();
+
+            var updatedSukuraNumber = await _unitOfWork.CarRepository.Update(id, new CarEntity
             {
                 AuctionId = dto.AuctionId,
                 ChassisNumber = dto.ChasisNumber,
@@ -124,14 +168,38 @@ namespace JapanCar.Application.Services
                 ManufactureMonth = dto.ManufactureMonth,
                 ScrapCost = dto.ScrapCost,
                 HasInsurance = dto.HasInsurance,
-                InsuranceStartDate = !string.IsNullOrEmpty(dto.InsuranceStartDate) ? DateTime.Parse(dto.InsuranceStartDate.Split("T")[0]) : null,
-                InsuranceEndDate = !string.IsNullOrEmpty(dto.InsuranceEndDate) ? DateTime.Parse(dto.InsuranceEndDate.Split("T")[0]) : null,
-                InsurancePolicyNumber = dto.InsurancePolicyNumber,
+                InsuranceEndDate = dto.InsuranceEndDate.ToDateTime(),
                 TransmissionType = dto.TransmissionType,
                 PlateType = dto.PlateType,
                 PlateNumber = dto.PlateNumber,
-                PurchaseDate = !string.IsNullOrEmpty(dto.PurchaseDate) ? DateTime.Parse(dto.PurchaseDate.Split("T")[0]) : null
+                PurchaseDate = dto.PurchaseDate.ToDateTime()!.Value,
+                ForSale = dto.ForSale,
+                TransportConfirm = dto.TransportConfirm,
+                TransportDate = dto.TransportDate.ToDateTime(),
+                TransportDateReceived = dto.TransportDateReceived.ToDateTime(),
+                TransportFrom = dto.TransportFrom,
+                TransportTo = dto.TransportTo,
+                NeedsPoliceCertificate = dto.NeedsPoliceCertificate,
+                PoliceCertificateRequestedDate = dto.PoliceCertificateRequestedDate.ToDateTime(),
+                PoliceCertificateReceivedDate = dto.PoliceCertificateReceivedDate.ToDateTime(),
+                DeedRequestedDate = dto.DeedRequestedDate.ToDateTime(),
+                DeedIssuedDate = dto.DeedIssuedDate.ToDateTime(),
+                PlateRegisteredDate = dto.PlateRegisteredDate.ToDateTime(),
+                SukuraNumber = sukuraNumber,
+                SentToMunicipality = dto.SentToMunicipality,
+                MunicipalitySentDate = dto.MunicipalitySentDate.ToDateTime(),
+                MunicipalitySentToPerson = dto.MunicipalitySentToPerson,
+                MunicipalitySentByUserId = dto.SentToMunicipality ? currentUser.UserId : null,
+                SentToAuction = dto.SentToAuction,
+                AuctionSentDate = dto.AuctionSentDate.ToDateTime(),
+                AuctionSentToPerson = dto.AuctionSentToPerson,
+                AuctionSentByUserId = dto.SentToAuction ? currentUser.UserId : null,
+                PlateRevoked = dto.PlateRevoked,
+                PlateRevokedDate = dto.PlateRevokedDate.ToDateTime(),
+                PlateRevokedByUserId = dto.PlateRevoked ? currentUser.UserId : null
             });
+
+            return updatedSukuraNumber;
         }
 
 
@@ -178,14 +246,34 @@ namespace JapanCar.Application.Services
                 EngineVolume = car.EngineVolume,
                 FuelType = car.FuelType,
                 ManufactureMonth = car.ManufactureMonth ?? 0,
-                PurchaseDate = car.PurchaseDate?.ToString(),
+                PurchaseDate = car.PurchaseDate.ToString(),
                 ScrapCost = car.ScrapCost,
                 HasInsurance = car.HasInsurance,
-                InsuranceStartDate = car.InsuranceStartDate?.ToString(),
                 InsuranceEndDate = car.InsuranceEndDate?.ToString(),
-                InsurancePolicyNumber = car.InsurancePolicyNumber,
                 PlateType = car.PlateType,
-                TransmissionType = car.TransmissionType
+                PlateNumber = car.PlateNumber,
+                TransmissionType = car.TransmissionType,
+                ForSale = car.ForSale,
+                TransportConfirm = car.TransportConfirm,
+                TransportDate = car.TransportDate?.ToString(),
+                TransportDateReceived = car.TransportDateReceived?.ToString(),
+                TransportFrom = car.TransportFrom,
+                TransportTo = car.TransportTo,
+                NeedsPoliceCertificate = car.NeedsPoliceCertificate,
+                PoliceCertificateRequestedDate = car.PoliceCertificateRequestedDate?.ToString(),
+                PoliceCertificateReceivedDate = car.PoliceCertificateReceivedDate?.ToString(),
+                DeedRequestedDate = car.DeedRequestedDate?.ToString(),
+                DeedIssuedDate = car.DeedIssuedDate?.ToString(),
+                PlateRegisteredDate = car.PlateRegisteredDate?.ToString(),
+                SukuraNumber = car.SukuraNumber,
+                SentToMunicipality = car.SentToMunicipality,
+                MunicipalitySentDate = car.MunicipalitySentDate.ToString(),
+                MunicipalitySentToPerson = car.MunicipalitySentToPerson,
+                SentToAuction = car.SentToAuction,
+                AuctionSentDate = car.AuctionSentDate.ToString(),
+                AuctionSentToPerson = car.AuctionSentToPerson,
+                PlateRevoked = car.PlateRevoked,
+                PlateRevokedDate = car.PlateRevokedDate.ToString(),
             };
         }
     }

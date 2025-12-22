@@ -64,6 +64,10 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<RolePermission> RolePermissions { get; set; }
 
+    public virtual DbSet<SystemNotification> SystemNotifications { get; set; }
+
+    public virtual DbSet<SystemNotificationTranslation> SystemNotificationTranslations { get; set; }
+
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserRole> UserRoles { get; set; }
@@ -130,6 +134,13 @@ public partial class AppDbContext : DbContext
             entity.HasKey(e => e.CarId).HasName("PK__Cars__68A0342E1EC2C699");
 
             entity.Property(e => e.CarId).HasComment("شناسه خودرو");
+            entity.Property(e => e.ActionSentByUserId).HasComment("ActionSentByUserId");
+            entity.Property(e => e.ActionSentDate)
+                .HasComment("ActionSentDate")
+                .HasColumnType("datetime");
+            entity.Property(e => e.ActionSentToPerson)
+                .HasMaxLength(200)
+                .HasComment("ActionSentToPerson");
             entity.Property(e => e.ChassisNumber)
                 .HasMaxLength(100)
                 .HasComment("شماره شاسی");
@@ -139,19 +150,20 @@ public partial class AppDbContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasComment("تاریخ ایجاد")
                 .HasColumnType("datetime");
+            entity.Property(e => e.DeedIssuedDate)
+                .HasComment("Deed Issued Date")
+                .HasColumnType("datetime");
+            entity.Property(e => e.DeedRequestedDate)
+                .HasComment("Deed Requested Date")
+                .HasColumnType("datetime");
             entity.Property(e => e.EngineVolume).HasComment("حجم موتور");
+            entity.Property(e => e.ForSale).HasComment("For Sale");
             entity.Property(e => e.FuelType)
                 .HasMaxLength(100)
                 .HasComment("نوع سوخت");
             entity.Property(e => e.HasInsurance).HasComment("وضعیت داشتن بیمه‌نامه (1 = دارد، 0 = ندارد)");
             entity.Property(e => e.InsuranceExpireDate)
                 .HasComment("تاریخ انقضای بیمه خودرو")
-                .HasColumnType("datetime");
-            entity.Property(e => e.InsurancePolicyNumber)
-                .HasMaxLength(100)
-                .HasComment("شماره بیمه‌نامه خودرو");
-            entity.Property(e => e.InsuranceStartDate)
-                .HasComment("تاریخ شروع اعتبار بیمه خودرو")
                 .HasColumnType("datetime");
             entity.Property(e => e.ManufactureMonth).HasComment("ماه ساخت خودرو (عدد بین 1 تا 12)");
             entity.Property(e => e.Mileage).HasComment("کارکرد خودرو");
@@ -160,14 +172,53 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.ModifiedDate)
                 .HasComment("تاریخ ویرایش")
                 .HasColumnType("datetime");
+            entity.Property(e => e.MunicipalitySentByUserId).HasComment("MunicipalitySentByUserId");
+            entity.Property(e => e.MunicipalitySentDate)
+                .HasComment("MunicipalitySentDate")
+                .HasColumnType("datetime");
+            entity.Property(e => e.MunicipalitySentToPerson)
+                .HasMaxLength(200)
+                .HasComment("MunicipalitySentToPerson");
+            entity.Property(e => e.NeedsPoliceCertificate)
+                .HasDefaultValue(false)
+                .HasComment("Needs Police Certificate");
             entity.Property(e => e.PlateNumber)
                 .HasMaxLength(50)
                 .HasComment("Vehicle plate number (may include letters and numbers)");
+            entity.Property(e => e.PlateRegisteredDate)
+                .HasComment("Plate Registere dDate")
+                .HasColumnType("datetime");
+            entity.Property(e => e.PlateRevoked).HasComment("PlateRevoked");
+            entity.Property(e => e.PlateRevokedDate)
+                .HasComment("PlateRevokedDate")
+                .HasColumnType("datetime");
             entity.Property(e => e.PlateType).HasComment("نوع پلاک خودرو (شخصی، عمومی/کار، اجاره‌ای، صادراتی و ...)");
+            entity.Property(e => e.PoliceCertificateReceivedDate)
+                .HasComment("Police Certificate Received Date")
+                .HasColumnType("datetime");
+            entity.Property(e => e.PoliceCertificateRequestedDate)
+                .HasComment("Police Certificate Requested Date")
+                .HasColumnType("datetime");
+            entity.Property(e => e.SentToAction).HasComment("SentToAction");
+            entity.Property(e => e.SentToMunicipality).HasComment("SentToMunicipality");
+            entity.Property(e => e.SukuraNumber).HasComment("Sukura Number");
             entity.Property(e => e.TransmissionType)
                 .HasMaxLength(50)
                 .HasComment("نوع گیربکس خودرو (اتوماتیک، دستی، CVT و ...)");
+            entity.Property(e => e.TransportConfirm).HasComment("Transport Confirm");
+            entity.Property(e => e.TransportDate)
+                .HasComment("Transport Date")
+                .HasColumnType("datetime");
+            entity.Property(e => e.TransportDateReceived)
+                .HasComment("Transport Date")
+                .HasColumnType("datetime");
+            entity.Property(e => e.TransportFrom).HasComment("1-Toyota R 2-Zero R 3- Self Transport");
+            entity.Property(e => e.TransportTo).HasComment("1-Osaka -Own yard 3- Hakata");
             entity.Property(e => e.Year).HasComment("سال ساخت");
+
+            entity.HasOne(d => d.ActionSentByUser).WithMany(p => p.CarActionSentByUsers)
+                .HasForeignKey(d => d.ActionSentByUserId)
+                .HasConstraintName("FK_Cars_ActionSentByUserId");
 
             entity.HasOne(d => d.Color).WithMany(p => p.Cars)
                 .HasForeignKey(d => d.ColorId)
@@ -186,6 +237,14 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.ModifiedByNavigation).WithMany(p => p.CarModifiedByNavigations)
                 .HasForeignKey(d => d.ModifiedBy)
                 .HasConstraintName("FK_Cars_ModifiedBy");
+
+            entity.HasOne(d => d.MunicipalitySentByUser).WithMany(p => p.CarMunicipalitySentByUsers)
+                .HasForeignKey(d => d.MunicipalitySentByUserId)
+                .HasConstraintName("FK_Cars_MunicipalitySentByUserId");
+
+            entity.HasOne(d => d.PlateRevokedByUser).WithMany(p => p.CarPlateRevokedByUsers)
+                .HasForeignKey(d => d.PlateRevokedByUserId)
+                .HasConstraintName("FK_Cars_PlateRevokedByUserId");
         });
 
         modelBuilder.Entity<CarAuctionDetail>(entity =>
@@ -443,6 +502,12 @@ public partial class AppDbContext : DbContext
                 .HasColumnType("datetime");
             entity.Property(e => e.DashboardReplacerId).HasComment("تعویض‌کننده داشبورد");
             entity.Property(e => e.MechanicId).HasComment("شناسه مکانیک");
+            entity.Property(e => e.MechanicLaborCost)
+                .HasComment("Mechanic Labor Cost")
+                .HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.MechanicWorkHours)
+                .HasComment("Mechanic Work Hours")
+                .HasColumnType("decimal(5, 2)");
             entity.Property(e => e.ModifiedBy).HasComment("ویرایش شده توسط");
             entity.Property(e => e.ModifiedDate)
                 .HasComment("تاریخ ویرایش")
@@ -779,6 +844,52 @@ public partial class AppDbContext : DbContext
                 .HasForeignKey(d => d.RoleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__RolePermi__RoleI__08B54D69");
+        });
+
+        modelBuilder.Entity<SystemNotification>(entity =>
+        {
+            entity.HasKey(e => e.NotificationId).HasName("PK__SystemNo__20CF2E1230079220");
+
+            entity.Property(e => e.NotificationId).HasComment("Notification Id");
+            entity.Property(e => e.CarId).HasComment("Car Id");
+            entity.Property(e => e.CreatedDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasComment("Created Date")
+                .HasColumnType("datetime");
+            entity.Property(e => e.DueDate)
+                .HasComment("Due Date")
+                .HasColumnType("datetime");
+            entity.Property(e => e.IsResolved).HasComment("Is Resolved");
+            entity.Property(e => e.NotificationType).HasComment("Notification Type");
+            entity.Property(e => e.ResolvedDate)
+                .HasComment("Resolved Date")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.Car).WithMany(p => p.SystemNotifications)
+                .HasForeignKey(d => d.CarId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SystemNotifications_Cars");
+
+            entity.HasOne(d => d.ResolvedByNavigation).WithMany(p => p.SystemNotifications)
+                .HasForeignKey(d => d.ResolvedBy)
+                .HasConstraintName("FK_SystemNotifications_Users");
+        });
+
+        modelBuilder.Entity<SystemNotificationTranslation>(entity =>
+        {
+            entity.ToTable("SystemNotificationTranslation");
+
+            entity.Property(e => e.Message).HasMaxLength(500);
+
+            entity.HasOne(d => d.Language).WithMany(p => p.SystemNotificationTranslations)
+                .HasForeignKey(d => d.LanguageId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SystemNotificationTranslation_Languages");
+
+            entity.HasOne(d => d.SystemNotification).WithMany(p => p.SystemNotificationTranslations)
+                .HasForeignKey(d => d.SystemNotificationId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SystemNotificationTranslation_SystemNotifications");
         });
 
         modelBuilder.Entity<User>(entity =>

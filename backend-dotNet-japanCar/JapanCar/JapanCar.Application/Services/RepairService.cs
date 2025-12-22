@@ -61,6 +61,8 @@ namespace JapanCar.Application.Services
                 MechanicTechnicalNote = dto.MechanicTechnicalNote,
                 RepairDate = DateOnly.Parse(dto.RepairDate.Split("T")[0]),
                 SteeringReplacerId = dto.SteeringReplacerId,
+                MechanicWorkHours = dto.MechanicWorkHours,
+                MechanicLaborCost = dto.MechanicLaborCost
             };
 
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
@@ -97,13 +99,15 @@ namespace JapanCar.Application.Services
                 MechanicTechnicalNote = dto.MechanicTechnicalNote,
                 RepairDate = DateOnly.Parse(dto.RepairDate.Split("T")[0]),
                 SteeringReplacerId = dto.SteeringReplacerId,
+                MechanicWorkHours = dto.MechanicWorkHours,
+                MechanicLaborCost = dto.MechanicLaborCost
             };
 
             await _unitOfWork.ExecuteInTransactionAsync(async () =>
             {
-                await _unitOfWork.RepairRepository.UpdateRepair(languageId, repairId, repairEntity);
+                await _unitOfWork.CarPartRepository.DeleteCarPartsOfRepair(repairId);
 
-                await _unitOfWork.CarPartRepository.DeleteCarPartRange([.. dto.Parts.Select(x => x.CarPartId!.Value)]);
+                await _unitOfWork.RepairRepository.UpdateRepair(languageId, repairId, repairEntity);
 
                 foreach (var item in dto.Parts)
                 {
@@ -130,7 +134,7 @@ namespace JapanCar.Application.Services
 
                 var carParts = await _unitOfWork.CarPartRepository.GetPartsOfRepair(repairId);
 
-                await _unitOfWork.CarPartRepository.DeleteCarPartRange([.. carParts.Select(x=>x.CarPartId)]);
+                await _unitOfWork.CarPartRepository.DeleteCarPartsOfRepair(repairId);
 
                 await _unitOfWork.RepairRepository.DeleteRepair(repairId);
             });
@@ -157,6 +161,8 @@ namespace JapanCar.Application.Services
                 SteeringReplacerId = repair.SteeringReplacerId,
                 RepairDate = repair.RepairDate.ToString(),
                 MechanicTechnicalNote = repair.MechanicTechnicalNote,
+                MechanicWorkHours = repair.MechanicWorkHours,
+                MechanicLaborCost = repair.MechanicLaborCost,
                 Parts = carParts.Select(x => new RepairedPartDto
                 {
                     CarPartId = x.CarPartId,

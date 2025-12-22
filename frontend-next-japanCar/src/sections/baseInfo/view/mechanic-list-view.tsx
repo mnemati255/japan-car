@@ -9,7 +9,7 @@ import { endpoints } from '@/lib/axios';
 import { MechanicCreateEditForm } from '../mechanic-create-edit-form';
 
 export function MechanicListView() {
-  const { formFields } = useTranslateFromServer();
+  const { translations: formFields } = useTranslateFromServer();
   const { t: tCommon } = useTranslate('common');
 
   const TABLE_HEAD: TableHeadCellProps[] = [

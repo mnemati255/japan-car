@@ -1,5 +1,6 @@
 export interface IPart {
   partId?: number;
+  partPrice: number;
   partName: string;
   partDescription?: string | undefined | null;
   createdAt?: string;

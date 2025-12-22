@@ -23,13 +23,32 @@ export interface ICar {
   manufactureMonth: number;
   transmissionType?: string | null | undefined;
   hasInsurance: boolean;
-  insuranceStartDate?: string;
   insuranceEndDate?: string;
-  insurancePolicyNumber?: string;
   plateType?: number;
   plateNumber?: string;
   scrapCost?: number | null | undefined;
   purchaseDate?: string;
+  forSale?: number;
+  transportFrom?: number;
+  transportTo?: number;
+  transportConfirm?: boolean;
+  transportDate?: string;
+  transportDateReceived?: string;
+  needsPoliceCertificate?: boolean;
+  policeCertificateRequestedDate?: string;
+  policeCertificateReceivedDate?: string;
+  deedRequestedDate?: string;
+  deedIssuedDate?: string;
+  plateRegisteredDate?: string;
+  sukuraNumber?: number;
+  sentToMunicipality: boolean;
+  municipalitySentDate?: string;
+  municipalitySentToPerson?: string;
+  sentToAuction: boolean;
+  auctionSentDate?: string;
+  auctionSentToPerson?: string;
+  plateRevoked: boolean;
+  plateRevokedDate?: string;
 }
 
 export interface IColor {

@@ -22,7 +22,7 @@ export function RepairCreateView({ carId }: Props) {
   const [parts, setParts] = useState<IPart[]>([]);
   const [mechanics, setMechanics] = useState<IMechanic[]>([]);
   const { t: tCommon, currentLang } = useTranslate('common');
-  const { formFields } = useTranslateFromServer();
+  const { translations: formFields } = useTranslateFromServer();
 
   useEffect(() => {
     (async () => {

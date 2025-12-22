@@ -23,7 +23,7 @@ import { useTranslate, useTranslateFromServer } from '@/locales';
 export function RoleListView() {
   const { roles, rolesLoading } = useGetRoles();
   const { t: tCommon } = useTranslate('common');
-  const { formFields } = useTranslateFromServer();
+  const { translations: formFields } = useTranslateFromServer();
 
   const TABLE_HEAD: TableHeadCellProps[] = [
     { id: 'roleName', label: formFields['RoleName'] },

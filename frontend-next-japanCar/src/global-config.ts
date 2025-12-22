@@ -39,7 +39,7 @@ export const CONFIG: ConfigValue = {
   auth: {
     method: 'jwt',
     skip: false,
-    redirectPath: paths.dashboard.auction.root,
+    redirectPath: paths.dashboard.notification.inbox,
   },
   appSettings: {
     pageSize: Number(process.env.NEXT_PUBLIC_PAGE_SIZE) ?? 10,

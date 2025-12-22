@@ -32,7 +32,7 @@ type Props = {
 export function AuctionCreateEditForm({ currentAuction, lang }: Props) {
   const router = useRouter();
   const { t: tCommon } = useTranslate('common');
-  const { formFields, systemMessages } = useTranslateFromServer();
+  const { translations } = useTranslateFromServer();
 
   const AuctionCreateSchema = z.object({
     auctionName: z.string().min(1, { error: messages.required() }),
@@ -76,8 +76,8 @@ export function AuctionCreateEditForm({ currentAuction, lang }: Props) {
       if (status == 200) {
         toast.success(
           currentAuction
-            ? systemMessages['update_success']
-            : systemMessages['create_success']
+            ? translations['update_success']
+            : translations['create_success']
         );
         router.push(paths.dashboard.auction.root);
       }
@@ -99,13 +99,13 @@ export function AuctionCreateEditForm({ currentAuction, lang }: Props) {
                 gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' },
               }}
             >
-              <Field.Text name="auctionName" label={formFields['AuctionName']} />
+              <Field.Text name="auctionName" label={translations['AuctionName']} />
               <LocalizationProvider>
-                <Field.DatePicker name="auctionDate" label={formFields['AuctionDate']} />
+                <Field.DatePicker name="auctionDate" label={translations['AuctionDate']} />
               </LocalizationProvider>
               <Field.Text
                 name="auctionFee"
-                label={formFields['AuctionFee']}
+                label={translations['AuctionFee']}
                 type="number"
                 slotProps={{
                   input: {

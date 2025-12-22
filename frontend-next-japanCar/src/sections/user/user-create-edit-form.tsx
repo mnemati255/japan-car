@@ -29,7 +29,7 @@ type Props = {
 export function UserCreateEditForm({ currentUser }: Props) {
   const router = useRouter();
   const { t: tCommon } = useTranslate('common');
-  const { formFields } = useTranslateFromServer();
+  const { translations } = useTranslateFromServer();
 
   const UserCreateSchema = z.object({
     userName: z.string().min(1, { error: messages.required() }),
@@ -78,7 +78,9 @@ export function UserCreateEditForm({ currentUser }: Props) {
     try {
       if (!currentUser) await createUser(data);
       else await updateUser(currentUser.userId!, data);
-      toast.success(currentUser ? 'Update success!' : 'Create success!');
+      toast.success(
+        currentUser ? translations['update_success'] : translations['create_success']
+      );
       router.push(paths.dashboard.user.root);
     } catch (error) {
       console.error(error);
@@ -100,15 +102,15 @@ export function UserCreateEditForm({ currentUser }: Props) {
             >
               <Field.Text
                 name="userName"
-                label={formFields['UserName']}
+                label={translations['UserName']}
                 disabled={currentUser != null}
               />
               <Field.Text
                 name="password"
-                label={formFields['PasswordHash']}
+                label={translations['PasswordHash']}
                 type="password"
               />
-              <Field.Text name="email" label={formFields['Email']} />
+              <Field.Text name="email" label={translations['Email']} />
 
               <Stack sx={{ gridColumnStart: 1 }} direction={'row'} alignItems={'center'}>
                 <Typography variant="subtitle2" color="gray">

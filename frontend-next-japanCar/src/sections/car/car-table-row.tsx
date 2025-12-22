@@ -17,6 +17,7 @@ import { CONFIG } from '@/global-config';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useTranslate } from '@/locales';
+import { CarPrintDialog } from './car-print-dialog';
 
 // ----------------------------------------------------------------------
 
@@ -28,6 +29,7 @@ type Props = {
 
 export function CarTableRow({ row, onDeleteRow, auctionId }: Props) {
   const confirmDialog = useBoolean();
+  const printDialog = useBoolean();
   const [loading, setLoading] = useState(false);
   const { t: tCommon } = useTranslate('common');
 
@@ -54,6 +56,15 @@ export function CarTableRow({ row, onDeleteRow, auctionId }: Props) {
     />
   );
 
+  const renderPrintDialog = () => (
+    <CarPrintDialog
+      open={printDialog.value}
+      onClose={printDialog.onFalse}
+      car={row}
+      model={row.modelName!}
+    />
+  );
+
   return (
     <>
       <TableRow>
@@ -77,6 +88,7 @@ export function CarTableRow({ row, onDeleteRow, auctionId }: Props) {
         {/* {!auctionId && <TableCell>{row.auctionName}</TableCell>} */}
         <TableCell>{fCurrency(row.purchasePrice)}</TableCell>
         <TableCell>{fCurrency(row.finalPrice)}</TableCell>
+        <TableCell>{row.sukuraNumber}</TableCell>
         <TableCell>{row.createdAt?.split('T')[0]}</TableCell>
 
         <TableCell>
@@ -87,6 +99,13 @@ export function CarTableRow({ row, onDeleteRow, auctionId }: Props) {
                   <Iconify icon="hugeicons:repair" />
                 </IconButton>
               </RouterLink>
+            </Tooltip>
+            <Tooltip title="Print" placement="top" arrow>
+              <IconButton
+                onClick={printDialog.onTrue}
+              >
+                <Iconify icon="solar:printer-minimalistic-bold" />
+              </IconButton>
             </Tooltip>
             <Tooltip title="Edit" placement="top" arrow>
               <RouterLink
@@ -110,6 +129,7 @@ export function CarTableRow({ row, onDeleteRow, auctionId }: Props) {
         </TableCell>
       </TableRow>
       {renderConfirmDialog()}
+      {renderPrintDialog()}
     </>
   );
 }

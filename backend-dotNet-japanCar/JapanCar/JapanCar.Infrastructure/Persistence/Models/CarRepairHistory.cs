@@ -55,6 +55,16 @@ public partial class CarRepairHistory
     /// </summary>
     public int? ModifiedBy { get; set; }
 
+    /// <summary>
+    /// Mechanic Work Hours
+    /// </summary>
+    public decimal? MechanicWorkHours { get; set; }
+
+    /// <summary>
+    /// Mechanic Labor Cost
+    /// </summary>
+    public decimal? MechanicLaborCost { get; set; }
+
     public virtual Car Car { get; set; } = null!;
 
     public virtual ICollection<CarPart> CarParts { get; set; } = new List<CarPart>();

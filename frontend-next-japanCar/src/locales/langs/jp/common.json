@@ -10,6 +10,7 @@
   "create": "作成",
   "update": "更新",
   "delete": "削除",
+  "yes": "はい",
   "deleteText": "本当に削除しますか？",
   "history": "履歴",
   "cancel": "キャンセル",
@@ -19,6 +20,17 @@
   "count": "件数",
   "by": "担当",
   "cost": "費用",
+  "active": "アクティブ",
+  "inactive": "非アクティブ",
+  "notification": {
+    "notification": "通知",
+    "notifications": "通知",
+    "noNotifications": "通知はありません",
+    "inbox": "受信箱",
+    "resolved": "解決済み",
+    "markAsDone": "完了としてマーク",
+    "markAsDoneText": "本当に完了としてマークしますか？"
+  },
   "car": {
     "car": "車",
     "cars": "車",
@@ -41,13 +53,20 @@
     "noAuctions": "オークションがありません",
     "createNew": "新しいオークションを作成"
   },
+  "customer": {
+    "customer": "顧客",
+    "customers": "顧客",
+    "addCustomer": "顧客を追加",
+    "createNew": "新しい顧客を作成",
+    "noCustomers": "顧客がいません",
+    "isCustomerActive": "顧客はアクティブですか？"
+  },
   "user": {
     "user": "ユーザー",
+    "users": "ユーザー",
     "addUser": "ユーザーを追加",
     "createNew": "新しいユーザーを作成",
     "noUsers": "ユーザーがいません",
-    "active": "アクティブ",
-    "inactive": "非アクティブ",
     "isUserActive": "ユーザーはアクティブですか？"
   },
   "role": {

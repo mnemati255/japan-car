@@ -17,11 +17,11 @@ namespace JapanCar.Application.Services
             _requestContext = requestContext;
         }
 
-        public async Task<IEnumerable<AuctionDto>> GetAllAuctions()
+        public async Task<IEnumerable<AuctionDto>> GetAuctions()
         {
             var languageId = await GetLanguageId(_requestContext.Locale);
 
-            var auctions = await _unitOfWork.AuctionRepository.GetAll((int)languageId);
+            var auctions = await _unitOfWork.AuctionRepository.GetAuctions((int)languageId);
 
             return auctions.Select(x => new AuctionDto
             {
@@ -37,7 +37,7 @@ namespace JapanCar.Application.Services
         {
             var languageId = await GetLanguageId(locale);
 
-            var auction = await _unitOfWork.AuctionRepository.GetById(languageId, id);
+            var auction = await _unitOfWork.AuctionRepository.GetAuctionById(languageId, id);
 
             if (auction == null)
                 throw new AppException("Not found", HttpStatusCode.NotFound);
@@ -55,7 +55,7 @@ namespace JapanCar.Application.Services
         {
             var languageId = await GetLanguageId(_requestContext.Locale);
 
-            await _unitOfWork.AuctionRepository.Create((int)languageId, new AuctionEntity
+            await _unitOfWork.AuctionRepository.CreateAuction((int)languageId, new AuctionEntity
             {
                 AuctionName = dto.AuctionName,
                 AuctionDate = DateOnly.Parse(dto.AuctionDate.Split("T")[0]),
@@ -67,7 +67,7 @@ namespace JapanCar.Application.Services
         {
             var languageId = await GetLanguageId(locale);
 
-            var result = await _unitOfWork.AuctionRepository.Update(languageId, id, new AuctionEntity
+            var result = await _unitOfWork.AuctionRepository.UpdateAuction(languageId, id, new AuctionEntity
             {
                 AuctionName = dto.AuctionName,
                 AuctionDate = DateOnly.Parse(dto.AuctionDate.Split("T")[0]),
@@ -81,7 +81,7 @@ namespace JapanCar.Application.Services
 
         public async Task DeleteAuction(int id)
         {
-            var result = await _unitOfWork.AuctionRepository.Delete(id);
+            var result = await _unitOfWork.AuctionRepository.DeleteAuction(id);
             if (!result)
                 throw new AppException("Not found", HttpStatusCode.NotFound);
         }

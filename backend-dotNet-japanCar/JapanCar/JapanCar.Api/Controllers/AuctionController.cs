@@ -25,7 +25,7 @@ namespace JapanCar.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _auctionService.GetAllAuctions();
+            var result = await _auctionService.GetAuctions();
             return Ok(result);
         }
 

@@ -96,8 +96,10 @@ export const endpoints = {
     signIn: '/auth/login',
     signUp: '/api/auth/sign-up',
   },
+  notification: 'notification',
   car: 'car',
   repair: 'repair',
+  customer: 'customer',
   baseInfo: {
     brand: 'baseInfo/brand',
     color: 'baseInfo/color',

@@ -13,5 +13,7 @@
         public string? DashboardReplacerName { get; set; }
         public DateTime? CreatedDate { get; set; }       
         public int CarId { get; set; }
+        public decimal? MechanicWorkHours { get; set; }
+        public decimal? MechanicLaborCost { get; set; }
     }
 }

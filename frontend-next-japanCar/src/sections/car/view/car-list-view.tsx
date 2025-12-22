@@ -35,9 +35,9 @@ const DEFAULT_FILTERS = {
   chasisNumber: '',
   fuelType: '',
   month: '',
-  transmissionType:'',
-  plateType:'',
-  plateNumber:'',
+  transmissionType: '',
+  plateType: '',
+  plateNumber: '',
 };
 
 // ----------------------------------------------------------------------
@@ -47,12 +47,13 @@ type Props = {
 };
 
 export function CarListView({ auctionId }: Props) {
-  const { formFields } = useTranslateFromServer();
-  
+  const { translations: formFields } = useTranslateFromServer();
+
   const TABLE_HEAD: TableHeadCellProps[] = [
     { id: 'modelName', label: formFields['ModelName'] },
     { id: 'purchasePrice', label: formFields['PurchasePrice'] },
     { id: 'finalPrice', label: formFields['FinalPrice'] },
+    { id: 'sukuraNumber', label: formFields['SukuraNumber'] },
     { id: 'createdAt', label: formFields['CreatedDate'] },
     { id: 'actions', width: 88 },
   ];
@@ -163,7 +164,11 @@ export function CarListView({ auctionId }: Props) {
   );
 
   const links = !auctionId
-    ? [{ name: tCommon('dashboard'), href: paths.dashboard.root }, { name: 'Cars' }]
+    ? [
+        { name: tCommon('dashboard'), href: paths.dashboard.root },
+        { name: tCommon('car.cars'), href: paths.dashboard.car.root },
+        { name: tCommon('list') },
+      ]
     : [
         { name: tCommon('dashboard'), href: paths.dashboard.root },
         { name: currentAuction?.auctionName, href: paths.dashboard.auction.root },
@@ -175,8 +180,7 @@ export function CarListView({ auctionId }: Props) {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading={tCommon('car.cars')}
-        backHref={paths.dashboard.car.root}
+        heading={tCommon('list')}
         links={links}
         action={
           <Button

@@ -24,7 +24,7 @@ export function CarEditView({ carId }: Props) {
   const [brands, setBrands] = useState<IBrand[]>([]);
   const [files, setFiles] = useState<File[]>([]);
   const { t: tCommon } = useTranslate('commo');
-  const { formFields } = useTranslateFromServer();
+  const { translations: formFields } = useTranslateFromServer();
 
   useEffect(() => {
     (async () => {

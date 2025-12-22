@@ -9,6 +9,6 @@ namespace JapanCar.Application.Interfaces
         Task<PartEntity?> GetPartById(int languageId, int id);
         Task CreatePart(int languageId, PartEntity entity);
         Task UpdatePart(int languageId, int id, PartEntity entity);
-        Task DeletePart(int id);
+        Task<bool> DeletePart(int id);
     }
 }

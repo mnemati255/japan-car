@@ -1,7 +1,13 @@
 {
   "subheader": "管理",
+  "notification": {
+    "notifications": "通知",
+    "inbox": "受信箱",
+    "resolved": "解決済み"
+  },
   "auctions": "オークション",
   "cars": "車",
+  "customers": "顧客",
   "users": "ユーザー",
   "roles": "ロール",
   "baseInfo": {

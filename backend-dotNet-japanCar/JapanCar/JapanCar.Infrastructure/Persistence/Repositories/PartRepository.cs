@@ -24,7 +24,10 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
 
         public async Task CreatePart(int languageId, PartEntity entity)
         {
-            var part = new Part();
+            var part = new Part
+            {
+                PartPrice = entity.PartPrice
+            };
 
             part.PartTranslations.Add(new PartTranslation
             {
@@ -39,25 +42,27 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task DeletePart(int id)
+        public async Task<bool> DeletePart(int id)
         {
             var part = await _context.Parts
                 .Include(x => x.PartTranslations)
-                .FirstOrDefaultAsync(x => x.PartId == id);
+                .FirstAsync(x => x.PartId == id);
 
-            if (part != null)
-            {
-                _context.PartTranslations.RemoveRange(part.PartTranslations);
-                _context.Parts.Remove(part);
+            if (part == null)
+                return false;
 
-                await _context.SaveChangesAsync();
-            }
+            _context.PartTranslations.RemoveRange(part.PartTranslations);
+            _context.Parts.Remove(part);
+
+            await _context.SaveChangesAsync();
+                
+            return true;
         }
 
 
         public async Task<PartEntity?> GetPartById(int languageId, int id)
         {
-            var entity = await _context.Parts
+            var part = await _context.Parts
                 .Where(x => x.PartId == id)
                 .Select(p => new
                 {
@@ -69,8 +74,9 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
             return new PartEntity
             {
                 PartId = id,
-                PartName = entity.tr != null ? entity.tr.PartName : "",
-                PartDescription = entity.tr != null ? entity.tr.PartDescription : "",
+                PartPrice = part.p.PartPrice,
+                PartName = part.tr != null ? part.tr.PartName : "",
+                PartDescription = part.tr != null ? part.tr.PartDescription : "",
             };
         }
 
@@ -96,6 +102,7 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
             var items = await query.Select(x => new PartEntity
             {
                 PartId = x.p.PartId,
+                PartPrice = x.p.PartPrice,
                 PartName = x.pTr.PartName,
                 PartDescription = x.pTr.PartDescription,
                 CreatedDate = x.p.CreatedDate
@@ -122,6 +129,8 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
 
             if (part != null)
             {
+                part.p.PartPrice = entity.PartPrice;
+
                 if (part.tr != null)
                 {
                     part.tr.PartName = entity.PartName;
@@ -142,5 +151,6 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
     }
 }

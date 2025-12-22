@@ -76,17 +76,45 @@ export async function createEditCar(
   fd.append('dto.dto.AuctionPrice', car.auctionPrice?.toString() ?? '');
   fd.append('dto.dto.Year', car.year.toString());
 
-  fd.append('dto.dto.ScrapCost', car.scrapCost?.toString() ?? "");
+  fd.append('dto.dto.ScrapCost', car.scrapCost?.toString() ?? '');
   fd.append('dto.dto.ManufactureMonth', car.manufactureMonth.toString());
-  fd.append('dto.dto.TransmissionType', car.transmissionType ?? "");
-  fd.append('dto.dto.PlateType', car.plateType?.toString() ?? "");
-  fd.append('dto.dto.PlateNumber', car.plateNumber ?? "");
-  fd.append('dto.dto.PurchaseDate', car.purchaseDate ?? "");
+  fd.append('dto.dto.TransmissionType', car.transmissionType ?? '');
+  fd.append('dto.dto.PlateType', car.plateType?.toString() ?? '');
+  fd.append('dto.dto.PlateNumber', car.plateNumber ?? '');
+  fd.append('dto.dto.PurchaseDate', car.purchaseDate ?? '');
   fd.append('dto.dto.HasInsurance', car.hasInsurance.toString());
-  fd.append('dto.dto.InsuranceStartDate', car.insuranceStartDate ?? "");
-  fd.append('dto.dto.InsuranceEndDate', car.insuranceEndDate ?? "");
-  fd.append('dto.dto.InsurancePolicyNumber', car.insurancePolicyNumber ?? "");
-  
+  fd.append('dto.dto.InsuranceEndDate', car.insuranceEndDate ?? '');
+  fd.append('dto.dto.ForSale', car.forSale?.toString() ?? '');
+  fd.append('dto.dto.TransportFrom', car.transportFrom?.toString() ?? '');
+  fd.append('dto.dto.TransportTo', car.transportTo?.toString() ?? '');
+  fd.append('dto.dto.TransportConfirm', car.transportConfirm?.toString() ?? '');
+  fd.append('dto.dto.TransportDate', car.transportDate ?? '');
+  fd.append('dto.dto.TransportDateReceived', car.transportDateReceived ?? '');
+  fd.append(
+    'dto.dto.NeedsPoliceCertificate',
+    car.needsPoliceCertificate?.toString() ?? ''
+  );
+  fd.append(
+    'dto.dto.PoliceCertificateRequestedDate',
+    car.policeCertificateRequestedDate ?? ''
+  );
+  fd.append(
+    'dto.dto.PoliceCertificateReceivedDate',
+    car.policeCertificateReceivedDate ?? ''
+  );
+  fd.append('dto.dto.DeedRequestedDate', car.deedRequestedDate ?? '');
+  fd.append('dto.dto.DeedIssuedDate', car.deedIssuedDate ?? '');
+  fd.append('dto.dto.PlateRegisteredDate', car.plateRegisteredDate ?? '');
+
+  fd.append('dto.dto.SentToMunicipality', car.sentToMunicipality.toString() ?? '');
+  fd.append('dto.dto.MunicipalitySentDate', car.municipalitySentDate ?? '');
+  fd.append('dto.dto.MunicipalitySentToPerson', car.municipalitySentToPerson ?? '');
+  fd.append('dto.dto.SentToAuction', car.sentToAuction.toString() ?? '');
+  fd.append('dto.dto.AuctionSentDate', car.auctionSentDate ?? '');
+  fd.append('dto.dto.AuctionSentToPerson', car.auctionSentToPerson ?? '');
+  fd.append('dto.dto.PlateRevoked', car.plateRevoked.toString() ?? '');
+  fd.append('dto.dto.PlateRevokedDate', car.plateRevokedDate ?? '');
+
   car.images.forEach((item) => {
     fd.append('dto.Images', item);
   });

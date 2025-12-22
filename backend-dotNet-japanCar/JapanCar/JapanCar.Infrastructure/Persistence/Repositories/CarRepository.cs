@@ -17,7 +17,7 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task Create(CarEntity car)
+        public async Task<int?> Create(CarEntity car)
         {
             var newCar = new Car
             {
@@ -32,9 +32,33 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 PlateType = car.PlateType,
                 TransmissionType = car.TransmissionType,
                 HasInsurance = car.HasInsurance,
-                InsuranceStartDate = car.InsuranceStartDate,
                 InsuranceExpireDate = car.InsuranceEndDate,
-                InsurancePolicyNumber = car.InsurancePolicyNumber,
+                ForSale = car.ForSale,
+                TransportConfirm = car.TransportConfirm,
+                TransportDate = car.TransportDate,
+                TransportDateReceived = car.TransportDateReceived,
+                TransportFrom = car.TransportFrom,
+                TransportTo = car.TransportTo,
+                NeedsPoliceCertificate = car.NeedsPoliceCertificate,
+                PoliceCertificateRequestedDate = car.PoliceCertificateRequestedDate,
+                PoliceCertificateReceivedDate = car.PoliceCertificateReceivedDate,
+                DeedRequestedDate = car.DeedRequestedDate,
+                DeedIssuedDate = car.DeedIssuedDate,
+                PlateNumber = car.PlateNumber,
+                PlateRegisteredDate = car.PlateRegisteredDate,
+                SukuraNumber = car.SukuraNumber,
+
+                SentToMunicipality = car.SentToMunicipality,
+                MunicipalitySentDate = car.MunicipalitySentDate,
+                MunicipalitySentToPerson = car.MunicipalitySentToPerson,
+                MunicipalitySentByUserId = car.MunicipalitySentByUserId,
+                SentToAction = car.SentToAuction,
+                ActionSentDate = car.AuctionSentDate,
+                ActionSentToPerson = car.AuctionSentToPerson,
+                ActionSentByUserId = car.AuctionSentByUserId,
+                PlateRevoked = car.PlateRevoked,
+                PlateRevokedDate = car.PlateRevokedDate,
+                PlateRevokedByUserId = car.PlateRevokedByUserId
             };
 
             foreach (var item in car.ImageUrls)
@@ -60,6 +84,8 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
             _context.Cars.Add(newCar);
 
             await _context.SaveChangesAsync();
+
+            return car.SukuraNumber;
         }
 
 
@@ -68,6 +94,7 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
             var car = await _context.Cars
                 .Include(x => x.CarAuctionDetails)
                 .Include(x => x.CarImages)
+                .Include(x => x.SystemNotifications)
                 .FirstOrDefaultAsync(x => x.CarId == id);
 
             if (car == null)
@@ -76,6 +103,8 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
             _context.CarAuctionDetails.RemoveRange(car.CarAuctionDetails);
 
             _context.CarImages.RemoveRange(car.CarImages);
+
+            _context.SystemNotifications.RemoveRange(car.SystemNotifications);
 
             _context.Cars.Remove(car);
 
@@ -154,7 +183,11 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                     TaxAmount = x.cad != null ? x.cad.TaxAmount : 0,
                     Year = x.car.Year,
                     CreatedDate = x.car.CreatedDate,
-                    ImageUrls = x.imgs.Select(i => i.ImageUrl).ToArray()
+                    ImageUrls = x.imgs.Select(i => i.ImageUrl).ToArray(),
+                    SukuraNumber = x.car.SukuraNumber,
+                    PurchaseDate = x.cad.PurchaseDate,
+                    ChassisNumber = x.car.ChassisNumber,
+                    ForSale = x.car.ForSale
                 })
                 .OrderByDescending(x => x.CreatedDate).ToListAsync();
 
@@ -201,21 +234,44 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 TransportPrice = car.CarAuctionDetails.Any() ? car.CarAuctionDetails.First().TransportPrice : null,
                 AuctionPrice = car.CarAuctionDetails.Any() ? car.CarAuctionDetails.First().AuctionPrice : null,
                 ImageUrls = car.CarImages.Any() ? car.CarImages.Select(x => x.ImageUrl).ToArray() : [],
-                PurchaseDate = car.CarAuctionDetails.Any() ? car.CarAuctionDetails.First().PurchaseDate : null,
+                PurchaseDate = car.CarAuctionDetails.Any() ? car.CarAuctionDetails.First().PurchaseDate : DateTime.Now,
                 ScrapCost = car.CarAuctionDetails.Any() ? car.CarAuctionDetails.First().ScrapCost : null,
                 ManufactureMonth = car.ManufactureMonth,
                 HasInsurance = car.HasInsurance,
-                InsuranceStartDate = car.InsuranceStartDate,
                 InsuranceEndDate = car.InsuranceExpireDate,
-                InsurancePolicyNumber = car.InsurancePolicyNumber,
                 PlateType = car.PlateType,
                 PlateNumber = car.PlateNumber,
-                TransmissionType = car.TransmissionType
+                TransmissionType = car.TransmissionType,
+                ForSale = car.ForSale,
+                TransportConfirm = car.TransportConfirm,
+                TransportDate = car.TransportDate,
+                TransportDateReceived = car.TransportDateReceived,
+                TransportFrom = car.TransportFrom,
+                TransportTo = car.TransportTo,
+                NeedsPoliceCertificate = car.NeedsPoliceCertificate,
+                PoliceCertificateRequestedDate = car.PoliceCertificateRequestedDate,
+                PoliceCertificateReceivedDate = car.PoliceCertificateReceivedDate,
+                DeedRequestedDate = car.DeedRequestedDate,
+                DeedIssuedDate = car.DeedIssuedDate,
+                PlateRegisteredDate = car.PlateRegisteredDate,
+                SukuraNumber = car.SukuraNumber,
+
+                SentToMunicipality = car.SentToMunicipality,
+                MunicipalitySentDate = car.MunicipalitySentDate,
+                MunicipalitySentToPerson = car.MunicipalitySentToPerson,
+                MunicipalitySentByUserId = car.MunicipalitySentByUserId,
+                SentToAuction = car.SentToAction,
+                AuctionSentDate = car.ActionSentDate,
+                AuctionSentToPerson = car.ActionSentToPerson,
+                AuctionSentByUserId = car.ActionSentByUserId,
+                PlateRevoked = car.PlateRevoked,
+                PlateRevokedDate = car.PlateRevokedDate,
+                PlateRevokedByUserId = car.PlateRevokedByUserId,
             };
         }
 
 
-        public async Task Update(int id, CarEntity car)
+        public async Task<int?> Update(int id, CarEntity car)
         {
             var entity = await _context.Cars
                 .Where(x => x.CarId == id)
@@ -237,9 +293,32 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 entity.PlateNumber = car.PlateNumber;
                 entity.TransmissionType = car.TransmissionType;
                 entity.HasInsurance = car.HasInsurance;
-                entity.InsuranceStartDate = car.InsuranceStartDate;
                 entity.InsuranceExpireDate = car.InsuranceEndDate;
-                entity.InsurancePolicyNumber = car.InsurancePolicyNumber;
+                entity.ForSale = car.ForSale;
+                entity.TransportConfirm = car.TransportConfirm;
+                entity.TransportDate = car.TransportDate;
+                entity.TransportDateReceived = car.TransportDateReceived;
+                entity.TransportFrom = car.TransportFrom;
+                entity.TransportTo = car.TransportTo;
+                entity.NeedsPoliceCertificate = car.NeedsPoliceCertificate;
+                entity.PoliceCertificateRequestedDate = car.PoliceCertificateRequestedDate;
+                entity.PoliceCertificateReceivedDate = car.PoliceCertificateReceivedDate;
+                entity.DeedRequestedDate = car.DeedRequestedDate;
+                entity.DeedIssuedDate = car.DeedIssuedDate;
+                entity.PlateNumber = car.PlateNumber;
+                entity.PlateRegisteredDate = car.PlateRegisteredDate;
+                entity.SukuraNumber = entity.SukuraNumber == null ? car.SukuraNumber : null;
+                entity.SentToMunicipality = car.SentToMunicipality;
+                entity.MunicipalitySentDate = car.MunicipalitySentDate;
+                entity.MunicipalitySentToPerson = car.MunicipalitySentToPerson;
+                entity.MunicipalitySentByUserId = car.MunicipalitySentByUserId;
+                entity.SentToAction = car.SentToAuction;
+                entity.ActionSentDate = car.AuctionSentDate;
+                entity.ActionSentToPerson = car.AuctionSentToPerson;
+                entity.ActionSentByUserId = car.AuctionSentByUserId;
+                entity.PlateRevoked = car.PlateRevoked;
+                entity.PlateRevokedDate = car.PlateRevokedDate;
+                entity.PlateRevokedByUserId = car.PlateRevokedByUserId;
 
                 _context.CarAuctionDetails.RemoveRange(entity.CarAuctionDetails);
                 _context.CarImages.RemoveRange(entity.CarImages);
@@ -269,6 +348,8 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
 
                 await _context.SaveChangesAsync();
             }
+
+            return entity?.SukuraNumber ?? null;
         }
 
 
@@ -279,6 +360,18 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 .AnyAsync();
 
             return isExists;
+        }
+
+
+        public async Task<int> GetSukuraNumber()
+        {
+            var lastSukuraNumber = await _context.Cars
+                .Where(x => x.ForSale == 1)
+                .OrderByDescending(c => c.SukuraNumber)
+                .Select(c => c.SukuraNumber)
+                .FirstOrDefaultAsync();
+
+            return (lastSukuraNumber ?? 0) + 1;
         }
     }
 }

@@ -71,6 +71,11 @@ export const paths = {
   // DASHBOARD
   dashboard: {
     root: ROOTS.DASHBOARD,
+    notification: {
+      root: `${ROOTS.DASHBOARD}/notification`,
+      inbox: `${ROOTS.DASHBOARD}/notification/inbox`,
+      resolved: `${ROOTS.DASHBOARD}/notification/resolved`,
+    },
     auction: {
       root: `${ROOTS.DASHBOARD}/auction`,
       new: `${ROOTS.DASHBOARD}/auction/new`,
@@ -88,6 +93,11 @@ export const paths = {
       newRepair: (id: number) => `${ROOTS.DASHBOARD}/car/${id}/repair/new`,
       editRepair: (carId: number, repairId: number) =>
         `${ROOTS.DASHBOARD}/car/${carId}/repair/${repairId}/edit`,
+    },
+    customer: {
+      root: `${ROOTS.DASHBOARD}/customer`,
+      new: `${ROOTS.DASHBOARD}/customer/new`,
+      edit: (id: number) => `${ROOTS.DASHBOARD}/customer/${id}/edit`,
     },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,

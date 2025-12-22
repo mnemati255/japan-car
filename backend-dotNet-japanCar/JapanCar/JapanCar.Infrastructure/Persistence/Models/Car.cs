@@ -71,16 +71,6 @@ public partial class Car
     public string? TransmissionType { get; set; }
 
     /// <summary>
-    /// شماره بیمه‌نامه خودرو
-    /// </summary>
-    public string? InsurancePolicyNumber { get; set; }
-
-    /// <summary>
-    /// تاریخ شروع اعتبار بیمه خودرو
-    /// </summary>
-    public DateTime? InsuranceStartDate { get; set; }
-
-    /// <summary>
     /// تاریخ انقضای بیمه خودرو
     /// </summary>
     public DateTime? InsuranceExpireDate { get; set; }
@@ -98,12 +88,131 @@ public partial class Car
     /// <summary>
     /// نوع پلاک خودرو (شخصی، عمومی/کار، اجاره‌ای، صادراتی و ...)
     /// </summary>
-    public byte PlateType { get; set; }
+    public byte? PlateType { get; set; }
 
     /// <summary>
     /// Vehicle plate number (may include letters and numbers)
     /// </summary>
     public string? PlateNumber { get; set; }
+
+    /// <summary>
+    /// For Sale
+    /// </summary>
+    public byte? ForSale { get; set; }
+
+    /// <summary>
+    /// Police Certificate Requested Date
+    /// </summary>
+    public DateTime? PoliceCertificateRequestedDate { get; set; }
+
+    /// <summary>
+    /// Police Certificate Received Date
+    /// </summary>
+    public DateTime? PoliceCertificateReceivedDate { get; set; }
+
+    /// <summary>
+    /// Deed Requested Date
+    /// </summary>
+    public DateTime? DeedRequestedDate { get; set; }
+
+    /// <summary>
+    /// Deed Issued Date
+    /// </summary>
+    public DateTime? DeedIssuedDate { get; set; }
+
+    /// <summary>
+    /// Plate Registere dDate
+    /// </summary>
+    public DateTime? PlateRegisteredDate { get; set; }
+
+    /// <summary>
+    /// Needs Police Certificate
+    /// </summary>
+    public bool? NeedsPoliceCertificate { get; set; }
+
+    /// <summary>
+    /// Sukura Number
+    /// </summary>
+    public int? SukuraNumber { get; set; }
+
+    /// <summary>
+    /// 1-Toyota R 2-Zero R 3- Self Transport
+    /// </summary>
+    public byte? TransportFrom { get; set; }
+
+    /// <summary>
+    /// 1-Osaka -Own yard 3- Hakata
+    /// </summary>
+    public byte? TransportTo { get; set; }
+
+    /// <summary>
+    /// Transport Confirm
+    /// </summary>
+    public bool? TransportConfirm { get; set; }
+
+    /// <summary>
+    /// Transport Date
+    /// </summary>
+    public DateTime? TransportDate { get; set; }
+
+    /// <summary>
+    /// Transport Date
+    /// </summary>
+    public DateTime? TransportDateReceived { get; set; }
+
+    /// <summary>
+    /// SentToMunicipality
+    /// </summary>
+    public bool SentToMunicipality { get; set; }
+
+    /// <summary>
+    /// MunicipalitySentDate
+    /// </summary>
+    public DateTime? MunicipalitySentDate { get; set; }
+
+    /// <summary>
+    /// MunicipalitySentToPerson
+    /// </summary>
+    public string? MunicipalitySentToPerson { get; set; }
+
+    /// <summary>
+    /// MunicipalitySentByUserId
+    /// </summary>
+    public int? MunicipalitySentByUserId { get; set; }
+
+    /// <summary>
+    /// SentToAction
+    /// </summary>
+    public bool SentToAction { get; set; }
+
+    /// <summary>
+    /// ActionSentDate
+    /// </summary>
+    public DateTime? ActionSentDate { get; set; }
+
+    /// <summary>
+    /// ActionSentToPerson
+    /// </summary>
+    public string? ActionSentToPerson { get; set; }
+
+    /// <summary>
+    /// ActionSentByUserId
+    /// </summary>
+    public int? ActionSentByUserId { get; set; }
+
+    /// <summary>
+    /// PlateRevoked
+    /// </summary>
+    public bool PlateRevoked { get; set; }
+
+    /// <summary>
+    /// PlateRevokedDate
+    /// </summary>
+    public DateTime? PlateRevokedDate { get; set; }
+
+    public int? PlateRevokedByUserId { get; set; }
+
+    public virtual User? ActionSentByUser { get; set; }
 
     public virtual ICollection<CarAuctionDetail> CarAuctionDetails { get; set; } = new List<CarAuctionDetail>();
 
@@ -118,4 +227,10 @@ public partial class Car
     public virtual CarModel Model { get; set; } = null!;
 
     public virtual User? ModifiedByNavigation { get; set; }
+
+    public virtual User? MunicipalitySentByUser { get; set; }
+
+    public virtual User? PlateRevokedByUser { get; set; }
+
+    public virtual ICollection<SystemNotification> SystemNotifications { get; set; } = new List<SystemNotification>();
 }

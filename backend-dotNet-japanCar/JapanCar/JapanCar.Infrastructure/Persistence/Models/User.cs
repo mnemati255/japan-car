@@ -44,6 +44,8 @@ public partial class User
 
     public virtual ICollection<Auction> AuctionModifiedByNavigations { get; set; } = new List<Auction>();
 
+    public virtual ICollection<Car> CarActionSentByUsers { get; set; } = new List<Car>();
+
     public virtual ICollection<CarAuctionDetail> CarAuctionDetailCreatedByNavigations { get; set; } = new List<CarAuctionDetail>();
 
     public virtual ICollection<CarAuctionDetail> CarAuctionDetailModifiedByNavigations { get; set; } = new List<CarAuctionDetail>();
@@ -67,6 +69,10 @@ public partial class User
     public virtual ICollection<CarModel> CarModelModifiedByNavigations { get; set; } = new List<CarModel>();
 
     public virtual ICollection<Car> CarModifiedByNavigations { get; set; } = new List<Car>();
+
+    public virtual ICollection<Car> CarMunicipalitySentByUsers { get; set; } = new List<Car>();
+
+    public virtual ICollection<Car> CarPlateRevokedByUsers { get; set; } = new List<Car>();
 
     public virtual ICollection<CarRepairHistory> CarRepairHistoryCreatedByNavigations { get; set; } = new List<CarRepairHistory>();
 
@@ -95,6 +101,8 @@ public partial class User
     public virtual ICollection<RolePermission> RolePermissionCreatedByNavigations { get; set; } = new List<RolePermission>();
 
     public virtual ICollection<RolePermission> RolePermissionModifiedByNavigations { get; set; } = new List<RolePermission>();
+
+    public virtual ICollection<SystemNotification> SystemNotifications { get; set; } = new List<SystemNotification>();
 
     public virtual ICollection<UserRole> UserRoleCreatedByNavigations { get; set; } = new List<UserRole>();
 

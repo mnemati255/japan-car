@@ -7,13 +7,15 @@ import { IPart } from '@/types/part';
 import { PartCreateEditForm } from '../part-create-edit-form';
 import { deleteItem, getItemById, useList } from '@/actions/base-action';
 import { endpoints } from '@/lib/axios';
+import { fCurrency } from '@/utils/format-number';
 
 export function PartListView() {
-  const { formFields } = useTranslateFromServer();
+  const { translations: formFields } = useTranslateFromServer();
   const { t: tCommon } = useTranslate('common');
 
   const TABLE_HEAD: TableHeadCellProps[] = [
     { id: 'partName', label: formFields['PartName'] },
+    { id: 'partPrice', label: formFields['PartPrice'] },
     { id: 'createdAt', label: formFields['CreatedDate'] },
     { id: '', width: 88 },
   ];
@@ -30,6 +32,7 @@ export function PartListView() {
       CreateEditForm={PartCreateEditForm}
       tableHead={[
         { key: 'partName', render: (r) => r.partName },
+        { key: 'partPrice', render: (r) => fCurrency(r.partPrice) },
         { key: 'createdAt', render: (r) => r.createdAt?.split('T')[0] },
       ]}
       addLabel={tCommon('baseInfo.addPart')}

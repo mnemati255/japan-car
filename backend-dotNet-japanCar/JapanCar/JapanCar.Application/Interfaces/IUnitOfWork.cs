@@ -20,6 +20,8 @@ namespace JapanCar.Application.Interfaces
         IRepairRepository RepairRepository { get; }
         IMechanicRepository MechanicRepository { get; }
         ICarPartRepository CarPartRepository { get; }
+        ICustomerRepository CustomerRepository { get; }
+        INotificationRepository NotificationRepository { get; }
 
         Task ExecuteInTransactionAsync(Func<Task> action);
         Task<int> SaveChangesAsync();

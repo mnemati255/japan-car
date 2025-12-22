@@ -24,6 +24,8 @@ namespace JapanCar.Infrastructure
         public IRepairRepository RepairRepository { get; private set; }
         public IMechanicRepository MechanicRepository { get; private set; }
         public ICarPartRepository CarPartRepository { get; private set; }
+        public ICustomerRepository CustomerRepository { get; private set; }
+        public INotificationRepository NotificationRepository { get; private set; }
 
 
         public UnitOfWork(AppDbContext context)
@@ -40,6 +42,8 @@ namespace JapanCar.Infrastructure
             RepairRepository = new RepairRepository(_context);
             MechanicRepository = new MechanicRepository(_context);
             CarPartRepository = new CarPartRepository(_context);
+            CustomerRepository = new CustomerRepository(_context);
+            NotificationRepository = new Notificationrepository(_context);
         }
 
 

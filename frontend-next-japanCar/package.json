@@ -51,6 +51,7 @@
     "react-hook-form": "^7.63.0",
     "react-i18next": "^16.0.0",
     "react-phone-number-input": "^3.4.12",
+    "react-to-print": "^3.2.0",
     "react-toastify": "^11.0.5",
     "simplebar-react": "^3.3.2",
     "sonner": "^2.0.7",

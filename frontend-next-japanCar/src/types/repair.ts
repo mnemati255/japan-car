@@ -1,13 +1,15 @@
 export interface IRepair {
   repairId?: number;
-  carId:number;
+  carId: number;
   repairDate: string;
   mechanicId?: number | null;
   dashboardReplacerId?: number | null;
   steeringReplacerId?: number | null;
   mechanicTechnicalNote?: string | null;
   parts: IRepairedPart[];
-  
+  mechanicLaborCost?: number;
+  mechanicWorkHours?: number;
+
   createdAt?: string;
   mechanicName?: string;
 }

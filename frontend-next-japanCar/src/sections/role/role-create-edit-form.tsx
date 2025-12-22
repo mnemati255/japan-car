@@ -38,7 +38,7 @@ type Props = {
 export function RoleCreateEditForm({ currentRole }: Props) {
   const router = useRouter();
   const { t: tCommon } = useTranslate('common');
-  const { formFields } = useTranslateFromServer();
+  const { translations } = useTranslateFromServer();
 
   const methods = useForm({
     mode: 'onSubmit',
@@ -62,7 +62,11 @@ export function RoleCreateEditForm({ currentRole }: Props) {
       const api = !currentRole ? createRole(data) : updateRole(currentRole.roleId!, data);
       const { status } = await api;
       if (status == 200) {
-        toast.success(currentRole ? 'Update success!' : 'Create success!');
+        toast.success(
+          currentRole
+            ? translations['update_success']
+            : translations['create_success']
+        );
         router.push(paths.dashboard.role.root);
       }
     } catch (error) {
@@ -82,8 +86,8 @@ export function RoleCreateEditForm({ currentRole }: Props) {
               gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' },
             }}
           >
-            <Field.Text name="roleName" label={formFields['RoleName']} />
-            <Field.Text name="description" label={formFields['Description']} />
+            <Field.Text name="roleName" label={translations['RoleName']} />
+            <Field.Text name="description" label={translations['Description']} />
 
             <Stack spacing={1} sx={{ gridColumn: { xs: 'span 1', sm: 'span 2' } }}>
               <Typography variant="subtitle2" color="gray">
@@ -96,7 +100,7 @@ export function RoleCreateEditForm({ currentRole }: Props) {
                   label: x.permissionName,
                   value: x.permissionId.toString(),
                 }))}
-                sx={{ gap: 4, }}
+                sx={{ gap: 4 }}
               />
             </Stack>
           </Box>

@@ -46,8 +46,8 @@ type Props = {
 const CarPartSchema = z.object({
   carPartId: z.number(),
   partId: z.number().min(1, { error: '' }),
-  partCost: z.coerce.number().min(1, { error: '' }),
-  partCount: z.coerce.number().min(1, { error: '' }),
+  partCost: z.number().min(1, { error: '' }),
+  partCount: z.number().min(1, { error: '' }),
   mechanicId: z.number(),
   // replaceDate: z.string().min(1, { error: '' }),
 });
@@ -69,6 +69,8 @@ const RepairSchema = z.object({
     z.string().nullable()
   ),
   parts: z.array(CarPartSchema).default([]),
+  mechanicLaborCost: z.coerce.number(),
+  mechanicWorkHours: z.coerce.number(),
 });
 
 export function RepairCreateEditForm({
@@ -78,7 +80,7 @@ export function RepairCreateEditForm({
   currentRepair,
   lang,
 }: Props) {
-  const { formFields, systemMessages } = useTranslateFromServer();
+  const { translations } = useTranslateFromServer();
   const { t: tCommon } = useTranslate('common');
   const router = useRouter();
 
@@ -93,6 +95,8 @@ export function RepairCreateEditForm({
       mechanicTechnicalNote: currentRepair?.mechanicTechnicalNote ?? '',
       repairDate: currentRepair?.repairDate ?? '',
       parts: currentRepair?.parts ?? [],
+      mechanicLaborCost: currentRepair?.mechanicLaborCost ?? '',
+      mechanicWorkHours: currentRepair?.mechanicWorkHours ?? ''
     },
   });
 
@@ -124,8 +128,8 @@ export function RepairCreateEditForm({
       if (status == 200) {
         toast.success(
           currentRepair
-            ? systemMessages['update_success']
-            : systemMessages['create_success']
+            ? translations['update_success']
+            : translations['create_success']
         );
         router.push(paths.dashboard.car.repair(car.carId!));
       }
@@ -149,10 +153,10 @@ export function RepairCreateEditForm({
           }}
         >
           <LocalizationProvider>
-            <Field.DatePicker name="repairDate" label={formFields['RepairDate']} />
+            <Field.DatePicker name="repairDate" label={translations['RepairDate']} />
           </LocalizationProvider>
 
-          <Field.Select name="mechanicId" label={formFields['MechanicName']}>
+          <Field.Select name="mechanicId" label={translations['MechanicName']}>
             {mechanics.map((x) => (
               <MenuItem key={x.mechanicId} value={x.mechanicId}>
                 {x.mechanicName}
@@ -162,7 +166,7 @@ export function RepairCreateEditForm({
 
           <Field.Select
             name="dashboardReplacerId"
-            label={formFields['DashboardReplacer']}
+            label={translations['DashboardReplacer']}
           >
             {mechanics.map((x) => (
               <MenuItem key={x.mechanicId} value={x.mechanicId}>
@@ -171,13 +175,33 @@ export function RepairCreateEditForm({
             ))}
           </Field.Select>
 
-          <Field.Select name="steeringReplacerId" label={formFields['SteeringReplacer']}>
+          <Field.Select name="steeringReplacerId" label={translations['SteeringReplacer']}>
             {mechanics.map((x) => (
               <MenuItem key={x.mechanicId} value={x.mechanicId}>
                 {x.mechanicName}
               </MenuItem>
             ))}
           </Field.Select>
+
+          <Field.Text
+            name="mechanicWorkHours"
+            label={translations['MechanicWorkHours']}
+            type='number'
+          />
+
+          <Field.Text
+            name="mechanicLaborCost"
+            label={translations['MechanicLaborCost']}
+            type='number'
+          />
+
+          <Field.Text
+            name="mechanicTechnicalNote"
+            label={translations['MechanicTechnicalNote']}
+            multiline={true}
+            rows={4}
+            sx={{ gridColumn: { xs: 'span 1', sm: 'span 2' } }}
+          />
 
           <Box sx={{ gridColumn: { xs: 'span 1', sm: 'span 2' } }}>
             <Box
@@ -199,7 +223,7 @@ export function RepairCreateEditForm({
                     carPartId: 0,
                     mechanicId: 0,
                     partCost: 0,
-                    partCount: 0,
+                    partCount: 1,
                     partId: 0,
                     // replaceDate: '',
                   });
@@ -214,10 +238,10 @@ export function RepairCreateEditForm({
               <TableHead>
                 <TableRow>
                   {/* <TableCell>{tCommon('date')}</TableCell> */}
-                  <TableCell>{tCommon('baseInfo.part')}</TableCell>
-                  <TableCell>{tCommon('count')}</TableCell>
-                  <TableCell>{tCommon('by')}</TableCell>
-                  <TableCell>{tCommon('cost')}</TableCell>
+                  <TableCell>{translations['PartName']}</TableCell>
+                  <TableCell>{translations['PartCount']}</TableCell>
+                  <TableCell>{translations['MechanicName']}</TableCell>
+                  <TableCell>{translations['PartCost']}</TableCell>
                   <TableCell></TableCell>
                 </TableRow>
               </TableHead>
@@ -237,7 +261,20 @@ export function RepairCreateEditForm({
                     </TableCell> */}
 
                     <TableCell sx={{ width: '200px' }}>
-                      <Field.Select name={`parts.${index}.partId`}>
+                      <Field.Select
+                        name={`parts.${index}.partId`}
+                        onChange={(e) => {
+                          const partId = Number(e.target.value);
+                          const part = parts.find((x) => x.partId == partId);
+                          const count =
+                            methods.getValues(`parts.${index}.partCount`) || 1;
+                          setValue(`parts.${index}.partId`, partId);
+                          setValue(
+                            `parts.${index}.partCost`,
+                            part ? part.partPrice * count : 0
+                          );
+                        }}
+                      >
                         {parts.map((p) => (
                           <MenuItem key={p.partId} value={p.partId}>
                             {p.partName}
@@ -247,7 +284,20 @@ export function RepairCreateEditForm({
                     </TableCell>
 
                     <TableCell sx={{ width: '100px' }}>
-                      <Field.Text name={`parts.${index}.partCount`} type="number" />
+                      <Field.Text
+                        name={`parts.${index}.partCount`}
+                        type="number"
+                        onChange={(e) => {
+                          const count = Number(e.target.value);
+                          const partId = methods.getValues(`parts.${index}.partId`);
+                          const part = parts.find((x) => x.partId == partId);
+                          setValue(`parts.${index}.partCount`, count);
+                          setValue(
+                            `parts.${index}.partCost`,
+                            part ? part.partPrice * count : 0
+                          );
+                        }}
+                      />
                     </TableCell>
 
                     <TableCell sx={{ width: '200px' }}>
@@ -264,6 +314,7 @@ export function RepairCreateEditForm({
                       <Field.Text
                         name={`parts.${index}.partCost`}
                         type="number"
+                        disabled
                         slotProps={{
                           input: {
                             startAdornment: (
@@ -290,14 +341,6 @@ export function RepairCreateEditForm({
               </TableBody>
             </Table>
           </Scrollbar>
-
-          <Field.Text
-            name="mechanicTechnicalNote"
-            label={formFields['MechanicTechnicalNote']}
-            multiline={true}
-            rows={4}
-            sx={{ gridColumn: { xs: 'span 1', sm: 'span 2' } }}
-          />
         </Box>
         <Stack sx={{ mt: 3, alignItems: 'end' }}>
           <Button type="submit" variant="contained" loading={isSubmitting}>

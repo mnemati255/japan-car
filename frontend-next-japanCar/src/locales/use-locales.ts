@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { useSettingsContext } from '@/components/settings';
 
 import { fallbackLng, getCurrentLang } from './locales-config';
-import { getFormFields, getSystemMessages } from './utils/translations';
+import { getTranslations } from './utils/translations';
 import { useRouter } from '@/routes/hooks';
 
 // ----------------------------------------------------------------------
@@ -84,12 +84,10 @@ export function useTranslateFromServer(namespace?: Namespace) {
 
   const currentLang = getCurrentLang(i18n.resolvedLanguage);
 
-  const formFields = getFormFields(currentLang.value);
-  const systemMessages = getSystemMessages(currentLang.value);
+  const translations = getTranslations(currentLang.value);
 
   return {
-    formFields,
-    systemMessages,
+    translations,
   };
 }
 
