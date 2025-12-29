@@ -9,14 +9,15 @@ import { RouterLink } from '@/routes/components';
 import { Iconify } from '@/components/iconify';
 import { ConfirmDialog } from '@/components/custom-dialog';
 import { paths } from '@/routes/paths';
-import { IUserItem } from '@/types/user';
+import { IUser } from '@/types/user';
 import { Label } from '@/components/label';
 import { useTranslate } from '@/locales';
+import { fDate } from '@/utils/format-time';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: IUserItem;
+  row: IUser;
   onDeleteRow: () => void;
 };
 
@@ -50,7 +51,7 @@ export function UserTableRow({ row, onDeleteRow }: Props) {
       <TableRow key={row.userId}>
         <TableCell>{row.userName}</TableCell>
         <TableCell>{row.email}</TableCell>
-        <TableCell>{row.createdAt?.split('T')[0]}</TableCell>
+        <TableCell>{fDate(row.createdAt)}</TableCell>
 
         <TableCell>
           <Label

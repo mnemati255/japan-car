@@ -1,4 +1,5 @@
-﻿using JapanCar.Application.Services;
+﻿using JapanCar.Application.DTOs;
+using JapanCar.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +24,14 @@ namespace JapanCar.Api.Controllers
         {
             var result = await _translationService.GetAllTranslations();
             return Ok(result);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> CreateTranslations(List<TranslationDto> dtos)
+        {
+            await _translationService.CreateTranslation(dtos);
+            return Ok();
         }
     }
 }

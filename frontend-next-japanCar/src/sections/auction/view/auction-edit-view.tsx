@@ -4,7 +4,7 @@ import { paths } from '@/routes/paths';
 import { DashboardContent } from '@/layouts/dashboard';
 import { CustomBreadcrumbs } from '@/components/custom-breadcrumbs';
 import { AuctionCreateEditForm } from '../auction-create-edit-form';
-import { IAuctionItem } from '@/types/auction';
+import { IAuction } from '@/types/auction';
 import { useEffect, useState } from 'react';
 import { getAuctionById } from '@/actions/auction';
 import { LangCode, useTranslate } from '@/locales';
@@ -17,7 +17,7 @@ type Props = {
 };
 
 export function AuctionEditView({ auctionId }: Props) {
-  const [currentAuction, setCurrentAuction] = useState<IAuctionItem | null>(null);
+  const [currentAuction, setCurrentAuction] = useState<IAuction | null>(null);
   const { currentLang, t: tCommon } = useTranslate('common');
   const lang = useSearchParams().get('lang') as LangCode | null;
 

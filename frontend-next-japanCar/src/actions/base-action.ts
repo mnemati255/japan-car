@@ -55,6 +55,7 @@ export function useGetPaginatedItems<T>(
   return {
     items: data?.items || [],
     totalPage: data?.totalPage || 0,
+    totalCount: data?.totalCount || 0,
     empty: !isLoading && !data?.items.length,
     isLoading,
     error,

@@ -19,16 +19,6 @@ public partial class AuctionsTranslation
     /// </summary>
     public string AuctionName { get; set; } = null!;
 
-    /// <summary>
-    /// تاریخ برگزاری حراج
-    /// </summary>
-    public DateOnly AuctionDate { get; set; }
-
-    /// <summary>
-    /// کارمزد حراج
-    /// </summary>
-    public decimal? AuctionFee { get; set; }
-
     public virtual Auction Auction { get; set; } = null!;
 
     public virtual Language Language { get; set; } = null!;

@@ -1,4 +1,4 @@
-export type IUserItem = {
+export type IUser = {
   userId?: number;
   userName: string;
   password?: string;

@@ -7,6 +7,7 @@ import { IMechanic } from '@/types/mechanic';
 import { deleteItem, getItemById, useList } from '@/actions/base-action';
 import { endpoints } from '@/lib/axios';
 import { MechanicCreateEditForm } from '../mechanic-create-edit-form';
+import { fDate } from '@/utils/format-time';
 
 export function MechanicListView() {
   const { translations: formFields } = useTranslateFromServer();
@@ -32,7 +33,7 @@ export function MechanicListView() {
       tableHead={[
         { key: 'mechanicName', render: (r) => r.mechanicName },
         { key: 'contact', render: (r) => r.contact },
-        { key: 'createdAt', render: (r) => r.createdAt?.split('T')[0] },
+        { key: 'createdAt', render: (r) => fDate(r.createdAt) },
       ]}
       addLabel={tCommon('baseInfo.addMechanic')}
       emptyLabel={tCommon('baseInfo.noMechanics')}

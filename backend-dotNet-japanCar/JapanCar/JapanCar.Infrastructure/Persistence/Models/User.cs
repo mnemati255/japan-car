@@ -78,6 +78,8 @@ public partial class User
 
     public virtual ICollection<CarRepairHistory> CarRepairHistoryModifiedByNavigations { get; set; } = new List<CarRepairHistory>();
 
+    public virtual ICollection<Car> CarTransportConfirmUsers { get; set; } = new List<Car>();
+
     public virtual ICollection<Customer> CustomerCreatedByNavigations { get; set; } = new List<Customer>();
 
     public virtual ICollection<Customer> CustomerModifiedByNavigations { get; set; } = new List<Customer>();

@@ -22,5 +22,20 @@ namespace JapanCar.Application.Helpers
 
             return null;
         }
+
+
+        public static DateOnly? ToDateOnly(this string? str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return null;
+
+            if (str.Split("T").Length > 0)
+                return DateOnly.Parse(str.Split("T")[0]);
+
+            if (str.Split(" ").Length > 0)
+                return DateOnly.Parse(str.Split(" ")[0]);
+
+            return null;
+        }
     }
 }

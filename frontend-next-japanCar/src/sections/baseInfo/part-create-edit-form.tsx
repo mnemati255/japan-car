@@ -1,7 +1,7 @@
 import { createItem, updateItem } from '@/actions/base-action';
 import { Field, Form } from '@/components/hook-form';
 import { endpoints } from '@/lib/axios';
-import messages from '@/lib/messages';
+import { useMessage } from '@/lib/messages';
 import { LangCode, useTranslate, useTranslateFromServer } from '@/locales';
 import { IPart } from '@/types/part';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,12 +16,6 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 
-const PartSchema = z.object({
-  partPrice: z.coerce.number().min(1, { error: messages.required() }),
-  partName: z.string().min(1, { error: messages.required() }),
-  partDescription: z.string().nullable().optional(),
-});
-
 type Props = {
   open: boolean;
   onClose: () => void;
@@ -32,6 +26,13 @@ type Props = {
 export function PartCreateEditForm({ onClose, open, currentItem, locale }: Props) {
   const { currentLang, t: tCommon } = useTranslate('common');
   const { translations: formFields } = useTranslateFromServer();
+  const { messages } = useMessage();
+
+  const PartSchema = z.object({
+    partPrice: z.coerce.number().min(1, { error: messages.required() }),
+    partName: z.string().min(1, { error: messages.required() }),
+    partDescription: z.string().nullable().optional(),
+  });
 
   const methods = useForm({
     mode: 'all',

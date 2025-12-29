@@ -22,6 +22,7 @@
   "cost": "費用",
   "active": "アクティブ",
   "inactive": "非アクティブ",
+  "records": "レコード",
   "notification": {
     "notification": "通知",
     "notifications": "通知",
@@ -29,7 +30,7 @@
     "inbox": "受信箱",
     "resolved": "解決済み",
     "markAsDone": "完了としてマーク",
-    "markAsDoneText": "本当に完了としてマークしますか？"
+    "markAsDoneText": "本当にマークしますか？"
   },
   "car": {
     "car": "車",
@@ -46,12 +47,6 @@
     "noRepairs": "修理がありません",
     "createNew": "新しい修理を作成",
     "parts": "修理した部品"
-  },
-  "auction": {
-    "auction": "オークション",
-    "addAuction": "オークションを追加",
-    "noAuctions": "オークションがありません",
-    "createNew": "新しいオークションを作成"
   },
   "customer": {
     "customer": "顧客",
@@ -76,27 +71,36 @@
     "createNew": "新しいロールを作成",
     "permissions": "権限"
   },
+  "report": {
+    "report": "レポート",
+    "reports": "レポート",
+    "exportExcel": "Excelにエクスポート"
+  },
   "baseInfo": {
     "title": "基本情報",
     "brand": "ブランド",
     "color": "色",
     "model": "モデル",
     "part": "部品",
+    "auction": "オークション",
     "mechanic": "整備士",
     "brands": "ブランド",
     "colors": "色",
     "models": "モデル",
     "parts": "部品",
+    "auctions": "オークション",
     "mechanics": "整備士",
     "addBrand": "ブランドを追加",
     "addColor": "色を追加",
     "addModel": "モデルを追加",
     "addPart": "部品を追加",
+    "addAuction": "オークションを追加",
     "addMechanic": "整備士を追加",
     "noBrands": "ブランドがありません",
     "noColors": "色がありません",
     "noModels": "モデルがありません",
     "noParts": "部品がありません",
+    "noAuctions": "オークションがありません",
     "noMechanics": "整備士がいません"
   }
 }

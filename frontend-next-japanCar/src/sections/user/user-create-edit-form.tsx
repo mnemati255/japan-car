@@ -1,4 +1,4 @@
-import type { IUserItem } from '@/types/user';
+import type { IUser } from '@/types/user';
 
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,22 +14,23 @@ import { paths } from '@/routes/paths';
 import { useRouter } from '@/routes/hooks';
 import { toast } from '@/components/snackbar';
 import { Form, Field } from '@/components/hook-form';
-import messages from '@/lib/messages';
 import { useGetRoles } from '@/actions/role';
 import { createUser, updateUsere as updateUser } from '@/actions/user';
 import Typography from '@mui/material/Typography';
 import { useTranslate, useTranslateFromServer } from '@/locales';
+import { useMessage } from '@/lib/messages';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  currentUser?: IUserItem;
+  currentUser?: IUser;
 };
 
 export function UserCreateEditForm({ currentUser }: Props) {
   const router = useRouter();
   const { t: tCommon } = useTranslate('common');
   const { translations } = useTranslateFromServer();
+  const { messages } = useMessage();
 
   const UserCreateSchema = z.object({
     userName: z.string().min(1, { error: messages.required() }),
@@ -37,13 +38,13 @@ export function UserCreateEditForm({ currentUser }: Props) {
       ? z
           .string()
           .min(1, { error: messages.required() })
-          .min(6, { error: messages.minLength(6) })
+          .min(6, { error: messages.minLength6() })
       : z
           .string()
           .trim()
           .optional()
           .transform((val) => (val === '' ? undefined : val))
-          .refine((val) => !val || val.length >= 6, { message: messages.minLength(6) }),
+          .refine((val) => !val || val.length >= 6, { message: messages.minLength6() }),
     email: z
       .string()
       .trim()

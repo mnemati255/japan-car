@@ -83,7 +83,6 @@ export function BaseInfoItemListView<T>({
   };
 
   const handleShowEditDialog = async (row: T, locale?: LangCode) => {
-    console.log(33, locale)
     if (locale) {
       setCurrentLocale(locale);
       const id =
@@ -91,7 +90,8 @@ export function BaseInfoItemListView<T>({
         (row as any)?.modelId ||
         (row as any)?.colorId ||
         (row as any)?.partId ||
-        (row as any)?.mechanicId;
+        (row as any)?.mechanicId ||
+        (row as any)?.auctionId;
       const { status, data }: any = await getItemById(url, id, locale);
       if (status === 200) setItem(data);
     } else {

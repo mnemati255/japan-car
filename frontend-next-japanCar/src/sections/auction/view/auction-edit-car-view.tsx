@@ -71,13 +71,13 @@ export function AuctionEditCarView({ auctionId, carId }: Props) {
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <CreateEditCarForm
+      {/* <CreateEditCarForm
         currentCar={currentCar}
         colors={colors}
         brands={brands}
         auctionId={auctionId}
         files={files}
-      />
+      /> */}
     </DashboardContent>
   );
 }

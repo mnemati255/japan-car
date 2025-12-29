@@ -33,7 +33,7 @@ export function NotificationListView({ boxType }: Props) {
 
   const TABLE_HEAD: TableHeadCellProps[] = [
     { id: 'car', label: capitalize(tCommon('car.car')) },
-    { id: 'type', label: translations['NotificationType'] },
+    { id: 'notificationType', label: translations['NotificationType'] },
     { id: 'message', label: translations['Message'] },
     { id: 'dueDate', label: translations['DueDate'] },
     { id: 'createdAt', label: translations['CreatedDate'] },

@@ -109,6 +109,10 @@ export const paths = {
       new: `${ROOTS.DASHBOARD}/role/new`,
       edit: (id: number) => `${ROOTS.DASHBOARD}/role/${id}/edit`,
     },
+    reports: {
+      root: `${ROOTS.DASHBOARD}/reports`,
+      car: `${ROOTS.DASHBOARD}/reports/car`,
+    },
     baseInfo: {
       root: `${ROOTS.DASHBOARD}/baseInfo`,
       brand: `${ROOTS.DASHBOARD}/baseInfo/brand`,
@@ -116,6 +120,7 @@ export const paths = {
       color: `${ROOTS.DASHBOARD}/baseInfo/color`,
       part: `${ROOTS.DASHBOARD}/baseInfo/part`,
       mechanic: `${ROOTS.DASHBOARD}/baseInfo/mechanic`,
+      auction: `${ROOTS.DASHBOARD}/baseInfo/auction`,
     },
     // product: {
     //   root: `${ROOTS.DASHBOARD}/product`,

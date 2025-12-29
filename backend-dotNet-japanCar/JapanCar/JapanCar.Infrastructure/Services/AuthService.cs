@@ -47,11 +47,13 @@ namespace JapanCar.Infrastructure.Services
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[]
-                {
-                new Claim("userId", user.UserId.ToString()),
-                new Claim(ClaimTypes.Name, user.UserName)
-            }),
+                Subject = new ClaimsIdentity(
+                    [
+                        new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                        new Claim(ClaimTypes.Name, user.UserName)
+                    ]),
+                Issuer = _jwtSettings.Issuer,
+                Audience = _jwtSettings.Audience,
                 Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpireMinutes),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -71,6 +73,39 @@ namespace JapanCar.Infrastructure.Services
 
             var user = await _unitOfWork.UserRepository.GetUserByUserName(userName);
             return user;
+        }
+
+        public ClaimsPrincipal ValidateToken(string token)
+        {
+            var secretKey = Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(secretKey),
+                ValidateIssuer = false,
+                ValidIssuer = _jwtSettings.Issuer,
+                ValidateAudience = false,
+                ValidAudience = _jwtSettings.Audience,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero,
+            };
+
+            try
+            {
+                var principal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
+                return principal;
+            }
+            catch (SecurityTokenExpiredException)
+            {
+                throw new SecurityTokenException("Token has expired.");
+            }
+            catch (Exception ex)
+            {
+                throw new SecurityTokenException("Invalid token", ex);
+            }
         }
     }
 

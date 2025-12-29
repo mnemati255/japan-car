@@ -8,6 +8,7 @@ import { PartCreateEditForm } from '../part-create-edit-form';
 import { deleteItem, getItemById, useList } from '@/actions/base-action';
 import { endpoints } from '@/lib/axios';
 import { fCurrency } from '@/utils/format-number';
+import { fDate } from '@/utils/format-time';
 
 export function PartListView() {
   const { translations: formFields } = useTranslateFromServer();
@@ -33,7 +34,7 @@ export function PartListView() {
       tableHead={[
         { key: 'partName', render: (r) => r.partName },
         { key: 'partPrice', render: (r) => fCurrency(r.partPrice) },
-        { key: 'createdAt', render: (r) => r.createdAt?.split('T')[0] },
+        { key: 'createdAt', render: (r) => fDate(r.createdAt) },
       ]}
       addLabel={tCommon('baseInfo.addPart')}
       emptyLabel={tCommon('baseInfo.noParts')}

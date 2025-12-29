@@ -13,6 +13,7 @@ import Typography from '@mui/material/Typography';
 import { useTranslate, useTranslateFromServer } from '@/locales';
 import { BoxType, INotification } from '@/types/notification';
 import { Iconify } from '@/components/iconify';
+import { fDate } from '@/utils/format-time';
 
 // ----------------------------------------------------------------------
 
@@ -26,7 +27,7 @@ export function NotificationTableRow({ row, boxType, onMarkDoneRow }: Props) {
   const confirmDialog = useBoolean();
   const [loading, setLoading] = useState(false);
   const { t: tCommon } = useTranslate('common');
-  const { translations: formFields } = useTranslateFromServer();
+  const { translations } = useTranslateFromServer();
 
   const dueDate = new Date(row.dueDate);
   const now = new Date();
@@ -40,24 +41,26 @@ export function NotificationTableRow({ row, boxType, onMarkDoneRow }: Props) {
   } else if (diff < 0) {
     bgColor = '#fef9c3'; // yellow (slightly overdue)
   }
-  console.log(diff);
-
+  
   let notificationType = '';
   switch (row.notificationType) {
     case 1:
-      notificationType = formFields['Police'];
+      notificationType = translations['Police'];
       break;
     case 2:
-      notificationType = formFields['Insurance'];
+      notificationType = translations['Action'];
       break;
     case 3:
-      notificationType = formFields['Deed'];
+      notificationType = translations['Deed'];
       break;
     case 4:
-      notificationType = formFields['Plate'];
+      notificationType = translations['Insurance'];
       break;
     case 5:
-      notificationType = formFields['Transport'];
+      notificationType = translations['Transport'];
+      break;
+    case 6:
+      notificationType = translations['Municipality'];
       break;
   }
 
@@ -75,6 +78,7 @@ export function NotificationTableRow({ row, boxType, onMarkDoneRow }: Props) {
           onClick={async () => {
             setLoading(true);
             await onMarkDoneRow();
+            setLoading(false);
             confirmDialog.onFalse();
           }}
         >
@@ -107,16 +111,14 @@ export function NotificationTableRow({ row, boxType, onMarkDoneRow }: Props) {
         </TableCell>
         <TableCell>{notificationType}</TableCell>
         <TableCell sx={{ minWidth: '200px' }}>{row.message}</TableCell>
-        <TableCell sx={{ minWidth: '120px' }}>{row.dueDate.split('T')[0]}</TableCell>
+        <TableCell sx={{ minWidth: '120px' }}>{fDate(row.dueDate)}</TableCell>
         {row.isResolved && (
           <>
             <TableCell>{row.resolvedBy}</TableCell>
-            <TableCell>
-              {row.resolvedDate ? row.resolvedDate.split('T')[0] : ''}
-            </TableCell>
+            <TableCell>{row.resolvedDate ? fDate(row.resolvedDate) : ''}</TableCell>
           </>
         )}
-        <TableCell>{row.createdAt.split('T')[0]}</TableCell>
+        <TableCell>{fDate(row.createdAt)}</TableCell>
 
         {!row.isResolved && (
           <TableCell>

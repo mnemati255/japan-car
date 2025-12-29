@@ -15,21 +15,8 @@ import { Form, Field } from '@/components/hook-form';
 import { IRoleItem } from '@/types/role';
 import { createRole, updateRole, useGetPermissions } from '@/actions/role';
 import Typography from '@mui/material/Typography';
-import messages from '@/lib/messages';
 import { useTranslate, useTranslateFromServer } from '@/locales';
-
-// ----------------------------------------------------------------------
-
-export type RoleCreateSchemaType = z.infer<typeof RoleCreateSchema>;
-
-export const RoleCreateSchema = z.object({
-  roleName: z.string().min(1, { error: messages.required() }),
-  description: z.string().nullable().optional(),
-  permissionIds: z.array(z.coerce.number()).min(1, { error: messages.requiredAtLeast() }),
-  // email: schemaUtils.email(),
-});
-
-// ----------------------------------------------------------------------
+import { useMessage } from '@/lib/messages';
 
 type Props = {
   currentRole?: IRoleItem;
@@ -39,6 +26,16 @@ export function RoleCreateEditForm({ currentRole }: Props) {
   const router = useRouter();
   const { t: tCommon } = useTranslate('common');
   const { translations } = useTranslateFromServer();
+  const { messages } = useMessage();
+
+  const RoleCreateSchema = z.object({
+    roleName: z.string().min(1, { error: messages.required() }),
+    description: z.string().nullable().optional(),
+    permissionIds: z
+      .array(z.coerce.number())
+      .min(1, { error: messages.requiredAtLeast() }),
+    // email: schemaUtils.email(),
+  });
 
   const methods = useForm({
     mode: 'onSubmit',
@@ -63,9 +60,7 @@ export function RoleCreateEditForm({ currentRole }: Props) {
       const { status } = await api;
       if (status == 200) {
         toast.success(
-          currentRole
-            ? translations['update_success']
-            : translations['create_success']
+          currentRole ? translations['update_success'] : translations['create_success']
         );
         router.push(paths.dashboard.role.root);
       }

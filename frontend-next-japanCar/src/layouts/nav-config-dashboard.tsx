@@ -21,6 +21,7 @@ const ICONS = {
   customer: icon('ic-customer'),
   dashboard: icon('ic-dashboard'),
   notif: icon('ic-notif'),
+  file: icon('ic-file'),
 };
 
 // ----------------------------------------------------------------------
@@ -42,15 +43,15 @@ export function navData(t: TFunction<any, any>): NavSectionProps['data'] {
             },
           ],
         },
-        {
-          title: t('auctions'),
-          path: paths.dashboard.auction.root,
-          icon: ICONS.folder,
-          children: [
-            { title: t('list'), path: paths.dashboard.auction.root },
-            { title: t('create'), path: paths.dashboard.auction.new },
-          ],
-        },
+        // {
+        //   title: t('auctions'),
+        //   path: paths.dashboard.auction.root,
+        //   icon: ICONS.folder,
+        //   children: [
+        //     { title: t('list'), path: paths.dashboard.auction.root },
+        //     { title: t('create'), path: paths.dashboard.auction.new },
+        //   ],
+        // },
         {
           title: t('cars'),
           path: paths.dashboard.car.root,
@@ -88,6 +89,14 @@ export function navData(t: TFunction<any, any>): NavSectionProps['data'] {
           ],
         },
         {
+          title: t('reports'),
+          path: paths.dashboard.reports.root,
+          icon: ICONS.file,
+          children: [
+            { title: t('cars'), path: paths.dashboard.reports.car },
+          ],
+        },
+        {
           title: t('baseInfo.title'),
           path: paths.dashboard.baseInfo.root,
           icon: ICONS.menuItem,
@@ -97,6 +106,7 @@ export function navData(t: TFunction<any, any>): NavSectionProps['data'] {
             { title: t('baseInfo.colors'), path: paths.dashboard.baseInfo.color },
             { title: t('baseInfo.parts'), path: paths.dashboard.baseInfo.part },
             { title: t('baseInfo.mechanics'), path: paths.dashboard.baseInfo.mechanic },
+            { title: t('baseInfo.auctions'), path: paths.dashboard.baseInfo.auction },
           ],
         },
       ],

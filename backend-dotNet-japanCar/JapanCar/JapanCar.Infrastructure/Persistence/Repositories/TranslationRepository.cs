@@ -15,13 +15,21 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task<IEnumerable<GenericTranslationEntity>> GetAllTranslations()
+        public async Task<IEnumerable<TranslationEntity>> GetAllTranslations(int? languageId = null, string? entityName = null)
         {
-            var result = await _context.GenericTranslations
+            var query = _context.GenericTranslations
                 .Include(x => x.Language)
-                .ToListAsync();
+                .AsQueryable();
 
-            return result.Select(x => new GenericTranslationEntity
+            if (languageId.HasValue)
+                query = query.Where(x => x.LanguageId == languageId.Value);
+
+            if (!string.IsNullOrEmpty(entityName))
+                query = query.Where(x => x.EntityName == entityName);
+
+            var result = await query.ToListAsync();
+
+            return result.Select(x => new TranslationEntity
             {
                 Category = x.Category,
                 EntityName = x.EntityName,
@@ -29,6 +37,31 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                 LanguageCode = x.Language.Code,
                 TranslatedValue = x.TranslatedValue,
             });
+        }
+
+
+        public async Task CreateTranslation(List<TranslationEntity> entities)
+        {
+            foreach (var item in entities)
+            {
+                _context.GenericTranslations.Add(new Models.GenericTranslation
+                {
+                    LanguageId = 1,
+                    EntityName = item.EntityName,
+                    FieldName = item.FieldName,
+                    TranslatedValue = item.TranslatedValue
+                });
+
+                _context.GenericTranslations.Add(new Models.GenericTranslation
+                {
+                    LanguageId = 2,
+                    EntityName = item.EntityName,
+                    FieldName = item.FieldName,
+                    TranslatedValue = item.TranslatedValue
+                });
+            }
+
+            await _context.SaveChangesAsync();
         }
     }
 }

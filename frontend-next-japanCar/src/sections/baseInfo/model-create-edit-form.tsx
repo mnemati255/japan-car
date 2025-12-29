@@ -1,7 +1,7 @@
 import { createItem, getItems, updateItem } from '@/actions/base-action';
 import { Field, Form } from '@/components/hook-form';
 import { endpoints } from '@/lib/axios';
-import messages from '@/lib/messages';
+import { useMessage } from '@/lib/messages';
 import { LangCode, useTranslate, useTranslateFromServer } from '@/locales';
 import { IBrand, IModel } from '@/types/car';
 import { IGrid } from '@/types/common';
@@ -16,11 +16,6 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 
-const ModelSchema = z.object({
-  brandId: z.coerce.number().min(1, { error: messages.required() }),
-  modelName: z.string().min(1, { error: messages.required() }),
-});
-
 type Props = {
   open: boolean;
   onClose: () => void;
@@ -32,6 +27,12 @@ export function ModelCreateEditForm({ onClose, open, currentItem, locale }: Prop
   const [brands, setBrands] = useState<IBrand[]>([]);
   const { currentLang, t: tCommon } = useTranslate('common');
   const { translations: formFields } = useTranslateFromServer();
+  const { messages } = useMessage();
+
+  const ModelSchema = z.object({
+    brandId: z.coerce.number().min(1, { error: messages.required() }),
+    modelName: z.string().min(1, { error: messages.required() }),
+  });
 
   useEffect(() => {
     const getAllBrands = async () => {

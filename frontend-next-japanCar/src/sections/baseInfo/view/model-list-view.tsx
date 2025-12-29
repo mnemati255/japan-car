@@ -7,6 +7,7 @@ import { IModel } from '@/types/car';
 import { ModelCreateEditForm } from '../model-create-edit-form';
 import { deleteItem, getItemById, useList } from '@/actions/base-action';
 import { endpoints } from '@/lib/axios';
+import { fDate } from '@/utils/format-time';
 
 export function ModelListView() {
   const { translations: formFields } = useTranslateFromServer();
@@ -32,7 +33,7 @@ export function ModelListView() {
       tableHead={[
         { key: 'modelName', render: (r) => r.modelName },
         { key: 'brandName', render: (r) => r.brandName },
-        { key: 'createdAt', render: (r) => r.createdAt?.split('T')[0] },
+        { key: 'createdAt', render: (r) => fDate(r.createdAt) },
       ]}
       addLabel={tCommon('baseInfo.addModel')}
       emptyLabel={tCommon('baseInfo.noModels')}

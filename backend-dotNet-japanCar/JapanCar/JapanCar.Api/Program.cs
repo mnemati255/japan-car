@@ -4,8 +4,10 @@ using JapanCar.Api.Middlewares;
 using JapanCar.Api.Services;
 using JapanCar.Application;
 using JapanCar.Application.Interfaces;
+using JapanCar.Application.Interfaces.Security;
 using JapanCar.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +22,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("EnableCors", builder =>
     {
         builder
-        .WithOrigins("http://localhost:3000", "http://localhost:3001", "http://185.231.115.136")
+        .WithOrigins("http://localhost:3000", "http://localhost:3002", "http://185.231.115.136")
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials();
@@ -72,8 +74,20 @@ app.UseStaticFiles();
 app.UseMiddleware<AppExceptionMiddleware>();
 app.Use(async (context, next) =>
 {
-    var locale = context.Request.Headers["X-Locale"].ToString() ?? "en";
     var requestContext = context.RequestServices.GetRequiredService<RequestContext>();
+
+    var bearerToken = context.Request.Headers.Authorization.ToString();
+    if (!string.IsNullOrEmpty(bearerToken))
+    {
+        var token = bearerToken.Replace("Bearer ", "");
+        var authService = context.RequestServices.GetRequiredService<IAuthService>();
+        var decodedToken = authService.ValidateToken(token);
+        var userId = decodedToken.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!string.IsNullOrEmpty(userId))
+            requestContext.UserId = int.Parse(userId);
+    }
+
+    var locale = context.Request.Headers["X-Locale"].ToString() ?? "en";
     requestContext.Locale = locale;
 
     await next();

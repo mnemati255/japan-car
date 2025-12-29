@@ -1,7 +1,5 @@
-export type IAuctionItem = {
+export type IAuction = {
   auctionId?: number;
   auctionName: string;
-  auctionDate: string;
-  auctionFee?: number;
   createdAt?: string;
 };

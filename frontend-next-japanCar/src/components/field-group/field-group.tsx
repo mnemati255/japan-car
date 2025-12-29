@@ -17,7 +17,7 @@ export function FieldGroup({ title, ...other }: Props) {
           justifyContent: 'space-between',
         }}
       >
-        <Chip label={title} sx={{ width: '150px' }} />
+        <Chip label={title} sx={{ width: '180px' }} />
         <Divider sx={{ flexGrow: 1 }} />
       </Box>
     </Box>

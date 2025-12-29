@@ -7,8 +7,7 @@ import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import { Form, Field } from '@/components/hook-form';
-import messages from '@/lib/messages';
-import { IBrand, ICar, IColor, IModel } from '@/types/car';
+import { IBrand, ICar, IColor } from '@/types/car';
 import MenuItem from '@mui/material/MenuItem';
 import { createEditCar } from '@/actions/car';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -25,12 +24,18 @@ import Typography from '@mui/material/Typography';
 import { FieldGroup } from '@/components/field-group';
 import { CarPrintDialog } from './car-print-dialog';
 import { useBoolean } from 'minimal-shared/hooks';
+import { IAuction } from '@/types/auction';
+import { IUser } from '@/types/user';
+import { useMessage } from '@/lib/messages';
+import Switch from '@mui/material/Switch';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   colors: IColor[];
   brands: IBrand[];
+  auctions: IAuction[];
+  users: IUser[];
   currentCar?: ICar;
   files?: File[];
   auctionId?: number;
@@ -40,6 +45,8 @@ export function CreateEditCarForm({
   currentCar,
   colors,
   brands,
+  auctions,
+  users,
   files,
   auctionId,
 }: Props) {
@@ -53,9 +60,20 @@ export function CreateEditCarForm({
     label: x.colorName,
   }));
 
+  const AUCTIONS = auctions.map((x) => ({
+    value: x.auctionId,
+    label: x.auctionName,
+  }));
+
+  const USERS = users.map((x) => ({
+    value: x.userId,
+    label: x.userName,
+  }));
+
   const { translations } = useTranslateFromServer();
   const { t: tCommon } = useTranslate('common');
-  const [models, setModels] = useState<IModel[]>([]);
+  const { messages } = useMessage();
+  const [models, setModels] = useState<{ value: number; label: string }[]>([]);
   const dialog = useBoolean();
 
   const AuctionCarCreateSchema = z
@@ -63,6 +81,7 @@ export function CreateEditCarForm({
       brandId: z.coerce.number().min(1, { error: messages.required() }),
       modelId: z.coerce.number().min(1, { error: messages.required() }),
       colorId: z.coerce.number().min(1, { error: messages.required() }),
+      auctionId: z.coerce.number(),
       year: z.coerce
         .number()
         .min(1900, { error: messages.invalid() })
@@ -71,17 +90,32 @@ export function CreateEditCarForm({
         if (val === '' || val === null || val === undefined) return undefined;
         return Number(val);
       }, z.number({ error: messages.required() })),
+      katashaki: z.string().min(1, { error: messages.required() }),
       chasisNumber: z.string().min(1, { error: messages.required() }),
-      purchasePrice: z.coerce.number().min(1, { error: messages.required() }),
-      transportPrice: z.coerce.number().nullable().optional(),
-      auctionPrice: z.coerce.number().nullable().optional(),
+      purchasePrice: z.coerce
+        .number({ error: messages.invalid() })
+        .min(1, { error: messages.required() }),
+      transportPrice: z.coerce
+        .number({ error: messages.invalid() })
+        .nullable()
+        .optional(),
+      auctionPrice: z.coerce.number({ error: messages.invalid() }).nullable().optional(),
       taxAmount: z.coerce.number().nullable().optional(),
       finalPrice: z.coerce.number().nullable().optional(),
       engineVolume: z.coerce.number().nullable().optional(),
       fuelType: z.string().nullable().optional(),
       images: z
         .array(z.instanceof(File))
-        .min(3, { error: messages.minCount(3) })
+        .min(3, { error: messages.minCount3() })
+        .refine(
+          (files) => {
+            const names = files.map((x) => x.name);
+            return new Set(names).size === names.length;
+          },
+          {
+            error: messages.duplicate(),
+          }
+        )
         .default([]),
       scrapCost: z.coerce.number().nullable().optional(),
       manufactureMonth: z.coerce
@@ -115,6 +149,14 @@ export function CreateEditCarForm({
       auctionSentToPerson: z.string().optional(),
       plateRevoked: z.boolean(),
       plateRevokedDate: z.string().optional(),
+      grad: z.string().optional(),
+      point: z.string().optional(),
+      transportConfirmUserId: z.coerce.number().optional(),
+      policeCertificateNumber: z.coerce.number().optional(),
+      actionNumber: z.coerce.number().optional(),
+      actionDeadlineDate: z.string().optional(),
+      municipalityDeadlineDate: z.string().optional(),
+      plateRevokedDeadLine: z.string().optional(),
     })
     .superRefine((data, ctx) => {
       if (data.hasInsurance && !data.insuranceEndDate) {
@@ -133,16 +175,22 @@ export function CreateEditCarForm({
       brandId: currentCar?.brandId ?? '',
       colorId: currentCar?.colorId ?? '',
       modelId: currentCar?.modelId ?? '',
+      auctionId: currentCar?.auctionId ?? '',
       year: currentCar?.year ?? '',
       mileage: currentCar?.mileage ?? '',
+      katashaki: currentCar?.katashaki ?? '',
       chasisNumber: currentCar?.chasisNumber ?? '',
-      engineVolume: currentCar?.engineVolume ?? '',
+      engineVolume:
+        currentCar?.engineVolume && currentCar?.engineVolume != 0
+          ? currentCar?.engineVolume
+          : '',
       fuelType: currentCar?.fuelType ?? '',
-      purchasePrice: currentCar?.purchasePrice ?? 0,
-      taxAmount: currentCar?.taxAmount ?? 0,
-      transportPrice: currentCar?.transportPrice ?? 0,
-      auctionPrice: currentCar?.auctionPrice ?? 0,
-      finalPrice: currentCar?.finalPrice ?? 0,
+      purchasePrice: currentCar?.purchasePrice ?? '',
+      taxAmount: currentCar?.taxAmount ?? '',
+      transportPrice: currentCar?.transportPrice ? currentCar.transportPrice : '',
+      auctionPrice: currentCar?.auctionPrice ? currentCar.auctionPrice : '',
+      scrapCost: currentCar?.scrapCost ? currentCar.scrapCost : '',
+      finalPrice: currentCar?.finalPrice ?? '',
       images: [],
       manufactureMonth: currentCar?.manufactureMonth ?? '',
       transmissionType: currentCar?.transmissionType ?? '',
@@ -172,6 +220,20 @@ export function CreateEditCarForm({
       plateRevoked: currentCar?.plateRevoked ?? false,
       plateRevokedDate: currentCar?.plateRevokedDate ?? '',
       sukuraNumber: currentCar?.sukuraNumber ?? 0,
+      grad: currentCar?.grad ?? '',
+      point: currentCar?.point ?? '',
+      transportConfirmUserId: currentCar?.transportConfirmUserId ?? '',
+      policeCertificateNumber:
+        currentCar?.policeCertificateNumber && currentCar?.policeCertificateNumber != 0
+          ? currentCar?.policeCertificateNumber
+          : '',
+      actionNumber:
+        currentCar?.actionNumber && currentCar?.actionNumber != 0
+          ? currentCar?.actionNumber
+          : '',
+      actionDeadlineDate: currentCar?.actionDeadlineDate ?? '',
+      municipalityDeadlineDate: currentCar?.municipalityDeadlineDate ?? '',
+      plateRevokedDeadLine: currentCar?.plateRevokedDeadLine ?? '',
     },
   });
 
@@ -179,7 +241,8 @@ export function CreateEditCarForm({
     handleSubmit,
     setValue,
     control,
-    formState: { isSubmitting, errors },
+    watch,
+    formState: { isSubmitting },
   } = methods;
 
   const onSelectBrand = useCallback(
@@ -187,7 +250,12 @@ export function CreateEditCarForm({
       setValue('modelId', '');
       const { status, data } = await getModelsOfBrand(brandId);
       if (status == 200) {
-        setModels(data);
+        setModels(
+          data.map((x) => ({
+            value: x.modelId!,
+            label: x.modelName,
+          }))
+        );
       }
     },
     [setValue]
@@ -220,17 +288,34 @@ export function CreateEditCarForm({
   const plateRegisteredDate = useWatch({ control, name: 'plateRegisteredDate' });
   const sentToMunicipality = useWatch({ control, name: 'sentToMunicipality' });
   const sentToAuction = useWatch({ control, name: 'sentToAuction' });
-  const plateRevoked = useWatch({ control, name: 'plateRevoked' });
+  const enginVolume = useWatch({ control, name: 'engineVolume' }) || 0;
 
-  useEffect(() => {
-    if (purchaseDate && needsPolice) {
-      const date = new Date(purchaseDate);
-      date.setMonth(date.getMonth() + 1);
-      setValue('policeCertificateRequestedDate', date.toLocaleDateString());
-      setValue('deedRequestedDate', date.toLocaleDateString());
-      setValue('plateRegisteredDate', date.toLocaleDateString());
-    }
-  }, [needsPolice, purchaseDate, setValue]);
+  // useEffect(() => {
+  //   if (hasInsurance == true) {
+  //     const date = new Date(purchaseDate);
+  //     date.setDate(date.getDate() + 10);
+  //     setValue('plateRevokedDate', date.toLocaleDateString());
+  //   }
+  // }, [hasInsurance, purchaseDate, setValue]);
+
+  // useEffect(() => {
+  //   if (purchaseDate && needsPolice) {
+  //     const date = new Date(purchaseDate);
+  //     date.setMonth(date.getMonth() + 1);
+  //     setValue('policeCertificateRequestedDate', date.toLocaleDateString());
+  //     setValue('deedRequestedDate', date.toLocaleDateString());
+  //     setValue('plateRegisteredDate', date.toLocaleDateString());
+  //   }
+  // }, [needsPolice, purchaseDate, setValue]);
+
+  // useEffect(() => {
+  //   if (purchaseDate) {
+  //     const date = new Date(purchaseDate);
+  //     date.setMonth(date.getMonth() + 1);
+  //     setValue('actionDeadlineDate', date.toLocaleDateString());
+  //     setValue('municipalityDeadlineDate', date.toLocaleDateString());
+  //   }
+  // }, [purchaseDate, setValue]);
 
   useEffect(() => {
     const p1 = Number(purchasePrice) || 0;
@@ -238,11 +323,11 @@ export function CreateEditCarForm({
     const p3 = Number(auctionPrice) || 0;
     const p4 = Number(scrapCost) || 0;
 
-    const total = p1 + p2 + p3 + p4;
+    const total = p1 + p2 + p3;
     const tax = total * 0.1;
 
-    setValue('taxAmount', tax);
-    setValue('finalPrice', total + tax);
+    setValue('taxAmount', tax > 0 ? (Number.isInteger(tax) ? tax : tax.toFixed(2)) : '');
+    setValue('finalPrice', total + tax + p4 > 0 ? total + tax + p4 : '');
   }, [purchasePrice, transportPrice, auctionPrice, setValue, scrapCost]);
 
   const onSubmit = handleSubmit(async (data) => {
@@ -252,7 +337,7 @@ export function CreateEditCarForm({
         auctionId ?? null,
         currentCar ? currentCar.carId! : null
       );
-      if (status == 200) {
+      if (status == 200 || status == 204) {
         setValue('sukuraNumber', sukuraNumber);
         dialog.onTrue();
       }
@@ -267,10 +352,6 @@ export function CreateEditCarForm({
       car={methods.getValues() as ICar}
       auctionId={auctionId}
       isUpdated={currentCar != null}
-      model={
-        models.find((x) => x.modelId === methods.getValues('modelId'))?.modelName ?? ''
-      }
-      
     />
   );
 
@@ -303,53 +384,86 @@ export function CreateEditCarForm({
                   </Typography>
                 </Box>
 
-                <Field.Select
-                  name="brandId"
-                  label={translations['BrandName']}
-                  onChange={(e) => {
-                    const id = +e.target.value;
-                    setValue('brandId', id, { shouldValidate: true });
-                    onSelectBrand(id);
-                  }}
-                >
-                  {BRANDS.map((x) => (
-                    <MenuItem key={`brand_${x.value}`} value={x.value}>
-                      {x.label}
-                    </MenuItem>
-                  ))}
-                </Field.Select>
-
-                <Field.Select name="modelId" label={translations['ModelName']}>
-                  {models.map((x) => (
-                    <MenuItem key={`model_${x.modelId}`} value={x.modelId}>
-                      {x.modelName}
-                    </MenuItem>
-                  ))}
-                </Field.Select>
-
-                <Field.Select name="colorId" label={translations['ColorId']}>
-                  {COLORS.map((x) => (
-                    <MenuItem key={`color_${x.value}`} value={x.value}>
-                      {x.label}
-                    </MenuItem>
-                  ))}
-                </Field.Select>
-
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Field.Text name="year" label={translations['Year']} type="number" />
-                  <Field.Text
-                    name="manufactureMonth"
-                    label={translations['ManufactureMonth']}
-                    type="number"
-                  />
-                </Box>
-
                 <LocalizationProvider>
                   <Field.DatePicker
                     name="purchaseDate"
                     label={translations['PurchaseDate']}
+                    onChange={(e) => {
+                      const purchaseDate = e?.toDate();
+                      if (purchaseDate) {
+                        setValue('purchaseDate', purchaseDate.toLocaleDateString());
+
+                        const date = new Date(purchaseDate);
+                        date.setMonth(date.getMonth() + 1);
+                        const dateNextMonth = date.toLocaleDateString();
+
+                        setValue('actionDeadlineDate', dateNextMonth);
+                        setValue('municipalityDeadlineDate', dateNextMonth);
+                        
+                        if (hasInsurance) {
+                          const date2 = new Date(purchaseDate);
+                          date2.setDate(date2.getDate() + 10);
+                          setValue('plateRevokedDate', date2.toLocaleDateString());
+                          setValue('plateRevokedDeadLine', date2.toLocaleDateString());
+                        }
+
+                        if (needsPolice) {
+                          setValue('policeCertificateRequestedDate', dateNextMonth);
+                          setValue('deedRequestedDate', dateNextMonth);
+                          setValue('plateRegisteredDate', dateNextMonth);
+                        }
+                      }
+                    }}
                   />
                 </LocalizationProvider>
+
+                <Field.Select name="auctionId" label={translations['AuctionName']}>
+                  {AUCTIONS.map((x) => (
+                    <MenuItem key={`auction_${x.value}`} value={x.value}>
+                      {x.label}
+                    </MenuItem>
+                  ))}
+                </Field.Select>
+
+                <Field.Text
+                  name="actionNumber"
+                  label={translations['ActionNumber']}
+                  type="number"
+                />
+
+                <Field.Autocomplete
+                  name="brandId"
+                  label={translations['BrandName']}
+                  options={BRANDS}
+                  getOptionKey={(option) => option.value}
+                  getOptionLabel={(option) => option?.label ?? ''}
+                  isOptionEqualToValue={(option, value) =>
+                    option?.value === value?.value || option?.value === value
+                  }
+                  value={BRANDS.find((b) => b.value === watch('brandId')) ?? null}
+                  onChange={(_, selected) => {
+                    setValue('brandId', selected.value, { shouldValidate: true });
+                    onSelectBrand(selected?.value);
+                  }}
+                />
+
+                <Field.Autocomplete
+                  name="modelId"
+                  label={translations['ModelName']}
+                  options={models}
+                  getOptionKey={(option) => option.value}
+                  getOptionLabel={(option) => option?.label ?? ''}
+                  isOptionEqualToValue={(option, value) =>
+                    option?.value === value?.value || option?.value === value
+                  }
+                  value={models.find((b) => b.value === watch('modelId')) ?? null}
+                  onChange={(_, selected) => {
+                    setValue('modelId', selected.value, { shouldValidate: true });
+                  }}
+                />
+
+                <Field.Text name="katashaki" label={translations['katashaki']} />
+                <Field.Text name="chasisNumber" label={translations['ChassisNumber']} />
 
                 <Field.Text
                   name="mileage"
@@ -357,13 +471,19 @@ export function CreateEditCarForm({
                   type="number"
                 />
 
-                <Field.Text name="chasisNumber" label={translations['ChassisNumber']} />
-
-                <Field.Text
-                  name="engineVolume"
-                  label={translations['EngineVolume']}
-                  type="number"
-                />
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Field.Text name="year" label={translations['Year']} type="number" />
+                  <Field.Select
+                    name="manufactureMonth"
+                    label={translations['ManufactureMonth']}
+                  >
+                    {Array.from({ length: 12 }, (_, i) => (
+                      <MenuItem key={i} value={i + 1}>
+                        {(i + 1).toString()}
+                      </MenuItem>
+                    ))}
+                  </Field.Select>
+                </Box>
 
                 <Field.Select name="fuelType" label={translations['FuelType']}>
                   {['CNG', 'G', 'D'].map((x) => (
@@ -372,6 +492,30 @@ export function CreateEditCarForm({
                     </MenuItem>
                   ))}
                 </Field.Select>
+
+                <Field.Autocomplete
+                  name="colorId"
+                  label={translations['ColorName']}
+                  options={COLORS}
+                  getOptionKey={(option) => option.value}
+                  getOptionLabel={(option) => option?.label ?? ''}
+                  isOptionEqualToValue={(option, value) =>
+                    option?.value === value?.value || option?.value === value
+                  }
+                  value={COLORS.find((b) => b.value === watch('colorId')) ?? null}
+                  onChange={(_, selected) => {
+                    setValue('colorId', selected.value, { shouldValidate: true });
+                  }}
+                />
+
+                <Field.Text
+                  name="engineVolume"
+                  label={translations['EngineVolume']}
+                  type="number"
+                />
+
+                <Field.Text name="grad" label={translations['Grade']} />
+                <Field.Text name="point" label={translations['Point']} />
 
                 <Field.Select
                   name="transmissionType"
@@ -392,6 +536,7 @@ export function CreateEditCarForm({
                   name="purchasePrice"
                   label={translations['PurchasePrice']}
                   type="number"
+                  thousandSeparator={true}
                   slotProps={{
                     input: {
                       startAdornment: (
@@ -409,6 +554,7 @@ export function CreateEditCarForm({
                   name="scrapCost"
                   label={translations['ScrapCost']}
                   type="number"
+                  thousandSeparator={true}
                   slotProps={{
                     input: {
                       startAdornment: (
@@ -426,6 +572,25 @@ export function CreateEditCarForm({
                   name="auctionPrice"
                   label={translations['AuctionPrice']}
                   type="number"
+                  thousandSeparator={true}
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>
+                            ¥
+                          </Box>
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                />
+
+                <Field.Text
+                  name="transportPrice"
+                  label={translations['TransportPrice']}
+                  type="number"
+                  thousandSeparator={true}
                   slotProps={{
                     input: {
                       startAdornment: (
@@ -443,6 +608,7 @@ export function CreateEditCarForm({
                   name="taxAmount"
                   label={translations['TaxAmount']}
                   type="number"
+                  thousandSeparator={true}
                   disabled
                   slotProps={{
                     input: {
@@ -461,6 +627,7 @@ export function CreateEditCarForm({
                   name="finalPrice"
                   label={translations['FinalPrice']}
                   type="number"
+                  thousandSeparator={true}
                   disabled
                   slotProps={{
                     input: {
@@ -481,9 +648,21 @@ export function CreateEditCarForm({
                 />
                 <Stack direction={'row'} alignItems={'center'}>
                   <Typography variant="subtitle2" color="gray">
-                    {tCommon('car.hasInsurance')}
+                    {translations['HasInsurance']}
                   </Typography>
-                  <Field.Switch name="hasInsurance" label="" />
+                  <Switch
+                    name="hasInsurance"
+                    checked={methods.getValues('hasInsurance')}
+                    onChange={(e) => {
+                      const value = e.target.checked;
+                      setValue('hasInsurance', value);
+                      if (purchaseDate && value == true) {
+                        const date = new Date(purchaseDate);
+                        date.setDate(date.getDate() + 10);
+                        setValue('plateRevokedDate', date.toLocaleDateString());
+                      }
+                    }}
+                  />
                 </Stack>
 
                 {hasInsurance && (
@@ -494,63 +673,54 @@ export function CreateEditCarForm({
                         label={translations['InsuranceEndDate']}
                       />
                     </LocalizationProvider>
+
+                    <FieldGroup
+                      title={translations['PlateRevoking']}
+                      sx={{ marginTop: 8, gridColumn: { sx: 'span 1', sm: 'span 2' } }}
+                    />
+                    <LocalizationProvider>
+                      <Field.DatePicker
+                        name="plateRevokedDeadLine"
+                        label={translations['PlateRevokedDeadLine']}
+                      />
+                    </LocalizationProvider>
+                    <Stack direction={'row'} alignItems={'center'}>
+                      <Typography variant="subtitle2" color="gray">
+                        {translations['PlateRevoked']}
+                      </Typography>
+                      <Field.Switch name="plateRevoked" label="" />
+                    </Stack>
+                    <LocalizationProvider>
+                      <Field.DatePicker
+                        name="plateRevokedDate"
+                        label={translations['PlateRevokedDate']}
+                      />
+                    </LocalizationProvider>
                   </>
                 )}
 
                 <FieldGroup
-                  title={translations['Transport']}
+                  title={translations['Deed']}
                   sx={{ marginTop: 8, gridColumn: { sx: 'span 1', sm: 'span 2' } }}
                 />
-                <Field.Text
-                  name="transportPrice"
-                  label={translations['TransportPrice']}
-                  type="number"
-                  slotProps={{
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>
-                            ¥
-                          </Box>
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
-                />
-                <Field.Select name="transportFrom" label={translations['TransportFrom']}>
-                  {TRANSPORTFROM.map((x) => (
-                    <MenuItem key={x.value} value={x.value}>
-                      {x.title}
-                    </MenuItem>
-                  ))}
-                </Field.Select>
-
-                <Field.Select name="transportTo" label={translations['TransportTo']}>
-                  {TRANSPORTTO.map((x) => (
-                    <MenuItem key={x.value} value={x.value}>
-                      {x.title}
-                    </MenuItem>
-                  ))}
-                </Field.Select>
-
-                <Stack direction={'row'} alignItems={'center'}>
-                  <Typography variant="subtitle2" color="gray">
-                    {translations['TransportConfirm']}
-                  </Typography>
-                  <Field.Switch name="transportConfirm" label="" />
-                </Stack>
-
                 <LocalizationProvider>
                   <Field.DatePicker
-                    name="transportDate"
-                    label={translations['TransportDate']}
+                    name="deedRequestedDate"
+                    label={translations['DeedRequestedDate']}
                   />
                 </LocalizationProvider>
 
                 <LocalizationProvider>
                   <Field.DatePicker
-                    name="transportDateReceived"
-                    label={translations['TransportDateReceived']}
+                    name="deedIssuedDate"
+                    label={translations['DeedIssuedDate']}
+                  />
+                </LocalizationProvider>
+
+                <LocalizationProvider>
+                  <Field.DatePicker
+                    name="plateRegisteredDate"
+                    label={translations['PlateRegisteredDate']}
                   />
                 </LocalizationProvider>
 
@@ -572,7 +742,23 @@ export function CreateEditCarForm({
                       <Typography variant="subtitle2" color="gray">
                         {translations['NeedsPoliceCertificate']}
                       </Typography>
-                      <Field.Switch name="needsPoliceCertificate" label="" />
+                      <Switch
+                        name="needsPoliceCertificate"
+                        checked={methods.getValues('needsPoliceCertificate')}
+                        onChange={(e) => {
+                          const value = e.target.checked;
+                          setValue('needsPoliceCertificate', value);
+                          if (purchaseDate && value == true) {
+                            const date = new Date(purchaseDate);
+                            date.setMonth(date.getMonth() + 1);
+                            const dateNextMonth = date.toLocaleDateString();
+
+                            setValue('policeCertificateRequestedDate', dateNextMonth);
+                            setValue('deedRequestedDate', dateNextMonth);
+                            setValue('plateRegisteredDate', dateNextMonth);
+                          }
+                        }}
+                      />
                     </Stack>
 
                     {needsPolice && (
@@ -583,6 +769,12 @@ export function CreateEditCarForm({
                             label={translations['PoliceCertificateRequestedDate']}
                           />
                         </LocalizationProvider>
+
+                        <Field.Text
+                          name="policeCertificateNumber"
+                          label={translations['PoliceCertificateNumber']}
+                          type="number"
+                        />
 
                         <LocalizationProvider>
                           <Field.DatePicker
@@ -613,52 +805,86 @@ export function CreateEditCarForm({
                 )}
 
                 <FieldGroup
-                  title={translations['Deed']}
+                  title={translations['Transport']}
                   sx={{ marginTop: 8, gridColumn: { sx: 'span 1', sm: 'span 2' } }}
                 />
-                <LocalizationProvider>
-                  <Field.DatePicker
-                    name="deedRequestedDate"
-                    label={translations['DeedRequestedDate']}
-                  />
-                </LocalizationProvider>
+                <Field.Select name="transportFrom" label={translations['TransportFrom']}>
+                  {TRANSPORTFROM.map((x) => (
+                    <MenuItem key={x.value} value={x.value}>
+                      {x.title}
+                    </MenuItem>
+                  ))}
+                </Field.Select>
+
+                <Field.Select name="transportTo" label={translations['TransportTo']}>
+                  {TRANSPORTTO.map((x) => (
+                    <MenuItem key={x.value} value={x.value}>
+                      {x.title}
+                    </MenuItem>
+                  ))}
+                </Field.Select>
 
                 <LocalizationProvider>
                   <Field.DatePicker
-                    name="deedIssuedDate"
-                    label={translations['DeedIssuedDate']}
+                    name="transportDate"
+                    label={translations['TransportDate']}
                   />
                 </LocalizationProvider>
-
                 <LocalizationProvider>
                   <Field.DatePicker
-                    name="plateRegisteredDate"
-                    label={translations['PlateRegisteredDate']}
+                    name="transportDateReceived"
+                    label={translations['TransportDateReceived']}
                   />
                 </LocalizationProvider>
-
-                <FieldGroup
-                  title={translations['SentToMunicipality']}
-                  sx={{ marginTop: 8, gridColumn: { sx: 'span 1', sm: 'span 2' } }}
-                />
                 <Stack direction={'row'} alignItems={'center'}>
                   <Typography variant="subtitle2" color="gray">
-                    {translations['SentToMunicipality']}
+                    {translations['TransportConfirm']}
                   </Typography>
-                  <Field.Switch name="sentToMunicipality" label="" />
+                  <Field.Switch name="transportConfirm" label="" />
                 </Stack>
-                {sentToMunicipality && (
+                <Field.Select
+                  name="transportConfirmUserId"
+                  label={translations['TransportConfirmUserId']}
+                >
+                  {USERS.map((x) => (
+                    <MenuItem key={`user_${x.value}`} value={x.value}>
+                      {x.label}
+                    </MenuItem>
+                  ))}
+                </Field.Select>
+
+                {Number(enginVolume) > 0 && Number(enginVolume) < 1000 && (
                   <>
+                    <FieldGroup
+                      title={translations['SentToMunicipality']}
+                      sx={{ marginTop: 8, gridColumn: { sx: 'span 1', sm: 'span 2' } }}
+                    />
                     <LocalizationProvider>
                       <Field.DatePicker
-                        name="municipalitySentDate"
-                        label={translations['MunicipalitySentDate']}
+                        name="municipalityDeadlineDate"
+                        label={translations['MunicipalityDeadlineDate']}
                       />
                     </LocalizationProvider>
-                    <Field.Text
-                      name="municipalitySentToPerson"
-                      label={translations['MunicipalitySentToPerson']}
-                    />
+                    <Stack direction={'row'} alignItems={'center'}>
+                      <Typography variant="subtitle2" color="gray">
+                        {translations['SentToMunicipality']}
+                      </Typography>
+                      <Field.Switch name="sentToMunicipality" label="" />
+                    </Stack>
+                    {sentToMunicipality && (
+                      <>
+                        <LocalizationProvider>
+                          <Field.DatePicker
+                            name="municipalitySentDate"
+                            label={translations['MunicipalitySentDate']}
+                          />
+                        </LocalizationProvider>
+                        <Field.Text
+                          name="municipalitySentToPerson"
+                          label={translations['MunicipalitySentToPerson']}
+                        />
+                      </>
+                    )}
                   </>
                 )}
 
@@ -666,6 +892,12 @@ export function CreateEditCarForm({
                   title={translations['SentToAction']}
                   sx={{ marginTop: 8, gridColumn: { sx: 'span 1', sm: 'span 2' } }}
                 />
+                <LocalizationProvider>
+                  <Field.DatePicker
+                    name="actionDeadlineDate"
+                    label={translations['ActionDeadlineDate']}
+                  />
+                </LocalizationProvider>
                 <Stack direction={'row'} alignItems={'center'}>
                   <Typography variant="subtitle2" color="gray">
                     {translations['SentToAction']}
@@ -684,27 +916,6 @@ export function CreateEditCarForm({
                       name="auctionSentToPerson"
                       label={translations['ActionSentToPerson']}
                     />
-                  </>
-                )}
-
-                <FieldGroup
-                  title={translations['PlateRevoking']}
-                  sx={{ marginTop: 8, gridColumn: { sx: 'span 1', sm: 'span 2' } }}
-                />
-                <Stack direction={'row'} alignItems={'center'}>
-                  <Typography variant="subtitle2" color="gray">
-                    {translations['PlateRevoked']}
-                  </Typography>
-                  <Field.Switch name="plateRevoked" label="" />
-                </Stack>
-                {plateRevoked && (
-                  <>
-                    <LocalizationProvider>
-                      <Field.DatePicker
-                        name="plateRevokedDate"
-                        label={translations['PlateRevokedDate']}
-                      />
-                    </LocalizationProvider>
                   </>
                 )}
 

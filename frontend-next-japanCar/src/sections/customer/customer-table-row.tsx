@@ -12,6 +12,7 @@ import { paths } from '@/routes/paths';
 import { Label } from '@/components/label';
 import { useTranslate } from '@/locales';
 import { ICustomer } from '@/types/customer';
+import { fDate } from '@/utils/format-time';
 
 // ----------------------------------------------------------------------
 
@@ -66,7 +67,7 @@ export function CustomerTableRow({ row, onDeleteRow }: Props) {
           </Label>
         </TableCell>
 
-        <TableCell>{row.createdAt?.split('T')[0]}</TableCell>
+        <TableCell>{fDate(row.createdAt)}</TableCell>
 
         <TableCell>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>

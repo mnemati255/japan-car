@@ -10,5 +10,6 @@ namespace JapanCar.Application.DTOs
     {
         public IEnumerable<T> Items { get; set; } = [];
         public int TotalPage { get; set; }
+        public int? TotalCount { get; set; }
     }
 }

@@ -12,5 +12,6 @@ namespace JapanCar.Application.Interfaces
     {
         Task<PagedResult<NotificationEntity>> GetNotifications(bool isResolved, int languageId, int? skip, int? take);
         Task<bool> MarkNotificationAsDone(int id, int userId);
+        Task<NotificationEntity?> GetNotificationById(int id);
     }
 }

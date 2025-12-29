@@ -110,10 +110,6 @@ public partial class AppDbContext : DbContext
             entity.ToTable("AuctionsTranslation");
 
             entity.Property(e => e.AuctionTranslationId).HasComment("شناسه حراج");
-            entity.Property(e => e.AuctionDate).HasComment("تاریخ برگزاری حراج");
-            entity.Property(e => e.AuctionFee)
-                .HasComment("کارمزد حراج")
-                .HasColumnType("decimal(18, 2)");
             entity.Property(e => e.AuctionName)
                 .HasMaxLength(400)
                 .HasComment("نام حراج");
@@ -134,6 +130,8 @@ public partial class AppDbContext : DbContext
             entity.HasKey(e => e.CarId).HasName("PK__Cars__68A0342E1EC2C699");
 
             entity.Property(e => e.CarId).HasComment("شناسه خودرو");
+            entity.Property(e => e.ActionDeadlineDate).HasComment("Action Deadline Date");
+            entity.Property(e => e.ActionNumber).HasComment("Action Number");
             entity.Property(e => e.ActionSentByUserId).HasComment("ActionSentByUserId");
             entity.Property(e => e.ActionSentDate)
                 .HasComment("ActionSentDate")
@@ -161,10 +159,17 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.FuelType)
                 .HasMaxLength(100)
                 .HasComment("نوع سوخت");
+            entity.Property(e => e.Grad)
+                .HasMaxLength(50)
+                .HasComment("Car grade or classification level (e.g., Standard, Premium, Luxury, etc.)");
             entity.Property(e => e.HasInsurance).HasComment("وضعیت داشتن بیمه‌نامه (1 = دارد، 0 = ندارد)");
             entity.Property(e => e.InsuranceExpireDate)
                 .HasComment("تاریخ انقضای بیمه خودرو")
                 .HasColumnType("datetime");
+            entity.Property(e => e.Katashaki)
+                .HasMaxLength(255)
+                .HasComment("katashaki")
+                .HasColumnName("katashaki");
             entity.Property(e => e.ManufactureMonth).HasComment("ماه ساخت خودرو (عدد بین 1 تا 12)");
             entity.Property(e => e.Mileage).HasComment("کارکرد خودرو");
             entity.Property(e => e.ModelId).HasComment("شناسه مدل خودرو");
@@ -172,6 +177,7 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.ModifiedDate)
                 .HasComment("تاریخ ویرایش")
                 .HasColumnType("datetime");
+            entity.Property(e => e.MunicipalityDeadlineDate).HasComment("Municipality Deadline Date");
             entity.Property(e => e.MunicipalitySentByUserId).HasComment("MunicipalitySentByUserId");
             entity.Property(e => e.MunicipalitySentDate)
                 .HasComment("MunicipalitySentDate")
@@ -192,7 +198,12 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.PlateRevokedDate)
                 .HasComment("PlateRevokedDate")
                 .HasColumnType("datetime");
+            entity.Property(e => e.PlateRevokedDeadLine).HasComment("Plate Revoked DeadLine");
             entity.Property(e => e.PlateType).HasComment("نوع پلاک خودرو (شخصی، عمومی/کار، اجاره‌ای، صادراتی و ...)");
+            entity.Property(e => e.Point)
+                .HasMaxLength(50)
+                .HasComment("Numeric score representing the overall evaluation of the car based on technical condition, appearance, brand value, and other system-defined criteria.");
+            entity.Property(e => e.PoliceCertificateNumber).HasComment("Police certificate number associated with the vehicle.");
             entity.Property(e => e.PoliceCertificateReceivedDate)
                 .HasComment("Police Certificate Received Date")
                 .HasColumnType("datetime");
@@ -215,6 +226,10 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.TransportFrom).HasComment("1-Toyota R 2-Zero R 3- Self Transport");
             entity.Property(e => e.TransportTo).HasComment("1-Osaka -Own yard 3- Hakata");
             entity.Property(e => e.Year).HasComment("سال ساخت");
+
+            entity.HasOne(d => d.Action).WithMany(p => p.Cars)
+                .HasForeignKey(d => d.ActionId)
+                .HasConstraintName("FK_Cars_Auctions");
 
             entity.HasOne(d => d.ActionSentByUser).WithMany(p => p.CarActionSentByUsers)
                 .HasForeignKey(d => d.ActionSentByUserId)
@@ -245,6 +260,10 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.PlateRevokedByUser).WithMany(p => p.CarPlateRevokedByUsers)
                 .HasForeignKey(d => d.PlateRevokedByUserId)
                 .HasConstraintName("FK_Cars_PlateRevokedByUserId");
+
+            entity.HasOne(d => d.TransportConfirmUser).WithMany(p => p.CarTransportConfirmUsers)
+                .HasForeignKey(d => d.TransportConfirmUserId)
+                .HasConstraintName("FK_Cars_Users");
         });
 
         modelBuilder.Entity<CarAuctionDetail>(entity =>
@@ -252,7 +271,6 @@ public partial class AppDbContext : DbContext
             entity.HasKey(e => e.CarAuctionId).HasName("PK__CarAucti__9022063488849333");
 
             entity.Property(e => e.CarAuctionId).HasComment("شناسه حراج خودرو");
-            entity.Property(e => e.AuctionId).HasComment("شناسه حراج");
             entity.Property(e => e.AuctionPrice).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.CarId).HasComment("شناسه خودرو");
             entity.Property(e => e.CreatedBy).HasComment("ایجاد شده توسط");
@@ -280,10 +298,6 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.TransportPrice)
                 .HasComment("قیمت خرید")
                 .HasColumnType("decimal(18, 2)");
-
-            entity.HasOne(d => d.Auction).WithMany(p => p.CarAuctionDetails)
-                .HasForeignKey(d => d.AuctionId)
-                .HasConstraintName("FK__CarAuctio__Aucti__5DCAEF64");
 
             entity.HasOne(d => d.Car).WithMany(p => p.CarAuctionDetails)
                 .HasForeignKey(d => d.CarId)

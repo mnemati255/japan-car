@@ -1,6 +1,6 @@
 'use client';
 
-import type { IUserItem } from '@/types/user';
+import type { IUser } from '@/types/user';
 import { paths } from '@/routes/paths';
 import { DashboardContent } from '@/layouts/dashboard';
 import { CustomBreadcrumbs } from '@/components/custom-breadcrumbs';
@@ -16,7 +16,7 @@ type Props = {
 };
 
 export function UserEditView({ userId }: Props) {
-  const [currentUser, setCurrentUser] = useState<IUserItem>();
+  const [currentUser, setCurrentUser] = useState<IUser>();
   const { t: tCommon } = useTranslate('common');
 
   useEffect(() => {

@@ -7,6 +7,7 @@ import { BaseInfoItemListView } from './base-info-item-list-view';
 import { IBrand } from '@/types/car';
 import { endpoints } from '@/lib/axios';
 import { deleteItem, getItemById, useList } from '@/actions/base-action';
+import { fDate } from '@/utils/format-time';
 
 export function BrandListView() {
   const { translations: formFields } = useTranslateFromServer();
@@ -30,7 +31,7 @@ export function BrandListView() {
       CreateEditForm={BrandCreateEditForm}
       tableHead={[
         { key: 'brandName', render: (r) => r.brandName },
-        { key: 'createdAt', render: (r) => r.createdAt?.split('T')[0] },
+        { key: 'createdAt', render: (r) => fDate(r.createdAt) },
       ]}
       addLabel={tCommon('baseInfo.addBrand')}
       emptyLabel={tCommon('baseInfo.noBrands')}

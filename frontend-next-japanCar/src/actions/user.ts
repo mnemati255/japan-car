@@ -1,6 +1,6 @@
 import { CONFIG } from '@/global-config';
 import axiosInstance, { fetcher } from '@/lib/axios';
-import { IUserItem } from '@/types/user';
+import { IUser } from '@/types/user';
 import useSWR, { mutate, SWRConfiguration } from 'swr';
 
 // ----------------------------------------------------------------------
@@ -17,7 +17,7 @@ const BASE_URL = `${CONFIG.serverUrl}/user`;
 
 export function useGetUsers(keyword: string) {
   const url = `${BASE_URL}?keyword=${keyword}`;
-  const { data, isLoading, error, isValidating } = useSWR<IUserItem[]>(url, fetcher, {
+  const { data, isLoading, error, isValidating } = useSWR<IUser[]>(url, fetcher, {
     ...swrOptions,
   });
 
@@ -39,7 +39,7 @@ export async function getUserById(id: number) {
 
 // ----------------------------------------------------------------------
 
-export async function createUser(rowData: IUserItem) {
+export async function createUser(rowData: IUser) {
   /**
    * on server
    */
@@ -55,7 +55,7 @@ export async function createUser(rowData: IUserItem) {
 
 // ----------------------------------------------------------------------
 
-export async function updateUsere(userId: number, rowData: IUserItem) {
+export async function updateUsere(userId: number, rowData: IUser) {
   /**
    * on server
    */

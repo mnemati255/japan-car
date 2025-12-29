@@ -45,7 +45,7 @@ export function AuctionCreateCarView({ auctionId }: Props) {
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
-      <CreateEditCarForm colors={colors} brands={brands} auctionId={auctionId} />
+      {/* <CreateEditCarForm colors={colors} brands={brands} auctionId={auctionId} /> */}
     </DashboardContent>
   );
 }

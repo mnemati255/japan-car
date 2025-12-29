@@ -32,7 +32,7 @@ public partial class Auction
 
     public virtual ICollection<AuctionsTranslation> AuctionsTranslations { get; set; } = new List<AuctionsTranslation>();
 
-    public virtual ICollection<CarAuctionDetail> CarAuctionDetails { get; set; } = new List<CarAuctionDetail>();
+    public virtual ICollection<Car> Cars { get; set; } = new List<Car>();
 
     public virtual User CreatedByNavigation { get; set; } = null!;
 

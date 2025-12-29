@@ -27,11 +27,11 @@ namespace JapanCar.Api.Controllers
         }
 
 
-        [HttpPut("mark-as-done/{id}")]
-        public async Task<IActionResult> MarkNotificationAsDone(int id)
+        [HttpPut("mark-as-done/{notifId}")]
+        public async Task<IActionResult> MarkNotificationAsDone(int notifId)
         {
             var userName = User.Identity?.Name ?? "";
-            await _notificationService.MarkNotificationAsDone(id, userName);
+            await _notificationService.MarkNotificationAsDone(notifId, userName);
             return Ok();
         }
     }

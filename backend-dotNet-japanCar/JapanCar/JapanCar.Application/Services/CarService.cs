@@ -1,4 +1,5 @@
-﻿using Common.Exceptions;
+﻿using ClosedXML.Excel;
+using Common.Exceptions;
 using JapanCar.Application.DTOs;
 using JapanCar.Application.Helpers;
 using JapanCar.Application.Interfaces;
@@ -28,7 +29,7 @@ namespace JapanCar.Application.Services
         }
 
 
-        public async Task<GridDto<CarDto>> GetAllCars(CarFilterDto filterDto, int? auctionId = null)
+        public async Task<GridDto<CarDto>> GetCars(CarFilterDto filterDto, int? auctionId = null)
         {
             var languageId = await GetLanguageId(_requestContext.Locale);
 
@@ -51,9 +52,10 @@ namespace JapanCar.Application.Services
                 CreatedAt = x.CreatedDate,
                 Images = x.ImageUrls,
                 SukuraNumber = x.SukuraNumber,
-                PurchaseDate = x.PurchaseDate.ToString(),
+                PurchaseDate = x.PurchaseDate.ToString("yyyy/MM/dd"),
                 ChasisNumber = x.ChassisNumber,
-                ForSale = x.ForSale
+                ForSale = x.ForSale,
+                Katashaki = x.Katashaki,
             });
 
             var totalPage = filterDto.Take.HasValue ? PagingHelper.GetTotalPages(entities.TotalCount, filterDto.Take.Value) : 0;
@@ -61,7 +63,8 @@ namespace JapanCar.Application.Services
             return new GridDto<CarDto>
             {
                 Items = cars,
-                TotalPage = totalPage
+                TotalPage = totalPage,
+                TotalCount = entities.TotalCount
             };
         }
 
@@ -125,7 +128,16 @@ namespace JapanCar.Application.Services
                 AuctionSentByUserId = dto.SentToAuction ? currentUser.UserId : null,
                 PlateRevoked = dto.PlateRevoked,
                 PlateRevokedDate = dto.PlateRevokedDate.ToDateTime(),
-                PlateRevokedByUserId = dto.PlateRevoked ? currentUser.UserId : null
+                PlateRevokedByUserId = dto.PlateRevoked ? currentUser.UserId : null,
+                Grad = dto.Grad,
+                Point = dto.Point,
+                TransportConfirmUserId = dto.TransportConfirmUserId != 0 ? dto.TransportConfirmUserId : null,
+                PoliceCertificateNumber = dto.PoliceCertificateNumber,
+                ActionNumber = dto.ActionNumber,
+                Katashaki = dto.Katashaki,
+                ActionDeadlineDate = dto.ActionDeadlineDate.ToDateOnly(),
+                MunicipalityDeadlineDate = dto.MunicipalityDeadlineDate.ToDateOnly(),
+                PlateRevokedDeadLine = dto.PlateRevokedDeadLine.ToDateOnly()
             });
 
             return sukuraNumber;
@@ -196,7 +208,16 @@ namespace JapanCar.Application.Services
                 AuctionSentByUserId = dto.SentToAuction ? currentUser.UserId : null,
                 PlateRevoked = dto.PlateRevoked,
                 PlateRevokedDate = dto.PlateRevokedDate.ToDateTime(),
-                PlateRevokedByUserId = dto.PlateRevoked ? currentUser.UserId : null
+                PlateRevokedByUserId = dto.PlateRevoked ? currentUser.UserId : null,
+                Grad = dto.Grad,
+                Point = dto.Point,
+                TransportConfirmUserId = dto.TransportConfirmUserId != 0 ? dto.TransportConfirmUserId : null,
+                PoliceCertificateNumber = dto.PoliceCertificateNumber,
+                ActionNumber = dto.ActionNumber,
+                Katashaki = dto.Katashaki,
+                ActionDeadlineDate = dto.ActionDeadlineDate.ToDateOnly(),
+                MunicipalityDeadlineDate = dto.MunicipalityDeadlineDate.ToDateOnly(),
+                PlateRevokedDeadLine = dto.PlateRevokedDeadLine.ToDateOnly()
             });
 
             return updatedSukuraNumber;
@@ -274,7 +295,63 @@ namespace JapanCar.Application.Services
                 AuctionSentToPerson = car.AuctionSentToPerson,
                 PlateRevoked = car.PlateRevoked,
                 PlateRevokedDate = car.PlateRevokedDate.ToString(),
+                Grad = car.Grad,
+                Point = car.Point,
+                TransportConfirmUserId = car.TransportConfirmUserId,
+                PoliceCertificateNumber = car.PoliceCertificateNumber,
+                ActionNumber = car.ActionNumber,
+                Katashaki = car.Katashaki,
+                ActionDeadlineDate = car.ActionDeadlineDate.ToString(),
+                MunicipalityDeadlineDate = car.MunicipalityDeadlineDate.ToString(),
+                PlateRevokedDeadLine = car.PlateRevokedDeadLine.ToString(),
             };
+        }
+
+
+        public async Task<byte[]> GetReportExcel(CarFilterDto filterDto)
+        {
+            var languageId = await GetLanguageId(_requestContext.Locale);
+
+            filterDto.Skip = null;
+            filterDto.Take = null;
+
+            var carsItems = await GetCars(filterDto);
+
+            var cars = carsItems.Items.ToList();
+
+            using var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add("Report");
+
+            var translations = await _unitOfWork.TranslationRepository.GetAllTranslations(languageId);
+            var dic = translations
+                .GroupBy(x => x.FieldName)
+                .ToDictionary(g => g.Key, g => g.First().TranslatedValue);
+
+            worksheet.Cell(1, 1).Value = dic["BrandName"];
+            worksheet.Cell(1, 2).Value = dic["ModelName"];
+            worksheet.Cell(1, 3).Value = dic["ColorName"];
+            worksheet.Cell(1, 4).Value = dic["Year"];
+            worksheet.Cell(1, 5).Value = dic["PurchaseDate"];
+            worksheet.Cell(1, 6).Value = dic["PurchasePrice"];
+            worksheet.Cell(1, 7).Value = dic["SukuraNumber"];
+
+            for (int i = 0; i < cars.Count(); i++)
+            {
+                worksheet.Cell(i+2,1).Value = cars[i].BrandName;
+                worksheet.Cell(i+2,2).Value = cars[i].ModelName;
+                worksheet.Cell(i+2,3).Value = cars[i].ColorName;
+                worksheet.Cell(i+2,4).Value = cars[i].Year;
+                worksheet.Cell(i+2,5).Value = cars[i].PurchaseDate;
+                worksheet.Cell(i+2,6).Value = cars[i].PurchasePrice;
+                worksheet.Cell(i+2,7).Value = cars[i].SukuraNumber;
+            }
+
+            worksheet.Columns().AdjustToContents();
+
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+
+            return stream.ToArray();
         }
     }
 }

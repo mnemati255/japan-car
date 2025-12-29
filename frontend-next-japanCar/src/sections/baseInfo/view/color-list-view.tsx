@@ -7,6 +7,7 @@ import { ColorCreateEditForm } from '../color-create-edit-form';
 import { IColor } from '@/types/car';
 import { deleteItem, getItemById, useList } from '@/actions/base-action';
 import { endpoints } from '@/lib/axios';
+import { fDate } from '@/utils/format-time';
 
 export function ColorListView() {
   const { translations: formFields } = useTranslateFromServer();
@@ -30,7 +31,7 @@ export function ColorListView() {
       CreateEditForm={ColorCreateEditForm}
       tableHead={[
         { key: 'colorName', render: (r) => r.colorName },
-        { key: 'createdAt', render: (r) => r.createdAt?.split('T')[0] },
+        { key: 'createdAt', render: (r) => fDate(r.createdAt) },
       ]}
       addLabel={tCommon('baseInfo.addColor')}
       emptyLabel={tCommon('baseInfo.noColors')}

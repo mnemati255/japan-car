@@ -10,8 +10,7 @@ import { paths } from '@/routes/paths';
 import { useRouter } from '@/routes/hooks';
 import { toast } from '@/components/snackbar';
 import { Form, Field } from '@/components/hook-form';
-import messages from '@/lib/messages';
-import { IAuctionItem } from '@/types/auction';
+import { IAuction } from '@/types/auction';
 import InputAdornment from '@mui/material/InputAdornment';
 import { createAuction, updateAuction } from '@/actions/auction';
 import {
@@ -21,11 +20,12 @@ import {
   useTranslateFromServer,
 } from '@/locales';
 import { useEffect } from 'react';
+import { useMessage } from '@/lib/messages';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  currentAuction?: IAuctionItem;
+  currentAuction?: IAuction;
   lang: LangCode;
 };
 
@@ -33,6 +33,7 @@ export function AuctionCreateEditForm({ currentAuction, lang }: Props) {
   const router = useRouter();
   const { t: tCommon } = useTranslate('common');
   const { translations } = useTranslateFromServer();
+  const { messages } = useMessage();
 
   const AuctionCreateSchema = z.object({
     auctionName: z.string().min(1, { error: messages.required() }),
@@ -45,8 +46,8 @@ export function AuctionCreateEditForm({ currentAuction, lang }: Props) {
     resolver: zodResolver(AuctionCreateSchema),
     defaultValues: {
       auctionName: currentAuction?.auctionName ?? '',
-      auctionDate: currentAuction?.auctionDate ?? '',
-      auctionFee: currentAuction?.auctionFee ?? 0,
+      // auctionDate: currentAuction?.auctionDate ?? '',
+      // auctionFee: currentAuction?.auctionFee ?? 0,
     },
   });
 
@@ -60,8 +61,8 @@ export function AuctionCreateEditForm({ currentAuction, lang }: Props) {
     if (currentAuction) {
       reset({
         auctionName: currentAuction.auctionName ?? '',
-        auctionDate: currentAuction.auctionDate ?? '',
-        auctionFee: currentAuction.auctionFee ?? 0,
+        // auctionDate: currentAuction.auctionDate ?? '',
+        // auctionFee: currentAuction.auctionFee ?? 0,
       });
     }
   }, [currentAuction, reset, lang]);
@@ -75,9 +76,7 @@ export function AuctionCreateEditForm({ currentAuction, lang }: Props) {
       const { status } = await api;
       if (status == 200) {
         toast.success(
-          currentAuction
-            ? translations['update_success']
-            : translations['create_success']
+          currentAuction ? translations['update_success'] : translations['create_success']
         );
         router.push(paths.dashboard.auction.root);
       }
@@ -101,7 +100,10 @@ export function AuctionCreateEditForm({ currentAuction, lang }: Props) {
             >
               <Field.Text name="auctionName" label={translations['AuctionName']} />
               <LocalizationProvider>
-                <Field.DatePicker name="auctionDate" label={translations['AuctionDate']} />
+                <Field.DatePicker
+                  name="auctionDate"
+                  label={translations['AuctionDate']}
+                />
               </LocalizationProvider>
               <Field.Text
                 name="auctionFee"

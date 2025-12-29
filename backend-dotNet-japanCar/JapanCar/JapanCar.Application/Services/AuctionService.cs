@@ -1,5 +1,7 @@
 ﻿using Common.Exceptions;
+using DocumentFormat.OpenXml.Spreadsheet;
 using JapanCar.Application.DTOs;
+using JapanCar.Application.Helpers;
 using JapanCar.Application.Interfaces;
 using JapanCar.Domain.Entities;
 using System.Net;
@@ -17,23 +19,29 @@ namespace JapanCar.Application.Services
             _requestContext = requestContext;
         }
 
-        public async Task<IEnumerable<AuctionDto>> GetAuctions()
+        public async Task<GridDto<AuctionDto>> GetAuctions(string? keyword, int? skip = null, int? take = null)
         {
             var languageId = await GetLanguageId(_requestContext.Locale);
 
-            var auctions = await _unitOfWork.AuctionRepository.GetAuctions((int)languageId);
+            var entities = await _unitOfWork.AuctionRepository.GetAuctions(languageId, keyword, skip, take);
 
-            return auctions.Select(x => new AuctionDto
+            var auctions = entities.Items.Select(x => new AuctionDto
             {
                 AuctionId = x.AuctionId,
                 AuctionName = x.AuctionName,
-                AuctionDate = x.AuctionDate.ToString(),
-                AuctionFee = x.AuctionFee,
                 CreatedAt = x.CreatedDate
-            });
+            }).ToList();
+
+            var totalPage = take.HasValue ? PagingHelper.GetTotalPages(entities.TotalCount, take.Value) : 0;
+
+            return new GridDto<AuctionDto>
+            {
+                Items = auctions,
+                TotalPage = totalPage
+            };
         }
 
-        public async Task<AuctionDto> GetAuctionById(int id, string locale)
+        public async Task<AuctionDto> GetAuctionById(string locale, int id)
         {
             var languageId = await GetLanguageId(locale);
 
@@ -46,8 +54,6 @@ namespace JapanCar.Application.Services
             {
                 AuctionId = auction.AuctionId,
                 AuctionName = auction.AuctionName,
-                AuctionDate = auction.AuctionDate.ToString(),
-                AuctionFee = auction.AuctionFee,
             };
         }
 
@@ -55,11 +61,10 @@ namespace JapanCar.Application.Services
         {
             var languageId = await GetLanguageId(_requestContext.Locale);
 
-            await _unitOfWork.AuctionRepository.CreateAuction((int)languageId, new AuctionEntity
+            await _unitOfWork.AuctionRepository.CreateAuction(languageId, new AuctionEntity
             {
                 AuctionName = dto.AuctionName,
-                AuctionDate = DateOnly.Parse(dto.AuctionDate.Split("T")[0]),
-                AuctionFee = dto.AuctionFee,
+                CreatedBy = _requestContext.UserId
             });
         }
 
@@ -70,9 +75,8 @@ namespace JapanCar.Application.Services
             var result = await _unitOfWork.AuctionRepository.UpdateAuction(languageId, id, new AuctionEntity
             {
                 AuctionName = dto.AuctionName,
-                AuctionDate = DateOnly.Parse(dto.AuctionDate.Split("T")[0]),
-                AuctionFee = dto.AuctionFee,
-                ModifiedDate = DateTime.Now
+                ModifiedDate = DateTime.Now,
+                ModifiedBy = _requestContext.UserId
             });
 
             if (!result)

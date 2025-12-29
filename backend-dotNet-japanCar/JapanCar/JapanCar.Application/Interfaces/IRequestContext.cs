@@ -9,6 +9,7 @@ namespace JapanCar.Application.Interfaces
     public interface IRequestContext
     {
         string Locale { get; }
+        int UserId { get; }
     }
 
 }

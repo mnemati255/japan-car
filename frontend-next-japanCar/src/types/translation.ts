@@ -1,5 +1,11 @@
 import { LangCode } from '@/locales';
 
+export interface ITranslation2 {
+  entityName: string;
+  fieldName: string;
+  translatedValue: string;
+}
+
 export interface ITranslation {
   entityName: string;
   languageCode: LangCode;
@@ -9,7 +15,11 @@ export interface ITranslation {
 }
 
 export type FieldNameType =
+  | 'Action'
   | 'action_error'
+  | 'ActionDeadlineDate'
+  | 'ActionId'
+  | 'ActionNumber'
   | 'ActionSentByUserId'
   | 'ActionSentDate'
   | 'ActionSentToPerson'
@@ -62,7 +72,10 @@ export type FieldNameType =
   | 'ForSale'
   | 'FuelType'
   | 'General'
+  | 'Grad'
+  | 'Grade'
   | 'HasInsurance'
+  | 'HasPoliceCertificate'
   | 'Icon'
   | 'ImageId'
   | 'ImageUrl'
@@ -74,6 +87,8 @@ export type FieldNameType =
   | 'IsActive'
   | 'IsPrimary'
   | 'IsResolved'
+  | 'IsUnder1000CC'
+  | 'katashaki'
   | 'LanguageId'
   | 'LastName'
   | 'ManufactureMonth'
@@ -84,14 +99,24 @@ export type FieldNameType =
   | 'MechanicWorkHours'
   | 'MenuId'
   | 'MenuKey'
+  | 'mes_duplicate'
+  | 'mes_invalid'
+  | 'mes_minCount3'
+  | 'mes_minLength6'
+  | 'mes_required'
+  | 'mes_requiredAtLeast'
   | 'Message'
   | 'Mileage'
   | 'ModelId'
   | 'ModelName'
   | 'ModifiedBy'
   | 'ModifiedDate'
+  | 'Municipality'
+  | 'MunicipalityDeadlineDate'
   | 'MunicipalitySentByUserId'
   | 'MunicipalitySentDate'
+  | 'MunicipalitySentDateFrom'
+  | 'MunicipalitySentDateTo'
   | 'MunicipalitySentToPerson'
   | 'Name'
   | 'NeedsPoliceCertificate'
@@ -119,16 +144,24 @@ export type FieldNameType =
   | 'PlateRevoking'
   | 'PlateType'
   | 'PlateType_Temp'
+  | 'Point'
   | 'Police'
   | 'PoliceCertificate'
+  | 'PoliceCertificateNumber'
   | 'PoliceCertificateReceivedDate'
+  | 'PoliceCertificateReceivedDateFrom'
+  | 'PoliceCertificateReceivedDateTo'
   | 'PoliceCertificateRequestedDate'
   | 'Prices'
   | 'principal_id'
   | 'PrintInfo'
   | 'PrintSukura'
   | 'PurchaseDate'
+  | 'PurchaseDateFrom'
+  | 'PurchaseDateTo'
   | 'PurchasePrice'
+  | 'PurchasePriceFrom'
+  | 'PurchasePriceTo'
   | 'RepairDate'
   | 'RepairId'
   | 'ReplaceDate'
@@ -151,8 +184,11 @@ export type FieldNameType =
   | 'TransmissionType'
   | 'Transport'
   | 'TransportConfirm'
+  | 'TransportConfirmUserId'
   | 'TransportDate'
+  | 'TransportDateFrom'
   | 'TransportDateReceived'
+  | 'TransportDateTo'
   | 'TransportFrom'
   | 'TransportPrice'
   | 'TransportTo'
@@ -161,5 +197,7 @@ export type FieldNameType =
   | 'UserId'
   | 'UserName'
   | 'UserRoleId'
+  | 'Vehicle'
   | 'version'
-  | 'Year';
+  | 'Year'
+  | 'PlateRevokedDeadLine';

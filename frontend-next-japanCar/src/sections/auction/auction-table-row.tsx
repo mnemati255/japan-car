@@ -9,15 +9,16 @@ import { RouterLink } from '@/routes/components';
 import { Iconify } from '@/components/iconify';
 import { ConfirmDialog } from '@/components/custom-dialog';
 import { paths } from '@/routes/paths';
-import { IAuctionItem } from '@/types/auction';
+import { IAuction } from '@/types/auction';
 import { useState } from 'react';
 import { fCurrency } from '@/utils/format-number';
 import { allLangs, useTranslate } from '@/locales';
+import { fDate } from '@/utils/format-time';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: IAuctionItem;
+  row: IAuction;
   onDeleteRow: () => Promise<void>;
 };
 
@@ -53,9 +54,9 @@ export function AuctionTableRow({ row, onDeleteRow }: Props) {
     <>
       <TableRow key={row.auctionId}>
         <TableCell>{row.auctionName}</TableCell>
-        <TableCell>{row.auctionDate}</TableCell>
-        <TableCell>{fCurrency(row.auctionFee)}</TableCell>
-        <TableCell>{row.createdAt?.split('T')[0]}</TableCell>
+        {/* <TableCell>{row.auctionDate}</TableCell> */}
+        {/* <TableCell>{fCurrency(row.auctionFee)}</TableCell> */}
+        <TableCell>{fDate(row.createdAt)}</TableCell>
 
         <TableCell>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>

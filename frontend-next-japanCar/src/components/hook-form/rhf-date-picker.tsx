@@ -24,14 +24,19 @@ function normalizeDateValue(value: DateInput): Dayjs | null {
 
 // ----------------------------------------------------------------------
 
-type PickerProps<T extends DatePickerProps | TimePickerProps | DateTimePickerProps> = T & {
-  name: string;
-  slotProps?: T['slotProps'] & {
-    textField?: Partial<PickersTextFieldProps>;
+type PickerProps<T extends DatePickerProps | TimePickerProps | DateTimePickerProps> =
+  T & {
+    name: string;
+    slotProps?: T['slotProps'] & {
+      textField?: Partial<PickersTextFieldProps>;
+    };
   };
-};
 
-export function RHFDatePicker({ name, slotProps, ...other }: PickerProps<DatePickerProps>) {
+export function RHFDatePicker({
+  name,
+  slotProps,
+  ...other
+}: PickerProps<DatePickerProps>) {
   const { control } = useFormContext();
 
   return (
@@ -40,6 +45,7 @@ export function RHFDatePicker({ name, slotProps, ...other }: PickerProps<DatePic
       control={control}
       render={({ field, fieldState: { error } }) => (
         <DatePicker
+          format="YYYY/MM/DD"
           {...field}
           value={normalizeDateValue(field.value)}
           onChange={(newValue) => {
@@ -68,7 +74,11 @@ export function RHFDatePicker({ name, slotProps, ...other }: PickerProps<DatePic
 
 // ----------------------------------------------------------------------
 
-export function RHFTimePicker({ name, slotProps, ...other }: PickerProps<TimePickerProps>) {
+export function RHFTimePicker({
+  name,
+  slotProps,
+  ...other
+}: PickerProps<TimePickerProps>) {
   const { control } = useFormContext();
 
   return (
@@ -105,7 +115,11 @@ export function RHFTimePicker({ name, slotProps, ...other }: PickerProps<TimePic
 
 // ----------------------------------------------------------------------
 
-export function RHFDateTimePicker({ name, slotProps, ...other }: PickerProps<DateTimePickerProps>) {
+export function RHFDateTimePicker({
+  name,
+  slotProps,
+  ...other
+}: PickerProps<DateTimePickerProps>) {
   const { control } = useFormContext();
 
   return (

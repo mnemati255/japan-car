@@ -1,4 +1,5 @@
 export const PLATETYPES = [
+  { title: 'None', value: 0 },
   { title: 'Personal', value: 1 },
   { title: 'Commerical', value: 2 },
   { title: 'Rental', value: 3 },

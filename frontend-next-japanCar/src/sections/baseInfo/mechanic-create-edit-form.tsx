@@ -1,7 +1,7 @@
 import { createItem, updateItem } from '@/actions/base-action';
 import { Field, Form } from '@/components/hook-form';
 import { endpoints } from '@/lib/axios';
-import messages from '@/lib/messages';
+import { useMessage } from '@/lib/messages';
 import { LangCode, useTranslate, useTranslateFromServer } from '@/locales';
 import { IMechanic } from '@/types/mechanic';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,11 +14,6 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 
-const PartSchema = z.object({
-  mechanicName: z.string().min(1, { error: messages.required() }),
-  contact: z.coerce.string().nullable().optional(),
-});
-
 type Props = {
   open: boolean;
   onClose: () => void;
@@ -29,6 +24,12 @@ type Props = {
 export function MechanicCreateEditForm({ onClose, open, currentItem, locale }: Props) {
   const { currentLang, t: tCommon } = useTranslate('common');
   const { translations: formFields } = useTranslateFromServer();
+  const { messages } = useMessage();
+
+  const PartSchema = z.object({
+    mechanicName: z.string().min(1, { error: messages.required() }),
+    contact: z.coerce.string().nullable().optional(),
+  });
 
   const methods = useForm({
     mode: 'all',
@@ -63,7 +64,11 @@ export function MechanicCreateEditForm({ onClose, open, currentItem, locale }: P
     try {
       const api = !currentItem
         ? createItem<IMechanic>(endpoints.baseInfo.mechanic, data)
-        : updateItem<IMechanic>(endpoints.baseInfo.mechanic, currentItem.mechanicId!, data);
+        : updateItem<IMechanic>(
+            endpoints.baseInfo.mechanic,
+            currentItem.mechanicId!,
+            data
+          );
       const { status } = await api;
       if (status == 200) {
         onClose();

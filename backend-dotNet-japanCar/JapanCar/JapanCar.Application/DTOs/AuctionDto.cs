@@ -11,8 +11,6 @@ namespace JapanCar.Application.DTOs
     {
         public int AuctionId { get; set; }
         public string AuctionName { get; set; } = null!;
-        public string AuctionDate { get; set; } = null!;
-        public decimal? AuctionFee { get; set; }
         public DateTime? CreatedAt { get; set; }
     }
 
@@ -21,7 +19,6 @@ namespace JapanCar.Application.DTOs
         public AuctionDtoValidator()
         {
             RuleFor(x => x.AuctionName).NotEmpty().WithMessage("Auction name is required");
-            RuleFor(x => x.AuctionDate).NotEmpty().WithMessage("Auction date is required");
         }
     }
 }

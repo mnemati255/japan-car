@@ -5,6 +5,7 @@ import type { Dayjs } from 'dayjs';
 export interface IGrid<T> {
   items: T[];
   totalPage: number;
+  totalCount?: number;
 }
 
 export type IPaymentCard = {

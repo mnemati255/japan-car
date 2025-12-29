@@ -5,12 +5,15 @@ import { DashboardContent } from '@/layouts/dashboard';
 import { CustomBreadcrumbs } from '@/components/custom-breadcrumbs';
 import { useEffect, useState } from 'react';
 import { IBrand, ICar, IColor } from '@/types/car';
-import { getBrands, getColors } from '@/actions/base-info';
-import { getCarById } from '@/actions/car';
 import { convertUrlToFile } from '@/utils/convert-url-to-file';
 import { CONFIG } from '@/global-config';
 import { CreateEditCarForm } from '../car-create-edit-form';
 import { useTranslate, useTranslateFromServer } from '@/locales';
+import { getItemById, getItems } from '@/actions/base-action';
+import { IGrid } from '@/types/common';
+import { endpoints } from '@/lib/axios';
+import { IAuction } from '@/types/auction';
+import { IUser } from '@/types/user';
 
 // ----------------------------------------------------------------------
 
@@ -22,19 +25,25 @@ export function CarEditView({ carId }: Props) {
   const [currentCar, setCurrentCar] = useState<ICar | null>(null);
   const [colors, setColors] = useState<IColor[]>([]);
   const [brands, setBrands] = useState<IBrand[]>([]);
+  const [auctions, setAuctions] = useState<IAuction[]>([]);
+  const [users, setUsers] = useState<IUser[]>([]);
   const [files, setFiles] = useState<File[]>([]);
   const { t: tCommon } = useTranslate('commo');
   const { translations: formFields } = useTranslateFromServer();
 
   useEffect(() => {
     (async () => {
-      const [brandsRes, colorsRes, carRes] = await Promise.all([
-        getBrands(),
-        getColors(),
-        getCarById(carId),
+      const [brandsRes, colorsRes, auctionsRes, usersRes, carRes] = await Promise.all([
+        getItems<IGrid<IBrand>>(endpoints.baseInfo.brand),
+        getItems<IGrid<IColor>>(endpoints.baseInfo.color),
+        getItems<IGrid<IAuction>>(endpoints.baseInfo.auction),
+        getItems<IUser[]>(endpoints.user),
+        getItemById<ICar>(endpoints.car, carId),
       ]);
       if (brandsRes.status == 200) setBrands(brandsRes.data.items);
       if (colorsRes.status == 200) setColors(colorsRes.data.items);
+      if (auctionsRes.status === 200) setAuctions(auctionsRes.data.items);
+      if (usersRes.status === 200) setUsers(usersRes.data);
       if (carRes.status == 200) setCurrentCar(carRes.data);
     })();
   }, [carId]);
@@ -73,6 +82,8 @@ export function CarEditView({ carId }: Props) {
         colors={colors}
         brands={brands}
         files={files}
+        auctions={auctions}
+        users={users}
       />
     </DashboardContent>
   );

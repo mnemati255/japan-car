@@ -3,8 +3,11 @@ export interface ICar {
   auctionId?: number;
   colorId: number;
   modelId: number;
+  grad?: string;
+  point?: string;
   year: number;
   mileage: number;
+  katashaki: string;
   chasisNumber: string;
   purchasePrice: number;
   brandId?: number;
@@ -49,6 +52,12 @@ export interface ICar {
   auctionSentToPerson?: string;
   plateRevoked: boolean;
   plateRevokedDate?: string;
+  transportConfirmUserId?: number;
+  policeCertificateNumber?: number;
+  actionNumber?: number;
+  actionDeadlineDate?: string;
+  municipalityDeadlineDate?: string;
+  plateRevokedDeadLine?: string;
 }
 
 export interface IColor {
@@ -69,4 +78,28 @@ export interface IModel {
   modelName: string;
   brandName?: string;
   createdAt?: string;
+}
+
+export interface ICarFilter {
+  brandId?: string;
+  modelId: string;
+  colorId: string;
+  year: string;
+  katashaki: string;
+  chasisNumber: string;
+  fuelType?: string;
+  transmissionType?: string;
+  plateType?: string;
+  plateNumber?: string;
+  purchaseDateFrom?: string;
+  purchaseDateTo?: string;
+  purchasePriceFrom?: string;
+  purchasePriceTo?: string;
+  transportDateFrom?: string;
+  transportDateTo?: string;
+  hasPoliceCertificate?: string;
+  policeCertificateReceivedDateFrom?: string;
+  policeCertificateReceivedDateTo?: string;
+  municipalitySentDateFrom?: string;
+  municipalitySentDateTo?: string;
 }

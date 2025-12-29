@@ -1,7 +1,6 @@
 import type { TextFieldProps } from '@mui/material/TextField';
 
 import { Controller, useFormContext } from 'react-hook-form';
-import { transformValue, transformValueOnBlur, transformValueOnChange } from 'minimal-shared/utils';
 
 import TextField from '@mui/material/TextField';
 
@@ -9,17 +8,26 @@ import TextField from '@mui/material/TextField';
 
 export type RHFTextFieldProps = TextFieldProps & {
   name: string;
+  thousandSeparator?: boolean;
 };
+
+const formatNumber = (value: string | number) => {
+  if (value === null || value === undefined || value === '') return '';
+  const num = value.toString().replace(/,/g, '');
+  return num.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+};
+
+const unformatNumber = (value: string) => value.replace(/,/g, '');
 
 export function RHFTextField({
   name,
   helperText,
   slotProps,
   type = 'text',
+  thousandSeparator = false,
   ...other
 }: RHFTextFieldProps) {
   const { control } = useFormContext();
-
   const isNumberType = type === 'number';
 
   return (
@@ -30,33 +38,32 @@ export function RHFTextField({
         <TextField
           {...field}
           fullWidth
-          value={isNumberType ? transformValue(field.value) : field.value}
+          type={isNumberType && thousandSeparator ? 'text' : type}
+          value={
+            isNumberType && thousandSeparator
+              ? formatNumber(field.value)
+              : field.value ?? ''
+          }
           onChange={(event) => {
-            const transformedValue = isNumberType
-              ? transformValueOnChange(event.target.value)
-              : event.target.value;
+            let value = event.target.value;
 
-            field.onChange(transformedValue);
-          }}
-          onBlur={(event) => {
-            const transformedValue = isNumberType
-              ? transformValueOnBlur(event.target.value)
-              : event.target.value;
+            if (isNumberType && thousandSeparator) {
+              value = unformatNumber(value);
+            }
 
-            field.onChange(transformedValue);
+            field.onChange(value);
           }}
-          type={isNumberType ? 'text' : type}
           error={!!error}
           helperText={error?.message ?? helperText}
           slotProps={{
             ...slotProps,
             htmlInput: {
               ...slotProps?.htmlInput,
+              autoComplete: 'off',
               ...(isNumberType && {
                 inputMode: 'decimal',
-                pattern: '[0-9]*\\.?[0-9]*',
+                pattern: '[0-9,]*',
               }),
-              autoComplete: 'new-password', // Disable autocomplete and autofill
             },
           }}
           {...other}

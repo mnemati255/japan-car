@@ -3,7 +3,7 @@ import { Field, Form } from '@/components/hook-form';
 import { Iconify } from '@/components/iconify';
 import { Scrollbar } from '@/components/scrollbar';
 import { endpoints } from '@/lib/axios';
-import messages from '@/lib/messages';
+import { useMessage } from '@/lib/messages';
 import {
   LangCode,
   LocalizationProvider,
@@ -49,28 +49,6 @@ const CarPartSchema = z.object({
   partCost: z.number().min(1, { error: '' }),
   partCount: z.number().min(1, { error: '' }),
   mechanicId: z.number(),
-  // replaceDate: z.string().min(1, { error: '' }),
-});
-
-const RepairSchema = z.object({
-  carId: z.coerce.number(),
-  repairDate: z.string().min(1, { error: messages.required() }),
-  mechanicId: z.preprocess((val) => (val === '' ? null : val), z.number().nullable()),
-  dashboardReplacerId: z.preprocess(
-    (val) => (val === '' ? null : val),
-    z.number().nullable()
-  ),
-  steeringReplacerId: z.preprocess(
-    (val) => (val === '' ? null : val),
-    z.number().nullable()
-  ),
-  mechanicTechnicalNote: z.preprocess(
-    (val) => (val === '' ? null : val),
-    z.string().nullable()
-  ),
-  parts: z.array(CarPartSchema).default([]),
-  mechanicLaborCost: z.coerce.number(),
-  mechanicWorkHours: z.coerce.number(),
 });
 
 export function RepairCreateEditForm({
@@ -83,6 +61,28 @@ export function RepairCreateEditForm({
   const { translations } = useTranslateFromServer();
   const { t: tCommon } = useTranslate('common');
   const router = useRouter();
+  const { messages } = useMessage();
+
+  const RepairSchema = z.object({
+    carId: z.coerce.number(),
+    repairDate: z.string().min(1, { error: messages.required() }),
+    mechanicId: z.preprocess((val) => (val === '' ? null : val), z.number().nullable()),
+    dashboardReplacerId: z.preprocess(
+      (val) => (val === '' ? null : val),
+      z.number().nullable()
+    ),
+    steeringReplacerId: z.preprocess(
+      (val) => (val === '' ? null : val),
+      z.number().nullable()
+    ),
+    mechanicTechnicalNote: z.preprocess(
+      (val) => (val === '' ? null : val),
+      z.string().nullable()
+    ),
+    parts: z.array(CarPartSchema).default([]),
+    mechanicLaborCost: z.coerce.number(),
+    mechanicWorkHours: z.coerce.number(),
+  });
 
   const methods = useForm({
     mode: 'onSubmit',
@@ -96,7 +96,7 @@ export function RepairCreateEditForm({
       repairDate: currentRepair?.repairDate ?? '',
       parts: currentRepair?.parts ?? [],
       mechanicLaborCost: currentRepair?.mechanicLaborCost ?? '',
-      mechanicWorkHours: currentRepair?.mechanicWorkHours ?? ''
+      mechanicWorkHours: currentRepair?.mechanicWorkHours ?? '',
     },
   });
 
@@ -127,9 +127,7 @@ export function RepairCreateEditForm({
       const { status } = await api;
       if (status == 200) {
         toast.success(
-          currentRepair
-            ? translations['update_success']
-            : translations['create_success']
+          currentRepair ? translations['update_success'] : translations['create_success']
         );
         router.push(paths.dashboard.car.repair(car.carId!));
       }
@@ -175,7 +173,10 @@ export function RepairCreateEditForm({
             ))}
           </Field.Select>
 
-          <Field.Select name="steeringReplacerId" label={translations['SteeringReplacer']}>
+          <Field.Select
+            name="steeringReplacerId"
+            label={translations['SteeringReplacer']}
+          >
             {mechanics.map((x) => (
               <MenuItem key={x.mechanicId} value={x.mechanicId}>
                 {x.mechanicName}
@@ -186,13 +187,13 @@ export function RepairCreateEditForm({
           <Field.Text
             name="mechanicWorkHours"
             label={translations['MechanicWorkHours']}
-            type='number'
+            type="number"
           />
 
           <Field.Text
             name="mechanicLaborCost"
             label={translations['MechanicLaborCost']}
-            type='number'
+            type="number"
           />
 
           <Field.Text

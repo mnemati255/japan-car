@@ -46,7 +46,6 @@ namespace JapanCar.Application.DTOs
         public string? DeedRequestedDate { get; set; }
         public string? DeedIssuedDate { get; set; }
         public string? PlateRegisteredDate { get; set; }
-
         public bool SentToMunicipality { get; set; }
         public string? MunicipalitySentDate { get; set; }
         public string? MunicipalitySentToPerson { get; set; }
@@ -55,7 +54,15 @@ namespace JapanCar.Application.DTOs
         public string? AuctionSentToPerson { get; set; }
         public bool PlateRevoked { get; set; }
         public string? PlateRevokedDate { get; set; }
-
+        public string? Grad { get; set; }
+        public string? Point { get; set; }
+        public int? TransportConfirmUserId { get; set; }
+        public int? PoliceCertificateNumber { get; set; }
+        public int? ActionNumber { get; set; }
+        public string? Katashaki { get; set; }
+        public string? ActionDeadlineDate { get; set; }
+        public string? MunicipalityDeadlineDate { get; set; }
+        public string? PlateRevokedDeadLine { get; set; }
     }
 
     public class CarDtoValidator : AbstractValidator<CarDto>

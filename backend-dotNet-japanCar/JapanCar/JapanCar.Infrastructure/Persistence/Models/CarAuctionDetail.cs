@@ -16,11 +16,6 @@ public partial class CarAuctionDetail
     public int CarId { get; set; }
 
     /// <summary>
-    /// شناسه حراج
-    /// </summary>
-    public int? AuctionId { get; set; }
-
-    /// <summary>
     /// قیمت خرید
     /// </summary>
     public decimal PurchasePrice { get; set; }
@@ -68,8 +63,6 @@ public partial class CarAuctionDetail
     public DateTime PurchaseDate { get; set; }
 
     public decimal? ScrapCost { get; set; }
-
-    public virtual Auction? Auction { get; set; }
 
     public virtual Car Car { get; set; } = null!;
 

@@ -26,11 +26,15 @@ export function useGetCars(
   const skip = (page - 1) * CONFIG.appSettings.pageSize;
   const take = CONFIG.appSettings.pageSize;
 
+  const cleanFilters = Object.fromEntries(
+    Object.entries(filters).filter(([, value]) => value !== undefined && value !== null)
+  );
+
   const query = new URLSearchParams({
-    skip,
-    take,
+    skip: String(skip),
+    take: String(take),
     locale,
-    ...filters,
+    ...cleanFilters,
   }).toString();
 
   const url = !auctionId
@@ -51,6 +55,31 @@ export function useGetCars(
   };
 }
 
+export async function getCarReportExcel(filters: any) {
+  const cleanFilters = Object.fromEntries(
+    Object.entries(filters).filter(([, value]) => value !== undefined && value !== null)
+  ) as Record<string, string>;
+
+  const query = new URLSearchParams(cleanFilters).toString();
+
+  const { status, data } = await axiosInstance.get(`${BASE_URL}/report-excel?${query}`, {
+    responseType: 'blob',
+  });
+  if (status == 200) {
+    const blob = new Blob([data], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `cars-report-${Date.now()}.xlsx`;
+    document.body.append(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+}
+
 // ----------------------------------------------------------------------
 
 export async function createEditCar(
@@ -64,6 +93,7 @@ export async function createEditCar(
 
   if (auctionId) fd.append('dto.dto.AuctionId', auctionId.toString());
   fd.append('dto.dto.ChasisNumber', car.chasisNumber);
+  fd.append('dto.dto.Katashaki', car.katashaki);
   fd.append('dto.dto.ColorId', car.colorId.toString());
   fd.append('dto.dto.EngineVolume', car.engineVolume?.toString() ?? '');
   fd.append('dto.dto.FinalPrice', car.finalPrice?.toString() ?? '');
@@ -75,7 +105,6 @@ export async function createEditCar(
   fd.append('dto.dto.TransportPrice', car.transportPrice?.toString() ?? '');
   fd.append('dto.dto.AuctionPrice', car.auctionPrice?.toString() ?? '');
   fd.append('dto.dto.Year', car.year.toString());
-
   fd.append('dto.dto.ScrapCost', car.scrapCost?.toString() ?? '');
   fd.append('dto.dto.ManufactureMonth', car.manufactureMonth.toString());
   fd.append('dto.dto.TransmissionType', car.transmissionType ?? '');
@@ -105,7 +134,6 @@ export async function createEditCar(
   fd.append('dto.dto.DeedRequestedDate', car.deedRequestedDate ?? '');
   fd.append('dto.dto.DeedIssuedDate', car.deedIssuedDate ?? '');
   fd.append('dto.dto.PlateRegisteredDate', car.plateRegisteredDate ?? '');
-
   fd.append('dto.dto.SentToMunicipality', car.sentToMunicipality.toString() ?? '');
   fd.append('dto.dto.MunicipalitySentDate', car.municipalitySentDate ?? '');
   fd.append('dto.dto.MunicipalitySentToPerson', car.municipalitySentToPerson ?? '');
@@ -114,6 +142,23 @@ export async function createEditCar(
   fd.append('dto.dto.AuctionSentToPerson', car.auctionSentToPerson ?? '');
   fd.append('dto.dto.PlateRevoked', car.plateRevoked.toString() ?? '');
   fd.append('dto.dto.PlateRevokedDate', car.plateRevokedDate ?? '');
+  fd.append('dto.dto.Grad', car.grad ?? '');
+  fd.append('dto.dto.Point', car.point ?? '');
+  fd.append(
+    'dto.dto.TransportConfirmUserId',
+    car.transportConfirmUserId?.toString() ?? ''
+  );
+  fd.append(
+    'dto.dto.PoliceCertificateNumber',
+    car.policeCertificateNumber?.toString() ?? ''
+  );
+  fd.append('dto.dto.ActionNumber', car.actionNumber?.toString() ?? '');
+  fd.append('dto.dto.ActionDeadlineDate', car.actionDeadlineDate?.toString() ?? '');
+  fd.append(
+    'dto.dto.MunicipalityDeadlineDate',
+    car.municipalityDeadlineDate?.toString() ?? ''
+  );
+  fd.append('dto.dto.PlateRevokedDeadLine', car.plateRevokedDeadLine?.toString() ?? '');
 
   car.images.forEach((item) => {
     fd.append('dto.Images', item);
@@ -124,7 +169,7 @@ export async function createEditCar(
     : axiosInstance.put(`${url}/${carId}`, fd);
 
   const response = await api;
-  if (response && response.status == 200) {
+  if (response && (response.status == 200 || response.status == 204)) {
     mutateCars();
   }
 

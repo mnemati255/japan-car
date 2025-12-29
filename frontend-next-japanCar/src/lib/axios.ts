@@ -100,7 +100,9 @@ export const endpoints = {
   car: 'car',
   repair: 'repair',
   customer: 'customer',
+  user: 'user',
   baseInfo: {
+    auction: 'auction',
     brand: 'baseInfo/brand',
     color: 'baseInfo/color',
     model: 'baseInfo/model',

@@ -15,7 +15,7 @@ namespace JapanCar.Application.Interfaces
         IAuctionRepository AuctionRepository { get; }
         IBaseInfoRepository BaseInfoRepository { get; }
         ILanguageRepository LanguageRepository { get; }
-        ITranslationRepository GenericTranslationRepository { get; }
+        ITranslationRepository TranslationRepository { get; }
         IPartRepository PartRepository { get; }
         IRepairRepository RepairRepository { get; }
         IMechanicRepository MechanicRepository { get; }

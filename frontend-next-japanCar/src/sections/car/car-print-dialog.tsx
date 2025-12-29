@@ -13,6 +13,7 @@ import Typography from '@mui/material/Typography';
 import { useReactToPrint } from 'react-to-print';
 import { useRef } from 'react';
 import Box from '@mui/material/Box';
+import { FORSALEITEMS } from '@/constants/car-constants';
 
 type Props = {
   open: boolean;
@@ -20,17 +21,9 @@ type Props = {
   car: ICar;
   auctionId?: number;
   isUpdated?: boolean;
-  model: string;
 };
 
-export function CarPrintDialog({
-  open,
-  onClose,
-  car,
-  model,
-  auctionId,
-  isUpdated,
-}: Props) {
+export function CarPrintDialog({ open, onClose, car, auctionId, isUpdated }: Props) {
   const { translations } = useTranslateFromServer();
   const router = useRouter();
   const printInfoRef = useRef<HTMLDivElement>(null);
@@ -44,6 +37,38 @@ export function CarPrintDialog({
     contentRef: printSukuraRef,
     documentTitle: 'car-info',
   });
+
+  const renderHeader = (str: string) => (
+    <Box
+      sx={{
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}
+    >
+      <Typography>
+        {car.brandName}-{car.modelName}
+        {car.grad ? `-${car.grad}` : ''}
+        {car.point ? `-${car.point}` : ''}-{car.chasisNumber}
+      </Typography>
+      <Typography>{car.purchaseDate}</Typography>
+      <Typography sx={{ fontSize: 40 }}>{str}</Typography>
+    </Box>
+  );
+
+  const renderFooter = () => (
+    <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Typography variant="h5" sx={{ textAlign: 'center' }}>
+        54-4 Takasaki Sakura-Shi Chiba JAPAN
+      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Typography>ARKSTARINC@HOTMAIL.COM</Typography>
+        <Typography>FAX: +81434846330</Typography>
+      </Box>
+      <Typography variant="h5">ARKSTAR INTERNATIONAL Co.,Ltd.</Typography>
+    </Box>
+  );
 
   return (
     <Dialog open={open}>
@@ -75,21 +100,16 @@ export function CarPrintDialog({
             sx={{
               display: 'flex',
               flexDirection: 'column',
+              justifyContent: 'space-between',
+              rowGap: 5,
               alignItems: 'center',
-              justifyContent: 'center',
-              gap: 16,
               height: '100%',
+              width: '100%',
             }}
           >
-            <Typography variant="h2">
-              {translations['PurchaseDate']}: {car.purchaseDate?.split(' ')[0]}
-            </Typography>
-            <Typography variant="h1">
-              {model} {car.year}
-            </Typography>
-            <Typography variant="h2">
-              {translations['ChassisNumber']}: {car.chasisNumber}
-            </Typography>
+            {renderHeader(FORSALEITEMS.find((x) => x.value == car.forSale)?.title ?? '')}
+            <Typography variant="h2">{car.chasisNumber}</Typography>
+            {renderFooter()}
           </Box>
         </Box>
 
@@ -100,25 +120,25 @@ export function CarPrintDialog({
         >
           <Box
             sx={{
-              display: 'grid',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
               rowGap: 5,
               alignItems: 'center',
               height: '100%',
+              width: '100%',
             }}
           >
-            <Box>
-              <Typography variant="h3" textAlign={'center'}>
-                {translations['SukuraNumber']}
-              </Typography>
-              <Typography sx={{ textAlign: 'center', fontSize: 120, fontWeight: 'bold' }}>
-                {car.sukuraNumber}
-              </Typography>
-            </Box>
+            {renderHeader('SK')}
+            <Typography sx={{ textAlign: 'center', fontSize: 120, fontWeight: 'bold' }}>
+              {car.sukuraNumber}
+            </Typography>
+            {renderFooter()}
           </Box>
         </Box>
       </DialogContent>
       <DialogActions>
-        {car.forSale == 1 && (
+        {car.sukuraNumber && (
           <Button variant="soft" onClick={handlePrintSukura}>
             {translations['PrintSukura']}
           </Button>

@@ -18,6 +18,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useTranslate } from '@/locales';
 import { CarPrintDialog } from './car-print-dialog';
+import { fDate } from '@/utils/format-time';
 
 // ----------------------------------------------------------------------
 
@@ -57,12 +58,7 @@ export function CarTableRow({ row, onDeleteRow, auctionId }: Props) {
   );
 
   const renderPrintDialog = () => (
-    <CarPrintDialog
-      open={printDialog.value}
-      onClose={printDialog.onFalse}
-      car={row}
-      model={row.modelName!}
-    />
+    <CarPrintDialog open={printDialog.value} onClose={printDialog.onFalse} car={row} />
   );
 
   return (
@@ -85,11 +81,10 @@ export function CarTableRow({ row, onDeleteRow, auctionId }: Props) {
             </Stack>
           </Stack>
         </TableCell>
-        {/* {!auctionId && <TableCell>{row.auctionName}</TableCell>} */}
+        <TableCell>{row.sukuraNumber}</TableCell>
         <TableCell>{fCurrency(row.purchasePrice)}</TableCell>
         <TableCell>{fCurrency(row.finalPrice)}</TableCell>
-        <TableCell>{row.sukuraNumber}</TableCell>
-        <TableCell>{row.createdAt?.split('T')[0]}</TableCell>
+        <TableCell>{fDate(row.createdAt)}</TableCell>
 
         <TableCell>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -101,9 +96,7 @@ export function CarTableRow({ row, onDeleteRow, auctionId }: Props) {
               </RouterLink>
             </Tooltip>
             <Tooltip title="Print" placement="top" arrow>
-              <IconButton
-                onClick={printDialog.onTrue}
-              >
+              <IconButton onClick={printDialog.onTrue}>
                 <Iconify icon="solar:printer-minimalistic-bold" />
               </IconButton>
             </Tooltip>

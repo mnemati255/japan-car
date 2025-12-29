@@ -212,6 +212,52 @@ public partial class Car
 
     public int? PlateRevokedByUserId { get; set; }
 
+    /// <summary>
+    /// Car grade or classification level (e.g., Standard, Premium, Luxury, etc.)
+    /// </summary>
+    public string? Grad { get; set; }
+
+    /// <summary>
+    /// Numeric score representing the overall evaluation of the car based on technical condition, appearance, brand value, and other system-defined criteria.
+    /// </summary>
+    public string? Point { get; set; }
+
+    public int? ActionId { get; set; }
+
+    public int? TransportConfirmUserId { get; set; }
+
+    /// <summary>
+    /// Police certificate number associated with the vehicle.
+    /// </summary>
+    public int? PoliceCertificateNumber { get; set; }
+
+    /// <summary>
+    /// Action Number
+    /// </summary>
+    public int? ActionNumber { get; set; }
+
+    /// <summary>
+    /// katashaki
+    /// </summary>
+    public string? Katashaki { get; set; }
+
+    /// <summary>
+    /// Municipality Deadline Date
+    /// </summary>
+    public DateOnly? MunicipalityDeadlineDate { get; set; }
+
+    /// <summary>
+    /// Action Deadline Date
+    /// </summary>
+    public DateOnly? ActionDeadlineDate { get; set; }
+
+    /// <summary>
+    /// Plate Revoked DeadLine
+    /// </summary>
+    public DateOnly? PlateRevokedDeadLine { get; set; }
+
+    public virtual Auction? Action { get; set; }
+
     public virtual User? ActionSentByUser { get; set; }
 
     public virtual ICollection<CarAuctionDetail> CarAuctionDetails { get; set; } = new List<CarAuctionDetail>();
@@ -233,4 +279,6 @@ public partial class Car
     public virtual User? PlateRevokedByUser { get; set; }
 
     public virtual ICollection<SystemNotification> SystemNotifications { get; set; } = new List<SystemNotification>();
+
+    public virtual User? TransportConfirmUser { get; set; }
 }

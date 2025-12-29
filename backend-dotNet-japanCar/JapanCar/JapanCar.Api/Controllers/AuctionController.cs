@@ -23,17 +23,17 @@ namespace JapanCar.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(string? keyword, int? skip = null, int? take = null)
         {
-            var result = await _auctionService.GetAuctions();
+            var result = await _auctionService.GetAuctions(keyword, skip, take);
             return Ok(result);
         }
 
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetAuctionById(int id, string locale)
+        [HttpGet("{locale}/{id}")]
+        public async Task<IActionResult> GetAuctionById(string locale, int id)
         {
-            var result = await _auctionService.GetAuctionById(id, locale);
+            var result = await _auctionService.GetAuctionById(locale, id);
             return Ok(result);
         }
 

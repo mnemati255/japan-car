@@ -3,7 +3,7 @@
 import { paths } from '@/routes/paths';
 import { DashboardContent } from '@/layouts/dashboard';
 import { CustomBreadcrumbs } from '@/components/custom-breadcrumbs';
-import { IAuctionItem } from '@/types/auction';
+import { IAuction } from '@/types/auction';
 import { useCallback, useEffect, useState } from 'react';
 import { getAuctionById } from '@/actions/auction';
 import Button from '@mui/material/Button';
@@ -51,14 +51,14 @@ export function CarListView({ auctionId }: Props) {
 
   const TABLE_HEAD: TableHeadCellProps[] = [
     { id: 'modelName', label: formFields['ModelName'] },
+    { id: 'sukuraNumber', label: formFields['SukuraNumber'] },
     { id: 'purchasePrice', label: formFields['PurchasePrice'] },
     { id: 'finalPrice', label: formFields['FinalPrice'] },
-    { id: 'sukuraNumber', label: formFields['SukuraNumber'] },
     { id: 'createdAt', label: formFields['CreatedDate'] },
     { id: 'actions', width: 88 },
   ];
 
-  const [currentAuction, setCurrentAuction] = useState<IAuctionItem | null>(null);
+  const [currentAuction, setCurrentAuction] = useState<IAuction | null>(null);
   const [page, setPage] = useState(1);
   const searchDialog = useBoolean();
   const [filters, setFilters] = useState<any>(DEFAULT_FILTERS);

@@ -1,7 +1,7 @@
 import { CONFIG } from '@/global-config';
 import axiosInstance, { fetcher } from '@/lib/axios';
 import { LangCode } from '@/locales';
-import { IAuctionItem } from '@/types/auction';
+import { IAuction } from '@/types/auction';
 import useSWR, { mutate, SWRConfiguration } from 'swr';
 
 // ----------------------------------------------------------------------
@@ -24,7 +24,7 @@ function mutateAuctions() {
 
 export function useGetAuctions(locale: LangCode) {
   const url = `${BASE_URL}?locale=${locale}`;
-  const { data, isLoading, error, isValidating } = useSWR<IAuctionItem[]>(url, fetcher, {
+  const { data, isLoading, error, isValidating } = useSWR<IAuction[]>(url, fetcher, {
     ...swrOptions,
   });
 
@@ -46,7 +46,7 @@ export async function getAuctionById(id: number, locale: LangCode) {
 
 // ----------------------------------------------------------------------
 
-export async function createAuction(rowData: IAuctionItem) {
+export async function createAuction(rowData: IAuction) {
   const url = BASE_URL;
   const response = await axiosInstance.post(`${url}`, rowData);
   if (response && response.status == 200) {
@@ -60,7 +60,7 @@ export async function createAuction(rowData: IAuctionItem) {
 export async function updateAuction(
   locale: LangCode,
   auctionId: number,
-  rowData: IAuctionItem
+  rowData: IAuction
 ) {
   const url = `${BASE_URL}/${auctionId}?locale=${locale}`;
   const response = await axiosInstance.put(url, rowData);

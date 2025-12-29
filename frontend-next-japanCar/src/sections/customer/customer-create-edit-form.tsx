@@ -12,7 +12,7 @@ import { paths } from '@/routes/paths';
 import { useRouter } from '@/routes/hooks';
 import { toast } from '@/components/snackbar';
 import { Form, Field } from '@/components/hook-form';
-import messages from '@/lib/messages';
+import { useMessage } from '@/lib/messages';
 import Typography from '@mui/material/Typography';
 import { useTranslate, useTranslateFromServer } from '@/locales';
 import { ICustomer } from '@/types/customer';
@@ -25,25 +25,26 @@ type Props = {
   currentCustomer?: ICustomer;
 };
 
-const CustomerSchema = z.object({
-  firstName: z.string().min(1, { error: messages.required() }),
-  lastName: z.string().min(1, { error: messages.required() }),
-  email: z
-    .string()
-    .trim()
-    .optional()
-    .nullable()
-    .transform((val) => (val === '' ? undefined : val))
-    .pipe(z.email({ error: messages.invalid }).optional()),
-  phone: z.coerce.string(),
-  address: z.string(),
-  isActive: z.boolean(),
-});
-
 export function CustomerCreateEditForm({ currentCustomer }: Props) {
   const router = useRouter();
   const { t: tCommon } = useTranslate('common');
   const { translations } = useTranslateFromServer();
+  const { messages } = useMessage();
+
+  const CustomerSchema = z.object({
+    firstName: z.string().min(1, { error: messages.required() }),
+    lastName: z.string().min(1, { error: messages.required() }),
+    email: z
+      .string()
+      .trim()
+      .optional()
+      .nullable()
+      .transform((val) => (val === '' ? undefined : val))
+      .pipe(z.email({ error: messages.invalid }).optional()),
+    phone: z.coerce.string(),
+    address: z.string(),
+    isActive: z.boolean(),
+  });
 
   const methods = useForm({
     mode: 'onSubmit',

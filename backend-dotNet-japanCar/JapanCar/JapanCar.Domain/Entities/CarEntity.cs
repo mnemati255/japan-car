@@ -64,6 +64,14 @@ namespace JapanCar.Domain.Entities
         public bool PlateRevoked { get; set; }
         public DateTime? PlateRevokedDate { get; set; }
         public int? PlateRevokedByUserId { get; set; }
-
+        public string? Grad { get; set; }
+        public string? Point { get; set; }
+        public int? TransportConfirmUserId { get; set; }
+        public int? PoliceCertificateNumber { get; set; }
+        public int? ActionNumber { get; set; }
+        public string? Katashaki { get; set; }
+        public DateOnly? ActionDeadlineDate { get; set; }
+        public DateOnly? MunicipalityDeadlineDate { get; set; }
+        public DateOnly? PlateRevokedDeadLine { get; set; }
     }
 }

@@ -12,6 +12,7 @@ import { paths } from '@/routes/paths';
 import { useState } from 'react';
 import { allLangs, useTranslate } from '@/locales';
 import { IRepair } from '@/types/repair';
+import { fDate } from '@/utils/format-time';
 
 // ----------------------------------------------------------------------
 
@@ -53,7 +54,7 @@ export function RepairTableRow({ row, onDeleteRow }: Props) {
       <TableRow>
         <TableCell>{row.repairDate}</TableCell>
         <TableCell>{row.mechanicName}</TableCell>
-        <TableCell>{row.createdAt?.split('T')[0]}</TableCell>
+        <TableCell>{fDate(row.createdAt)}</TableCell>
 
         <TableCell>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>

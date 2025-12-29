@@ -19,7 +19,7 @@ namespace JapanCar.Infrastructure
         public IAuctionRepository AuctionRepository { get; private set; }
         public IBaseInfoRepository BaseInfoRepository { get; private set; }
         public ILanguageRepository LanguageRepository { get; private set; }
-        public ITranslationRepository GenericTranslationRepository { get; private set; }
+        public ITranslationRepository TranslationRepository { get; private set; }
         public IPartRepository PartRepository { get; private set; }
         public IRepairRepository RepairRepository { get; private set; }
         public IMechanicRepository MechanicRepository { get; private set; }
@@ -37,7 +37,7 @@ namespace JapanCar.Infrastructure
             AuctionRepository = new AuctionRepository(_context);
             BaseInfoRepository = new BaseInfoRepository(_context);
             LanguageRepository = new LanguageRepository(_context);
-            GenericTranslationRepository = new TranslationRepository(_context);
+            TranslationRepository = new TranslationRepository(_context);
             PartRepository = new PartRepository(_context);
             RepairRepository = new RepairRepository(_context);
             MechanicRepository = new MechanicRepository(_context);

@@ -1,7 +1,7 @@
 import { createItem, updateItem } from '@/actions/base-action';
 import { Field, Form } from '@/components/hook-form';
 import { endpoints } from '@/lib/axios';
-import messages from '@/lib/messages';
+import { useMessage } from '@/lib/messages';
 import { LangCode, useTranslate, useTranslateFromServer } from '@/locales';
 import { IBrand } from '@/types/car';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,10 +14,6 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 
-const BrandSchema = z.object({
-  brandName: z.string().min(1, { error: messages.required() }),
-});
-
 type Props = {
   open: boolean;
   onClose: () => void;
@@ -28,6 +24,11 @@ type Props = {
 export function BrandCreateEditForm({ onClose, open, currentItem, locale }: Props) {
   const { currentLang, t: tCommon } = useTranslate('common');
   const { translations: formFields } = useTranslateFromServer();
+  const {messages} = useMessage();
+
+  const BrandSchema = z.object({
+  brandName: z.string().min(1, { error: messages.required() }),
+});
 
   const methods = useForm({
     mode: 'all',

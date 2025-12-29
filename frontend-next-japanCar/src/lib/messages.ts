@@ -1,9 +1,18 @@
-const messages = {
-  required: () => `This filed is required.`,
-  requiredAtLeast: () => 'At least one item is required.',
-  invalid: () => 'This field is invalid.',
-  minLength: (l: number) => `This field must be at least ${l} characters.`,
-  minCount: (l: number) => `Select at least ${l} items.`,
-};
+'use client';
 
-export default messages;
+import { useTranslateFromServer } from '@/locales';
+
+export function useMessage() {
+  const { translations } = useTranslateFromServer();
+
+  const messages = {
+    required: () => translations['mes_required'],
+    requiredAtLeast: () => translations['mes_requiredAtLeast'],
+    invalid: () => translations['mes_invalid'],
+    minLength6: () => translations['mes_minLength6'],
+    minCount3: () => translations['mes_minCount3'],
+    duplicate: () => 'Duplicate image file names are not allowed.',
+  };
+
+  return { messages };
+}

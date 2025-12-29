@@ -22,13 +22,14 @@
   "cost": "Cost",
   "active": "Active",
   "inactive": "Inative",
+  "records": "records",
   "notification": {
     "notification": "notification",
     "notifications": "Notifications",
     "noNotifications": "No notifications",
     "inbox": "Inbox",
     "resolved": "Resolved",
-    "markAsDone":"Mark as done",
+    "markAsDone": "Mark as done",
     "markAsDoneText": "Are you sure want to mark?"
   },
   "car": {
@@ -46,12 +47,6 @@
     "noRepairs": "No repairs",
     "createNew": "Create a new repair",
     "parts": "Repaired parts"
-  },
-  "auction": {
-    "auction": "Action",
-    "addAuction": "Add auction",
-    "noAuctions": "No auctions",
-    "createNew": "Create a new auction"
   },
   "customer": {
     "customer": "customer",
@@ -76,27 +71,36 @@
     "createNew": "Create a new role",
     "permissions": "Permissions"
   },
+  "report": {
+    "report": "Report",
+    "reports": "Reports",
+    "exportExcel": "Export excel"
+  },
   "baseInfo": {
     "title": "Base informations",
     "brand": "brand",
     "color": "color",
     "model": "model",
     "part": "Part",
+    "auction": "auction",
     "mechanic": "Mechanic",
     "brands": "Brands",
     "colors": "Colors",
     "models": "Models",
     "parts": "Parts",
+    "auctions": "Auctions",
     "mechanics": "Mechanics",
     "addBrand": "Add brand",
     "addColor": "Add color",
     "addModel": "Add model",
     "addPart": "Add part",
+    "addAuction": "Add auction",
     "addMechanic": "Add mechanic",
     "noBrands": "No brands",
     "noColors": "No colors",
     "noModels": "No models",
     "noParts": "No parts",
+    "noAuctions": "No auctions",
     "noMechanics": "No mechanics"
   }
 }

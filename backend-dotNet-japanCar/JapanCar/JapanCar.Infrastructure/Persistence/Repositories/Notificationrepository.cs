@@ -88,5 +88,22 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
 
             return true;
         }
+
+
+        public async Task<NotificationEntity?> GetNotificationById(int id)
+        {
+            var notification = await _context.SystemNotifications
+                .FirstOrDefaultAsync(x => x.NotificationId == id);
+
+            if(notification == null)
+                return null;
+
+            return new NotificationEntity
+            {
+                NotificationId = notification.NotificationId,
+                CarId = notification.CarId,
+                NotificationType = notification.NotificationType,
+            };
+        }
     }
 }

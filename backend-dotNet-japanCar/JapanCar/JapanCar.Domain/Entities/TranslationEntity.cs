@@ -1,10 +1,10 @@
 ﻿namespace JapanCar.Domain.Entities
 {
-    public class GenericTranslationEntity
+    public class TranslationEntity
     {
         public string EntityName { get; set; } = null!;
 
-        public string LanguageCode { get; set; } = null!;
+        public string? LanguageCode { get; set; }
 
         public string FieldName { get; set; } = null!;
 

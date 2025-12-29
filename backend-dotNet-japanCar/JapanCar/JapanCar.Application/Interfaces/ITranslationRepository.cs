@@ -9,6 +9,7 @@ namespace JapanCar.Application.Interfaces
 {
     public interface ITranslationRepository
     {
-        Task<IEnumerable<GenericTranslationEntity>> GetAllTranslations();
+        Task<IEnumerable<TranslationEntity>> GetAllTranslations(int? languageId = null, string? entityName = null);
+        Task CreateTranslation(List<TranslationEntity> entities);
     }
 }

@@ -1,14 +1,19 @@
 export async function convertUrlToFile(url: string) {
-  const response = await fetch(url, {
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-    },
+  // const response = await fetch(url);
+  // const data = await response.blob();
+  // const metadata = {
+  //   type: 'image/jpeg',
+  // };
+  // const file = new File([data], `${createRandomString(5)}.jpg`, metadata);
+  // return file;
+  console.log(url)
+  const response = await fetch(`/api/proxy-image?url=${encodeURIComponent(url)}`);
+  const blob = await response.blob();
+
+  const file = new File([blob], `${createRandomString(5)}.png`, {
+    type: blob.type,
   });
-  const data = await response.blob();
-  const metadata = {
-    type: 'image/jpeg',
-  };
-  const file = new File([data], `${createRandomString(5)}.jpg`, metadata);
+
   return file;
 }
 

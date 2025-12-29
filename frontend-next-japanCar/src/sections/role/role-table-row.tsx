@@ -11,6 +11,7 @@ import { ConfirmDialog } from '@/components/custom-dialog';
 import { IRoleItem } from '@/types/role';
 import { paths } from '@/routes/paths';
 import { useTranslate } from '@/locales';
+import { fDate } from '@/utils/format-time';
 
 // ----------------------------------------------------------------------
 
@@ -48,7 +49,7 @@ export function RoleTableRow({ row, onDeleteRow }: Props) {
     <>
       <TableRow key={row.roleId}>
         <TableCell>{row.roleName}</TableCell>
-        <TableCell>{row.createdAt?.split('T')[0]}</TableCell>
+        <TableCell>{fDate(row.createdAt)}</TableCell>
         <TableCell>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Tooltip title="Edit" placement="top" arrow>
