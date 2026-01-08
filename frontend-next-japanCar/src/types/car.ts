@@ -11,14 +11,14 @@ export interface ICar {
   chasisNumber: string;
   purchasePrice: number;
   brandId?: number;
-  engineVolume?: number | null | undefined;
+  engineVolume: number;
   taxAmount?: number | null | undefined;
   finalPrice?: number | null | undefined;
   transportPrice?: number | null | undefined;
   auctionPrice?: number | null | undefined;
   fuelType?: string | null | undefined;
   createdAt?: string;
-  images: File[] | string[];
+  images: CarImage[];
   modelName?: string;
   brandName?: string;
   colorName?: string;
@@ -31,7 +31,7 @@ export interface ICar {
   plateNumber?: string;
   scrapCost?: number | null | undefined;
   purchaseDate?: string;
-  forSale?: number;
+  forSale: number;
   transportFrom?: number;
   transportTo?: number;
   transportConfirm?: boolean;
@@ -58,6 +58,23 @@ export interface ICar {
   actionDeadlineDate?: string;
   municipalityDeadlineDate?: string;
   plateRevokedDeadLine?: string;
+  hasShakend?: boolean;
+  thirdPartyInsuranceNumber?: string;
+  deedNumber?: string;
+  commandType?: string;
+  transportCompanyRequestDate?: string;
+  newPlateNumber?: string;
+  description?: string;
+  insuranceCancellationDate?: string;
+  isInsuranceCancelled?: boolean;
+  isUnder1000CcdeedCopyUploaded?: boolean;
+  policeDeedCertificateDeliveryDate?: string;
+  newDeedCopySentToBuyerDate?: string;
+  buyerId?: number;
+  saleDate?: string;
+  salePrice?: number;
+  thirdPartyInsuranceExpireDate?: string;
+  thirdPartyInsuranceCompany?: string;
 }
 
 export interface IColor {
@@ -102,4 +119,9 @@ export interface ICarFilter {
   policeCertificateReceivedDateTo?: string;
   municipalitySentDateFrom?: string;
   municipalitySentDateTo?: string;
+}
+
+export interface CarImage {
+  fileType?: string;
+  fileName: File | null;
 }

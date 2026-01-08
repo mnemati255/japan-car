@@ -41,7 +41,8 @@ namespace JapanCar.Application.Services
             {
                 EntityName = x.EntityName,
                 FieldName = x.FieldName,
-                TranslatedValue = x.TranslatedValue
+                TranslatedValue = x.TranslatedValue,
+                Category = x.Category
             }).ToList();
 
             await _unitOfWork.TranslationRepository.CreateTranslation(entities);

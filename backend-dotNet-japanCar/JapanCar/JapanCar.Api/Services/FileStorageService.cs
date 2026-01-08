@@ -1,5 +1,6 @@
 ﻿using JapanCar.Application.Interfaces;
 using JapanCar.Application.Models;
+using JapanCar.Common.Models;
 
 namespace JapanCar.Api.Services
 {

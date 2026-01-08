@@ -175,5 +175,25 @@ namespace JapanCar.Application.Services
 
             return result;
         }
+
+
+        public async Task<List<RepairDto>> GetRepairDetailsOfCar(int carId)
+        {
+            var languageId = await GetLanguageId(_requestContext.Locale);
+
+            var result = await _unitOfWork.RepairRepository.GetRepairDetailsOfCar(languageId, carId);
+
+            return result.Select(x => new RepairDto
+            {
+                RepairDate = x.RepairDate.ToString(),
+                Parts = x.Parts.Select(y => new RepairedPartDto
+                {
+                    PartCost = y.PartCost,
+                    PartCount = y.PartCount,
+                    PartName = y.PartName,
+                    MechanicName = y.MechanicName,
+                }).ToList()
+            }).ToList();
+        }
     }
 }

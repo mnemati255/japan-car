@@ -6,7 +6,7 @@ export async function convertUrlToFile(url: string) {
   // };
   // const file = new File([data], `${createRandomString(5)}.jpg`, metadata);
   // return file;
-  console.log(url)
+  
   const response = await fetch(`/api/proxy-image?url=${encodeURIComponent(url)}`);
   const blob = await response.blob();
 

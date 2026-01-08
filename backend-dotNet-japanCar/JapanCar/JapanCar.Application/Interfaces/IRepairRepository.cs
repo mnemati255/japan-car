@@ -16,5 +16,6 @@ namespace JapanCar.Application.Interfaces
         Task<bool> UpdateRepair(int languageId, int repairId, RepairEntity entity);
         Task<bool> DeleteRepair(int repairId);
         Task<RepairEntity?> GetRepairById(int languageId, int id);
+        Task<List<RepairEntity>> GetRepairDetailsOfCar(int languageId, int carId);
     }
 }

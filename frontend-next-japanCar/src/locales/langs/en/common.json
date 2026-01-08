@@ -6,6 +6,7 @@
   "dashboard": "Dashboard",
   "edit": "Edit",
   "save": "Save changes",
+  "save2": "Save",
   "translation": "Translation",
   "create": "Create",
   "update": "Update",
@@ -23,6 +24,8 @@
   "active": "Active",
   "inactive": "Inative",
   "records": "records",
+  "next": "Next and save",
+  "previous": "Previous",
   "notification": {
     "notification": "notification",
     "notifications": "Notifications",
@@ -74,7 +77,8 @@
   "report": {
     "report": "Report",
     "reports": "Reports",
-    "exportExcel": "Export excel"
+    "exportExcel": "Export excel",
+    "exportPdf": "Export pdf"
   },
   "baseInfo": {
     "title": "Base informations",

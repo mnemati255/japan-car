@@ -15,6 +15,7 @@ import { useSettingsContext } from '@/components/settings';
 import { fallbackLng, getCurrentLang } from './locales-config';
 import { getTranslations } from './utils/translations';
 import { useRouter } from '@/routes/hooks';
+import { CategoryType } from '@/types/translation';
 
 // ----------------------------------------------------------------------
 
@@ -29,7 +30,9 @@ export function useTranslate(namespace?: Namespace) {
 
   const updateDirection = useCallback(
     (lang: LangCode) => {
-      settings.setState({ direction: i18n.dir(lang) });
+      settings.setState({
+        direction: i18n.dir(lang)
+      });
     },
     [i18n, settings]
   );
@@ -79,12 +82,12 @@ export function useTranslate(namespace?: Namespace) {
 
 // ----------------------------------------------------------------------
 
-export function useTranslateFromServer(namespace?: Namespace) {
-  const { i18n } = useTranslation(namespace);
+export function useTranslateFromServer(category?: CategoryType) {
+  const { i18n } = useTranslation();
 
   const currentLang = getCurrentLang(i18n.resolvedLanguage);
 
-  const translations = getTranslations(currentLang.value);
+  const translations = getTranslations(currentLang.value, category);
 
   return {
     translations,

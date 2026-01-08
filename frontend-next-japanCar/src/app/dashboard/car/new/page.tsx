@@ -8,12 +8,6 @@ export const metadata: Metadata = {
   title: `Create a new car | Dashboard - ${CONFIG.appName}`,
 };
 
-type Props = {
-  params: Promise<{ id: number }>;
-};
-
-export default async function Page({ params }: Props) {
-  const { id } = await params;
-
-  return <CarCreateView auctionId={id} />;
+export default async function Page() {
+  return <CarCreateView  />;
 }

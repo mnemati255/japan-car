@@ -9,6 +9,13 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { fDate } from '@/utils/format-time';
 import { paths } from '@/routes/paths';
+import IconButton from '@mui/material/IconButton';
+import CarReportRepairsDialog from './car-report-repairs-dialog';
+import { useBoolean } from 'minimal-shared/hooks';
+import { getItems } from '@/actions/base-action';
+import { IRepair } from '@/types/repair';
+import { endpoints } from '@/lib/axios';
+import { useState } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -17,6 +24,27 @@ type Props = {
 };
 
 export function CarReportTableRow({ row }: Props) {
+  const repairsDialog = useBoolean();
+  const [repairsData, setRepairsData] = useState<IRepair[]>([]);
+
+  const handleGetDetails = async () => {
+    const { status, data } = await getItems<IRepair[]>(
+      `${endpoints.repair}/details-by-carId/${row.carId}`
+    );
+    if (status == 200) {
+      setRepairsData(data);
+      repairsDialog.onTrue();
+    }
+  };
+
+  const renderRepairsDialog = () => (
+    <CarReportRepairsDialog
+      open={repairsDialog.value}
+      onClose={() => repairsDialog.onFalse()}
+      data={repairsData}
+    />
+  );
+
   return (
     <>
       <TableRow
@@ -45,7 +73,13 @@ export function CarReportTableRow({ row }: Props) {
         <TableCell>{fCurrency(row.finalPrice)}</TableCell>
         <TableCell>{row.sukuraNumber}</TableCell>
         <TableCell>{fDate(row.createdAt)}</TableCell>
+        <TableCell>
+          <IconButton onClick={handleGetDetails}>
+            <Iconify icon="hugeicons:repair" />
+          </IconButton>
+        </TableCell>
       </TableRow>
+      {renderRepairsDialog()}
     </>
   );
 }

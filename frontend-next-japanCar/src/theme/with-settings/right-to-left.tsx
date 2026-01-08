@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import createCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
 
-// import rtlPlugin from '@mui/stylis-plugin-rtl';
+import rtlPlugin from '@mui/stylis-plugin-rtl';
 
 // ----------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ type RtlProps = {
 const cacheRtl = () =>
   createCache({
     key: 'rtl',
-    // stylisPlugins: [rtlPlugin],
+    stylisPlugins: [rtlPlugin],
   });
 
 export function Rtl({ children, direction }: RtlProps) {

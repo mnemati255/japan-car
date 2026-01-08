@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack';
 import { EmptyContent } from '@/components/empty-content';
 import Loading from '@/app/dashboard/loading';
 import Card from '@mui/material/Card';
-import { getCarReportExcel } from '@/actions/car';
+import { getCarReportExcel, getCarReportPdf } from '@/actions/car';
 import Table from '@mui/material/Table';
 import { TableHeadCellProps, TableHeadCustom } from '@/components/table';
 import TableBody from '@mui/material/TableBody';
@@ -53,15 +53,16 @@ const DEFAULT_FILTERS: ICarFilter = {
 };
 
 export function CarReportView() {
-  const { translations: formFields } = useTranslateFromServer();
+  const { translations } = useTranslateFromServer();
 
   const TABLE_HEAD: TableHeadCellProps[] = [
-    { id: 'modelName', label: formFields['ModelName'] },
-    { id: 'purchaseDate', label: formFields['PurchaseDate'] },
-    { id: 'purchasePrice', label: formFields['PurchasePrice'] },
-    { id: 'finalPrice', label: formFields['FinalPrice'] },
-    { id: 'sukuraNumber', label: formFields['SukuraNumber'] },
-    { id: 'createdAt', label: formFields['CreatedDate'] },
+    { id: 'modelName', label: translations['ModelName'] },
+    { id: 'purchaseDate', label: translations['PurchaseDate'] },
+    { id: 'purchasePrice', label: translations['PurchasePrice'] },
+    { id: 'finalPrice', label: translations['FinalPrice'] },
+    { id: 'sukuraNumber', label: translations['SukuraNumber'] },
+    { id: 'createdAt', label: translations['CreatedDate'] },
+    { id: 'actions', width: 88 },
   ];
 
   const [page, setPage] = useState(1);
@@ -69,6 +70,7 @@ export function CarReportView() {
   const [filters, setFilters] = useState<any>(DEFAULT_FILTERS);
   const { currentLang, t: tCommon } = useTranslate('common');
   const excelLoading = useBoolean();
+  const pdfLoading = useBoolean();
 
   // const { cars, totalPage, empty, isLoading } = useGetCars(
   //   currentLang.value,
@@ -91,6 +93,17 @@ export function CarReportView() {
       excelLoading.onFalse();
     } catch (error) {
       excelLoading.onFalse();
+      throw error;
+    }
+  };
+
+  const exportPdf = async () => {
+    try {
+      pdfLoading.onTrue();
+      await getCarReportPdf(currentLang.value, filters);
+      pdfLoading.onFalse();
+    } catch (error) {
+      pdfLoading.onFalse();
       throw error;
     }
   };
@@ -134,6 +147,15 @@ export function CarReportView() {
             gap: 1,
           }}
         >
+          <Button
+            variant="contained"
+            sx={{ backgroundColor: 'orangered' }}
+            startIcon={<Iconify icon="solar:file-text-bold" />}
+            loading={pdfLoading.value}
+            onClick={exportPdf}
+          >
+            {tCommon('report.exportPdf')}
+          </Button>
           <Button
             variant="contained"
             color="success"

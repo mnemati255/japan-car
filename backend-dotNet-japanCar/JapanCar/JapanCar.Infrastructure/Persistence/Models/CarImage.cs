@@ -45,9 +45,16 @@ public partial class CarImage
     /// </summary>
     public int? ModifiedBy { get; set; }
 
+    /// <summary>
+    /// Type of the car image.
+    /// </summary>
+    public int? ImageTypeId { get; set; }
+
     public virtual Car Car { get; set; } = null!;
 
     public virtual User? CreatedByNavigation { get; set; }
+
+    public virtual CarImageType? ImageType { get; set; }
 
     public virtual User? ModifiedByNavigation { get; set; }
 }

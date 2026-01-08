@@ -12,8 +12,6 @@
         public List<RepairedPartDto> Parts { get; set; } = [];
         public decimal? MechanicWorkHours { get; set; }
         public decimal? MechanicLaborCost { get; set; }
-
-
         public string? MechanicName { get; set; }
         public string? SteeringReplacerName { get; set; }
         public string? DashboardReplacerName { get; set; }
@@ -27,5 +25,7 @@
         public decimal PartCost { get; set; }
         public int? MechanicId { get; set; }
         public int? PartCount { get; set; }
+        public string? PartName { get; set; }
+        public string? MechanicName { get; set; }
     }
 }

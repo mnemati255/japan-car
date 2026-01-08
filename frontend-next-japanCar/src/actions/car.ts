@@ -1,5 +1,3 @@
-// ----------------------------------------------------------------------
-
 import { CONFIG, swrOptions } from '@/global-config';
 import axiosInstance, { fetcher } from '@/lib/axios';
 import { LangCode } from '@/locales';
@@ -8,8 +6,6 @@ import { IGrid } from '@/types/common';
 import useSWR, { mutate } from 'swr';
 
 const BASE_URL = `${CONFIG.serverUrl}/car`;
-
-// ----------------------------------------------------------------------
 
 function mutateCars() {
   mutate((key) => typeof key === 'string' && key.startsWith(BASE_URL), undefined, {
@@ -80,22 +76,38 @@ export async function getCarReportExcel(filters: any) {
   }
 }
 
+export async function getCarReportPdf(locale: LangCode, filters: any) {
+  const cleanFilters = Object.fromEntries(
+    Object.entries(filters).filter(([, value]) => value !== undefined && value !== null)
+  ) as Record<string, string>;
+
+  const query = new URLSearchParams(cleanFilters).toString();
+  const response = await fetch(`/api/download-pdf?locale=${locale}&query=${query}`);
+  if (response.ok) {
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `cars-report-${Date.now()}.pdf`;
+    document.body.append(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+}
+
 // ----------------------------------------------------------------------
 
-export async function createEditCar(
-  car: ICar,
-  auctionId: number | null,
-  carId: number | null
-) {
+export async function createEditCar(car: ICar, carId: number | null) {
   const url = BASE_URL;
 
   const fd = new FormData();
 
-  if (auctionId) fd.append('dto.dto.AuctionId', auctionId.toString());
+  fd.append('dto.dto.AuctionId', car.auctionId?.toString() ?? '');
   fd.append('dto.dto.ChasisNumber', car.chasisNumber);
   fd.append('dto.dto.Katashaki', car.katashaki);
   fd.append('dto.dto.ColorId', car.colorId.toString());
-  fd.append('dto.dto.EngineVolume', car.engineVolume?.toString() ?? '');
+  fd.append('dto.dto.EngineVolume', car.engineVolume.toString());
   fd.append('dto.dto.FinalPrice', car.finalPrice?.toString() ?? '');
   fd.append('dto.dto.FuelType', car.fuelType ?? '');
   fd.append('dto.dto.Mileage', car.mileage.toString());
@@ -159,9 +171,35 @@ export async function createEditCar(
     car.municipalityDeadlineDate?.toString() ?? ''
   );
   fd.append('dto.dto.PlateRevokedDeadLine', car.plateRevokedDeadLine?.toString() ?? '');
+  fd.append('dto.dto.HasShakend', car.hasShakend?.toString() ?? '');
+  fd.append('dto.dto.ThirdPartyInsuranceNumber', car.thirdPartyInsuranceNumber ?? '');
+  fd.append('dto.dto.DeedNumber', car.deedNumber ?? '');
+  fd.append('dto.dto.CommandType', car.commandType ?? '');
+  fd.append('dto.dto.TransportCompanyRequestDate', car.transportCompanyRequestDate ?? '');
+  fd.append('dto.dto.NewPlateNumber', car.newPlateNumber ?? '');
+  fd.append('dto.dto.Description', car.description ?? '');
+  fd.append('dto.dto.InsuranceCancellationDate', car.insuranceCancellationDate ?? '');
+  fd.append('dto.dto.IsInsuranceCancelled', car.isInsuranceCancelled?.toString() ?? '');
+  fd.append(
+    'dto.dto.IsUnder1000CcdeedCopyUploaded',
+    car.isUnder1000CcdeedCopyUploaded?.toString() ?? ''
+  );
+  fd.append(
+    'dto.dto.PoliceDeedCertificateDeliveryDate',
+    car.policeDeedCertificateDeliveryDate ?? ''
+  );
+  fd.append('dto.dto.NewDeedCopySentToBuyerDate', car.newDeedCopySentToBuyerDate ?? '');
+  fd.append('dto.dto.BuyerId', car.buyerId?.toString() ?? '');
+  fd.append('dto.dto.SaleDate', car.saleDate ?? '');
+  fd.append('dto.dto.SalePrice', car.salePrice?.toString() ?? '');
+  fd.append('dto.dto.ThirdPartyInsuranceExpireDate', car.thirdPartyInsuranceExpireDate ?? '');
+  fd.append('dto.dto.ThirdPartyInsuranceCompany', car.thirdPartyInsuranceCompany ?? '');
 
-  car.images.forEach((item) => {
-    fd.append('dto.Images', item);
+  car.images.forEach((item, index) => {
+    if (item.fileName && item.fileType) {
+      fd.append(`dto.images[${index}].file`, item.fileName);
+      fd.append(`dto.images[${index}].type`, item.fileType);
+    }
   });
 
   const api = !carId

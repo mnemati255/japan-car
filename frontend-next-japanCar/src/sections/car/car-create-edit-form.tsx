@@ -1,145 +1,158 @@
-import * as z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, useWatch } from 'react-hook-form';
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import Grid from '@mui/material/Grid';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import { Form, Field } from '@/components/hook-form';
-import { IBrand, ICar, IColor } from '@/types/car';
-import MenuItem from '@mui/material/MenuItem';
-import { createEditCar } from '@/actions/car';
-import InputAdornment from '@mui/material/InputAdornment';
-import { useCallback, useEffect, useState } from 'react';
-import { getModelsOfBrand } from '@/actions/base-info';
-import { LocalizationProvider, useTranslate, useTranslateFromServer } from '@/locales';
-import {
-  FORSALEITEMS,
-  PLATETYPES,
-  TRANSPORTFROM,
-  TRANSPORTTO,
-} from '@/constants/car-constants';
-import Typography from '@mui/material/Typography';
-import { FieldGroup } from '@/components/field-group';
-import { CarPrintDialog } from './car-print-dialog';
-import { useBoolean } from 'minimal-shared/hooks';
-import { IAuction } from '@/types/auction';
-import { IUser } from '@/types/user';
-import { useMessage } from '@/lib/messages';
-import Switch from '@mui/material/Switch';
+'use client';
 
-// ----------------------------------------------------------------------
+import { useTranslate, useTranslateFromServer } from '@/locales';
+import { IAuction } from '@/types/auction';
+import { CarImage, IBrand, ICar, IColor } from '@/types/car';
+import { CAR_TAB_ORDER, CarTab, TAB_FIELDS, TabState } from '@/types/car-tabs';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import { useTabs } from 'minimal-shared/hooks';
+import { GeneralTab } from './tabs/general-tab';
+import z from 'zod';
+import { useMessage } from '@/lib/messages';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form } from '@/components/hook-form';
+import { ShakendTab } from './tabs/shakend-tab';
+import { canGoPrev, getNextTab, getPrevTab } from './tabs/tab-navigation';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import { InsuranceTab } from './tabs/insurance-tab';
+import { DeedTab } from './tabs/deed-tab';
+import { PoliceTab } from './tabs/police-tab';
+import { TransportTab } from './tabs/transport-tab';
+import { IUser } from '@/types/user';
+import { MunicipalityTab } from './tabs/municipality-tab';
+import { ActionTab } from './tabs/action-tab';
+import { createEditCar } from '@/actions/car';
+import { paths } from '@/routes/paths';
+import { useRouter, useSearchParams } from '@/routes/hooks';
+import { useEffect, useState } from 'react';
+import { getItemById } from '@/actions/base-action';
+import { endpoints } from '@/lib/axios';
+import { capitalize } from '@/utils/utils';
+import { SaleTab } from './tabs/sale-tab';
+import { ICustomer } from '@/types/customer';
+import { useToastStore } from '@/stores/toastStore';
 
 type Props = {
   colors: IColor[];
   brands: IBrand[];
   auctions: IAuction[];
   users: IUser[];
-  currentCar?: ICar;
+  customers: ICustomer[];
   files?: File[];
-  auctionId?: number;
+  currentCar?: ICar;
 };
 
-export function CreateEditCarForm({
+export default function CarCreateEditForm({
+  auctions = [],
+  brands = [],
+  colors = [],
+  users = [],
+  customers = [],
   currentCar,
-  colors,
-  brands,
-  auctions,
-  users,
   files,
-  auctionId,
 }: Props) {
-  const BRANDS = brands.map((x) => ({
-    value: x.brandId,
-    label: x.brandName,
-  }));
-
-  const COLORS = colors.map((x) => ({
-    value: x.colorId,
-    label: x.colorName,
-  }));
-
-  const AUCTIONS = auctions.map((x) => ({
-    value: x.auctionId,
-    label: x.auctionName,
-  }));
-
-  const USERS = users.map((x) => ({
-    value: x.userId,
-    label: x.userName,
-  }));
-
   const { translations } = useTranslateFromServer();
-  const { t: tCommon } = useTranslate('common');
   const { messages } = useMessage();
-  const [models, setModels] = useState<{ value: number; label: string }[]>([]);
-  const dialog = useBoolean();
+  const { t: tCommon } = useTranslate('common');
+  const router = useRouter();
+  const [tabStates, setTabStates] = useState<Record<CarTab, TabState>>({
+    general: 'enabled',
+    shakend: 'disabled',
+    insurance: 'disabled',
+    deed: 'disabled',
+    police: 'hidden',
+    transport: 'disabled',
+    sentMunicipality: 'hidden',
+    sentAction: 'hidden',
+    sale: currentCar ? 'enabled' : 'hidden',
+  });
 
-  const AuctionCarCreateSchema = z
+  const CarFormSchema = z
     .object({
+      purchaseDate: z.string().min(1, { error: messages.required() }),
+      auctionId: z.coerce.number(),
+      actionNumber: z.coerce.number().optional(),
       brandId: z.coerce.number().min(1, { error: messages.required() }),
       modelId: z.coerce.number().min(1, { error: messages.required() }),
-      colorId: z.coerce.number().min(1, { error: messages.required() }),
-      auctionId: z.coerce.number(),
-      year: z.coerce
-        .number()
-        .min(1900, { error: messages.invalid() })
-        .max(9999, { error: messages.invalid() }),
+      katashaki: z.string().min(1, { error: messages.required() }),
+      chasisNumber: z.string().min(1, { error: messages.required() }),
       mileage: z.preprocess((val) => {
         if (val === '' || val === null || val === undefined) return undefined;
         return Number(val);
       }, z.number({ error: messages.required() })),
-      katashaki: z.string().min(1, { error: messages.required() }),
-      chasisNumber: z.string().min(1, { error: messages.required() }),
+      year: z.coerce
+        .number()
+        .min(1900, { error: messages.invalid() })
+        .max(9999, { error: messages.invalid() }),
+      manufactureMonth: z.coerce
+        .number()
+        .min(1, { error: messages.invalid() })
+        .max(12, { error: messages.invalid() }),
+      fuelType: z.string().nullable().optional(),
+      colorId: z.coerce.number().min(1, { error: messages.required() }),
+      engineVolume: z.coerce.number().min(1, { error: messages.required() }),
+      grad: z.string().optional(),
+      point: z.string().optional(),
+      forSale: z.coerce.number().min(1, { error: messages.required() }),
+      transmissionType: z.string().nullable().optional(),
       purchasePrice: z.coerce
         .number({ error: messages.invalid() })
         .min(1, { error: messages.required() }),
+      finalPrice: z.coerce.number().nullable().optional(),
       transportPrice: z.coerce
         .number({ error: messages.invalid() })
         .nullable()
         .optional(),
       auctionPrice: z.coerce.number({ error: messages.invalid() }).nullable().optional(),
       taxAmount: z.coerce.number().nullable().optional(),
-      finalPrice: z.coerce.number().nullable().optional(),
-      engineVolume: z.coerce.number().nullable().optional(),
-      fuelType: z.string().nullable().optional(),
-      images: z
-        .array(z.instanceof(File))
-        .min(3, { error: messages.minCount3() })
-        .refine(
-          (files) => {
-            const names = files.map((x) => x.name);
-            return new Set(names).size === names.length;
-          },
-          {
-            error: messages.duplicate(),
-          }
-        )
-        .default([]),
       scrapCost: z.coerce.number().nullable().optional(),
-      manufactureMonth: z.coerce
-        .number()
-        .min(1, { error: messages.invalid() })
-        .max(12, { error: messages.invalid() }),
-      transmissionType: z.string().nullable().optional(),
-      plateType: z.coerce.number(),
-      plateNumber: z.string(),
-      purchaseDate: z.string().min(1, { error: messages.required() }),
+      description: z.string().optional(),
+      images: z
+        .array(
+          z.object({
+            fileName: z.any().optional(),
+            fileType: z.string().optional(),
+          })
+        )
+        .optional()
+        .default([]),
+
       hasInsurance: z.boolean({ error: messages.required() }),
       insuranceEndDate: z.string().optional(),
-      forSale: z.coerce.number(),
-      transportFrom: z.coerce.number(),
-      transportTo: z.coerce.number(),
-      transportConfirm: z.boolean(),
-      transportDate: z.string(),
-      transportDateReceived: z.string(),
+
+      hasShakend: z.boolean(),
+      thirdPartyInsuranceNumber: z.string().optional(),
+      insuranceCancellationDate: z.string().optional(),
+      isInsuranceCancelled: z.boolean(),
+      thirdPartyInsuranceExpireDate: z.string().optional(),
+      thirdPartyInsuranceCompany: z.string().optional(),
+
+      deedRequestedDate: z.string(),
+      deedIssuedDate: z.string(),
+      plateRegisteredDate: z.string().min(1, { error: messages.required() }),
+      deedNumber: z.string().min(1, { error: messages.required() }),
+      newDeedCopySentToBuyerDate: z.string().optional(),
+      isUnder1000CcdeedCopyUploaded: z.boolean(),
+
       needsPoliceCertificate: z.boolean(),
       policeCertificateRequestedDate: z.string(),
       policeCertificateReceivedDate: z.string(),
-      deedRequestedDate: z.string(),
-      deedIssuedDate: z.string(),
-      plateRegisteredDate: z.string(),
+      policeCertificateNumber: z.coerce.number().optional(),
+      policeDeedCertificateDeliveryDate: z.string().optional(),
+
+      transportDate: z.string(),
+      transportCompanyRequestDate: z.string().min(1, { error: messages.required() }),
+      transportFrom: z.coerce.number().min(1, { error: messages.required() }),
+      transportTo: z.coerce.number().min(1, { error: messages.required() }),
+      transportDateReceived: z.string(),
+      transportConfirm: z.boolean(),
+      transportConfirmUserId: z.coerce.number().optional(),
+
+      plateType: z.coerce.number(),
+      plateNumber: z.string(),
       sukuraNumber: z.number().optional(),
       sentToMunicipality: z.boolean(),
       municipalitySentDate: z.string().optional(),
@@ -149,14 +162,17 @@ export function CreateEditCarForm({
       auctionSentToPerson: z.string().optional(),
       plateRevoked: z.boolean(),
       plateRevokedDate: z.string().optional(),
-      grad: z.string().optional(),
-      point: z.string().optional(),
-      transportConfirmUserId: z.coerce.number().optional(),
-      policeCertificateNumber: z.coerce.number().optional(),
-      actionNumber: z.coerce.number().optional(),
       actionDeadlineDate: z.string().optional(),
       municipalityDeadlineDate: z.string().optional(),
       plateRevokedDeadLine: z.string().optional(),
+      commandType: z.string().optional(),
+      newPlateNumber: z.string().optional(),
+
+      buyerId: z.coerce.number().min(1, { error: messages.required() }),
+      saleDate: z.string().min(1, { error: messages.required() }),
+      salePrice: z.coerce
+        .number({ error: messages.invalid() })
+        .min(1, { error: messages.required() }),
     })
     .superRefine((data, ctx) => {
       if (data.hasInsurance && !data.insuranceEndDate) {
@@ -166,11 +182,70 @@ export function CreateEditCarForm({
           message: messages.required(),
         });
       }
+      if (
+        data.hasShakend &&
+        data.isInsuranceCancelled &&
+        !data.insuranceCancellationDate
+      ) {
+        ctx.addIssue({
+          path: ['insuranceCancellationDate'],
+          code: 'custom',
+          message: messages.required(),
+        });
+      }
+      // if (data.hasInsurance && data.insuranceEndDate && data.hasInsurance) {
+      //   if (!data.deedIssuedDate) {
+      //     ctx.addIssue({
+      //       path: ['deedIssuedDate'],
+      //       code: 'custom',
+      //       message: messages.required(),
+      //     });
+      //   }
+      // }
+      if (data.needsPoliceCertificate && !data.policeCertificateReceivedDate) {
+        ctx.addIssue({
+          path: ['policeCertificateReceivedDate'],
+          code: 'custom',
+          message: messages.required(),
+        });
+      }
+      if (data.sentToMunicipality) {
+        if (!data.municipalitySentDate) {
+          ctx.addIssue({
+            path: ['municipalitySentDate'],
+            code: 'custom',
+            message: messages.required(),
+          });
+        }
+        if (!data.municipalitySentToPerson) {
+          ctx.addIssue({
+            path: ['municipalitySentToPerson'],
+            code: 'custom',
+            message: messages.required(),
+          });
+        }
+      }
+      if (data.sentToAuction) {
+        if (!data.auctionSentDate) {
+          ctx.addIssue({
+            path: ['auctionSentDate'],
+            code: 'custom',
+            message: messages.required(),
+          });
+        }
+        if (!data.auctionSentToPerson) {
+          ctx.addIssue({
+            path: ['auctionSentToPerson'],
+            code: 'custom',
+            message: messages.required(),
+          });
+        }
+      }
     });
 
   const methods = useForm({
-    mode: 'onSubmit',
-    resolver: zodResolver(AuctionCarCreateSchema),
+    mode: 'all',
+    resolver: zodResolver(CarFormSchema),
     defaultValues: {
       brandId: currentCar?.brandId ?? '',
       colorId: currentCar?.colorId ?? '',
@@ -191,7 +266,7 @@ export function CreateEditCarForm({
       auctionPrice: currentCar?.auctionPrice ? currentCar.auctionPrice : '',
       scrapCost: currentCar?.scrapCost ? currentCar.scrapCost : '',
       finalPrice: currentCar?.finalPrice ?? '',
-      images: [],
+      images: (currentCar as any)?.imagesWithTypes ?? [],
       manufactureMonth: currentCar?.manufactureMonth ?? '',
       transmissionType: currentCar?.transmissionType ?? '',
       plateType: currentCar?.plateType ?? '',
@@ -234,720 +309,221 @@ export function CreateEditCarForm({
       actionDeadlineDate: currentCar?.actionDeadlineDate ?? '',
       municipalityDeadlineDate: currentCar?.municipalityDeadlineDate ?? '',
       plateRevokedDeadLine: currentCar?.plateRevokedDeadLine ?? '',
+      hasShakend: currentCar?.hasShakend ?? false,
+      thirdPartyInsuranceNumber: currentCar?.thirdPartyInsuranceNumber ?? '',
+      deedNumber: currentCar?.deedNumber ?? '',
+      commandType: currentCar?.commandType ?? '',
+      transportCompanyRequestDate: currentCar?.transportCompanyRequestDate ?? '',
+      newPlateNumber: currentCar?.newPlateNumber ?? '',
+      description: currentCar?.description ?? '',
+      insuranceCancellationDate: currentCar?.insuranceCancellationDate ?? '',
+      policeDeedCertificateDeliveryDate:
+        currentCar?.policeDeedCertificateDeliveryDate ?? '',
+      newDeedCopySentToBuyerDate: currentCar?.newDeedCopySentToBuyerDate ?? '',
+      isInsuranceCancelled: currentCar?.isInsuranceCancelled ?? false,
+      isUnder1000CcdeedCopyUploaded: currentCar?.isUnder1000CcdeedCopyUploaded ?? false,
+      buyerId: currentCar?.buyerId ?? '',
+      saleDate: currentCar?.saleDate ?? '',
+      salePrice: currentCar?.salePrice ?? '',
+      thirdPartyInsuranceExpireDate: currentCar?.thirdPartyInsuranceExpireDate ?? '',
+      thirdPartyInsuranceCompany: currentCar?.thirdPartyInsuranceCompany ?? '',
     },
   });
 
-  const {
-    handleSubmit,
-    setValue,
-    control,
-    watch,
-    formState: { isSubmitting },
-  } = methods;
-
-  const onSelectBrand = useCallback(
-    async (brandId: number) => {
-      setValue('modelId', '');
-      const { status, data } = await getModelsOfBrand(brandId);
-      if (status == 200) {
-        setModels(
-          data.map((x) => ({
-            value: x.modelId!,
-            label: x.modelName,
-          }))
+  useEffect(() => {
+    (async () => {
+      if (currentCar) {
+        const { status, data } = await getItemById(
+          `${endpoints.car}/tabs-state`,
+          currentCar.carId!
         );
+        if (status == 200) {
+          setTabStates(data as any);
+        }
       }
-    },
-    [setValue]
-  );
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  useEffect(() => {
-    if (currentCar) {
-      const getModelsInEdit = async () => {
-        await onSelectBrand(currentCar.brandId!);
-      };
-      getModelsInEdit();
-      setValue('modelId', currentCar.modelId);
-    }
-  }, [currentCar, onSelectBrand, setValue]);
+  const type = useSearchParams().get('type');
+  const tabs = useTabs<CarTab>(!type ? 'general' : 'shakend');
 
-  useEffect(() => {
-    if (files && files.length > 0) {
-      setValue('images', files, { shouldValidate: true });
-    }
-  }, [files, setValue]);
+  const currentTab = tabs.value as CarTab;
+  const prevTab = getPrevTab(currentTab, CAR_TAB_ORDER, tabStates);
+  const prevEnabled = canGoPrev(prevTab);
 
-  const purchaseDate = useWatch({ control, name: 'purchaseDate' });
-  const hasInsurance = useWatch({ control, name: 'hasInsurance' });
-  const purchasePrice = useWatch({ control, name: 'purchasePrice' });
-  const transportPrice = useWatch({ control, name: 'transportPrice' });
-  const scrapCost = useWatch({ control, name: 'scrapCost' });
-  const auctionPrice = useWatch({ control, name: 'auctionPrice' });
-  const forSale = useWatch({ control, name: 'forSale' });
-  const needsPolice = useWatch({ control, name: 'needsPoliceCertificate' });
-  const plateRegisteredDate = useWatch({ control, name: 'plateRegisteredDate' });
-  const sentToMunicipality = useWatch({ control, name: 'sentToMunicipality' });
-  const sentToAuction = useWatch({ control, name: 'sentToAuction' });
-  const enginVolume = useWatch({ control, name: 'engineVolume' }) || 0;
-
-  // useEffect(() => {
-  //   if (hasInsurance == true) {
-  //     const date = new Date(purchaseDate);
-  //     date.setDate(date.getDate() + 10);
-  //     setValue('plateRevokedDate', date.toLocaleDateString());
-  //   }
-  // }, [hasInsurance, purchaseDate, setValue]);
-
-  // useEffect(() => {
-  //   if (purchaseDate && needsPolice) {
-  //     const date = new Date(purchaseDate);
-  //     date.setMonth(date.getMonth() + 1);
-  //     setValue('policeCertificateRequestedDate', date.toLocaleDateString());
-  //     setValue('deedRequestedDate', date.toLocaleDateString());
-  //     setValue('plateRegisteredDate', date.toLocaleDateString());
-  //   }
-  // }, [needsPolice, purchaseDate, setValue]);
-
-  // useEffect(() => {
-  //   if (purchaseDate) {
-  //     const date = new Date(purchaseDate);
-  //     date.setMonth(date.getMonth() + 1);
-  //     setValue('actionDeadlineDate', date.toLocaleDateString());
-  //     setValue('municipalityDeadlineDate', date.toLocaleDateString());
-  //   }
-  // }, [purchaseDate, setValue]);
-
-  useEffect(() => {
-    const p1 = Number(purchasePrice) || 0;
-    const p2 = Number(transportPrice) || 0;
-    const p3 = Number(auctionPrice) || 0;
-    const p4 = Number(scrapCost) || 0;
-
-    const total = p1 + p2 + p3;
-    const tax = total * 0.1;
-
-    setValue('taxAmount', tax > 0 ? (Number.isInteger(tax) ? tax : tax.toFixed(2)) : '');
-    setValue('finalPrice', total + tax + p4 > 0 ? total + tax + p4 : '');
-  }, [purchasePrice, transportPrice, auctionPrice, setValue, scrapCost]);
-
-  const onSubmit = handleSubmit(async (data) => {
-    try {
-      const { status, data: sukuraNumber } = await createEditCar(
-        data,
-        auctionId ?? null,
-        currentCar ? currentCar.carId! : null
-      );
-      if (status == 200 || status == 204) {
-        setValue('sukuraNumber', sukuraNumber);
-        dialog.onTrue();
+  function scrollToFirstError() {
+    const firstErrorField = Object.keys(methods.formState.errors)[0];
+    if (firstErrorField) {
+      const el = document.getElementById(firstErrorField);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.focus({ preventScroll: true });
       }
-    } catch (error) {
-      console.error(error);
     }
-  });
+  }
 
-  const renderPrintDialog = () => (
-    <CarPrintDialog
-      open={dialog.value}
-      car={methods.getValues() as ICar}
-      auctionId={auctionId}
-      isUpdated={currentCar != null}
-    />
-  );
+  async function validate(): Promise<boolean> {
+    const currentTab = tabs.value as CarTab;
+
+    const fields = TAB_FIELDS[currentTab] as any;
+    if (!fields) return false;
+    const isValid = await methods.trigger(fields, {
+      shouldFocus: true,
+    });
+
+    if (!isValid) {
+      scrollToFirstError();
+      return false;
+    }
+
+    return true;
+  }
+
+  function validateImages(): boolean {
+    const images = methods.getValues('images') as CarImage[];
+    if (images.length < 3) {
+      useToastStore.getState().setToast('error', messages.minCount3());
+      return false;
+    }
+    if (images.some((x) => !x.fileType || x.fileType === '')) {
+      useToastStore.getState().setToast('error', messages.selectType());
+      return false;
+    }
+    return true;
+  }
+
+  const handleNext = async () => {
+    if (!(await validate())) return;
+
+    if (validateImages()) {
+      try {
+        const { status, data } = await createEditCar(
+          methods.getValues() as ICar,
+          currentCar ? currentCar.carId! : null
+        );
+        if (status == 200 || status == 204) {
+          if (!currentCar && tabs.value === 'general') {
+            router.push(`${paths.dashboard.car.edit(data)}?type=new`);
+          } else {
+            setTabStates(data);
+            const nextTab = getNextTab(currentTab, CAR_TAB_ORDER, data);
+            if (nextTab) {
+              tabs.setValue(nextTab);
+            }
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  const handleTabChange = async (_: any, target: CarTab) => {
+    const state = tabStates[target];
+    if (state === 'disabled' || state === 'hidden') return;
+    tabs.setValue(target);
+  };
 
   return (
-    <>
-      <Form methods={methods} onSubmit={onSubmit}>
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 12 }}>
-            <Card sx={{ p: 3 }}>
-              <Box
-                sx={{
-                  rowGap: 3,
-                  columnGap: 2,
-                  display: 'grid',
-                  gridTemplateColumns: {
-                    xs: 'repeat(1, 1fr)',
-                    sm: 'repeat(2, 1fr)',
-                  },
-                }}
-              >
-                <FieldGroup
-                  title={translations['General']}
-                  sx={{ gridColumn: { sx: 'span 1', sm: 'span 2' } }}
-                />
+    <Form methods={methods}>
+      <Tabs value={tabs.value} sx={{ mb: 6 }} onChange={handleTabChange}>
+        {tabStates['general'] !== 'hidden' && (
+          <Tab label={translations['General']} value="general" />
+        )}
+        {tabStates['shakend'] !== 'hidden' && (
+          <Tab
+            label={translations['Insurance']}
+            value="shakend"
+            disabled={tabStates.shakend === 'disabled'}
+          />
+        )}
+        {tabStates['insurance'] !== 'hidden' && (
+          <Tab
+            label={translations['InsuranceTab']}
+            value="insurance"
+            disabled={tabStates.insurance === 'disabled'}
+          />
+        )}
+        {tabStates['police'] !== 'hidden' && (
+          <Tab
+            label={translations['Police']}
+            value="police"
+            disabled={tabStates.police === 'disabled'}
+          />
+        )}
+        {tabStates['deed'] !== 'hidden' && (
+          <Tab
+            label={translations['Deed']}
+            value="deed"
+            disabled={tabStates.deed === 'disabled'}
+          />
+        )}
+        {tabStates['transport'] !== 'hidden' && (
+          <Tab
+            label={translations['Transport']}
+            value="transport"
+            disabled={tabStates.transport === 'disabled'}
+          />
+        )}
+        {tabStates['sentMunicipality'] !== 'hidden' && (
+          <Tab
+            label={translations['SentToMunicipality']}
+            value="sentMunicipality"
+            disabled={tabStates.sentMunicipality === 'disabled'}
+          />
+        )}
+        {tabStates['sentAction'] !== 'hidden' && (
+          <Tab
+            label={capitalize(translations['SentToAction'].replace('Sent ', ''))}
+            value="sentAction"
+            disabled={tabStates.sentAction === 'disabled'}
+          />
+        )}
+        {tabStates['sale'] !== 'hidden' && (
+          <Tab
+            label={translations['Sale']}
+            value="sale"
+            disabled={tabStates.sale === 'disabled'}
+          />
+        )}
+      </Tabs>
+      {tabs.value === 'general' && (
+        <GeneralTab
+          methods={methods}
+          brands={brands}
+          colors={colors}
+          auctions={auctions}
+          modelId={currentCar?.modelId}
+          files={files}
+        />
+      )}
+      {tabs.value === 'shakend' && <ShakendTab methods={methods} />}
+      {tabs.value === 'insurance' && <InsuranceTab methods={methods} />}
+      {tabs.value === 'deed' && <DeedTab methods={methods} />}
+      {tabs.value === 'police' && <PoliceTab methods={methods} />}
+      {tabs.value === 'transport' && <TransportTab methods={methods} users={users} />}
+      {tabs.value === 'sentMunicipality' && <MunicipalityTab methods={methods} />}
+      {tabs.value === 'sentAction' && <ActionTab methods={methods} />}
+      {tabs.value === 'sale' && <SaleTab methods={methods} customers={customers} />}
 
-                <Box sx={{ mb: 3, gridColumn: { sx: 'span 1', sm: 'span 2' } }}>
-                  <Typography variant="subtitle2" color="gray">
-                    {translations['SukuraNumber']} :{' '}
-                    {methods.getValues('sukuraNumber') ?? '-----'}
-                  </Typography>
-                </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
+        <Button
+          variant="outlined"
+          disabled={!prevEnabled}
+          onClick={() => {
+            if (prevTab) tabs.setValue(prevTab);
+          }}
+        >
+          {tCommon('previous')}
+        </Button>
 
-                <LocalizationProvider>
-                  <Field.DatePicker
-                    name="purchaseDate"
-                    label={translations['PurchaseDate']}
-                    onChange={(e) => {
-                      const purchaseDate = e?.toDate();
-                      if (purchaseDate) {
-                        setValue('purchaseDate', purchaseDate.toLocaleDateString());
-
-                        const date = new Date(purchaseDate);
-                        date.setMonth(date.getMonth() + 1);
-                        const dateNextMonth = date.toLocaleDateString();
-
-                        setValue('actionDeadlineDate', dateNextMonth);
-                        setValue('municipalityDeadlineDate', dateNextMonth);
-                        
-                        if (hasInsurance) {
-                          const date2 = new Date(purchaseDate);
-                          date2.setDate(date2.getDate() + 10);
-                          setValue('plateRevokedDate', date2.toLocaleDateString());
-                          setValue('plateRevokedDeadLine', date2.toLocaleDateString());
-                        }
-
-                        if (needsPolice) {
-                          setValue('policeCertificateRequestedDate', dateNextMonth);
-                          setValue('deedRequestedDate', dateNextMonth);
-                          setValue('plateRegisteredDate', dateNextMonth);
-                        }
-                      }
-                    }}
-                  />
-                </LocalizationProvider>
-
-                <Field.Select name="auctionId" label={translations['AuctionName']}>
-                  {AUCTIONS.map((x) => (
-                    <MenuItem key={`auction_${x.value}`} value={x.value}>
-                      {x.label}
-                    </MenuItem>
-                  ))}
-                </Field.Select>
-
-                <Field.Text
-                  name="actionNumber"
-                  label={translations['ActionNumber']}
-                  type="number"
-                />
-
-                <Field.Autocomplete
-                  name="brandId"
-                  label={translations['BrandName']}
-                  options={BRANDS}
-                  getOptionKey={(option) => option.value}
-                  getOptionLabel={(option) => option?.label ?? ''}
-                  isOptionEqualToValue={(option, value) =>
-                    option?.value === value?.value || option?.value === value
-                  }
-                  value={BRANDS.find((b) => b.value === watch('brandId')) ?? null}
-                  onChange={(_, selected) => {
-                    setValue('brandId', selected.value, { shouldValidate: true });
-                    onSelectBrand(selected?.value);
-                  }}
-                />
-
-                <Field.Autocomplete
-                  name="modelId"
-                  label={translations['ModelName']}
-                  options={models}
-                  getOptionKey={(option) => option.value}
-                  getOptionLabel={(option) => option?.label ?? ''}
-                  isOptionEqualToValue={(option, value) =>
-                    option?.value === value?.value || option?.value === value
-                  }
-                  value={models.find((b) => b.value === watch('modelId')) ?? null}
-                  onChange={(_, selected) => {
-                    setValue('modelId', selected.value, { shouldValidate: true });
-                  }}
-                />
-
-                <Field.Text name="katashaki" label={translations['katashaki']} />
-                <Field.Text name="chasisNumber" label={translations['ChassisNumber']} />
-
-                <Field.Text
-                  name="mileage"
-                  label={translations['Mileage']}
-                  type="number"
-                />
-
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Field.Text name="year" label={translations['Year']} type="number" />
-                  <Field.Select
-                    name="manufactureMonth"
-                    label={translations['ManufactureMonth']}
-                  >
-                    {Array.from({ length: 12 }, (_, i) => (
-                      <MenuItem key={i} value={i + 1}>
-                        {(i + 1).toString()}
-                      </MenuItem>
-                    ))}
-                  </Field.Select>
-                </Box>
-
-                <Field.Select name="fuelType" label={translations['FuelType']}>
-                  {['CNG', 'G', 'D'].map((x) => (
-                    <MenuItem key={x} value={x}>
-                      {x}
-                    </MenuItem>
-                  ))}
-                </Field.Select>
-
-                <Field.Autocomplete
-                  name="colorId"
-                  label={translations['ColorName']}
-                  options={COLORS}
-                  getOptionKey={(option) => option.value}
-                  getOptionLabel={(option) => option?.label ?? ''}
-                  isOptionEqualToValue={(option, value) =>
-                    option?.value === value?.value || option?.value === value
-                  }
-                  value={COLORS.find((b) => b.value === watch('colorId')) ?? null}
-                  onChange={(_, selected) => {
-                    setValue('colorId', selected.value, { shouldValidate: true });
-                  }}
-                />
-
-                <Field.Text
-                  name="engineVolume"
-                  label={translations['EngineVolume']}
-                  type="number"
-                />
-
-                <Field.Text name="grad" label={translations['Grade']} />
-                <Field.Text name="point" label={translations['Point']} />
-
-                <Field.Select
-                  name="transmissionType"
-                  label={translations['TransmissionType']}
-                >
-                  {['A', 'M', 'CVT'].map((x) => (
-                    <MenuItem key={x} value={x}>
-                      {x}
-                    </MenuItem>
-                  ))}
-                </Field.Select>
-
-                <FieldGroup
-                  title={translations['Prices']}
-                  sx={{ marginTop: 8, gridColumn: { sx: 'span 1', sm: 'span 2' } }}
-                />
-                <Field.Text
-                  name="purchasePrice"
-                  label={translations['PurchasePrice']}
-                  type="number"
-                  thousandSeparator={true}
-                  slotProps={{
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>
-                            ¥
-                          </Box>
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
-                />
-
-                <Field.Text
-                  name="scrapCost"
-                  label={translations['ScrapCost']}
-                  type="number"
-                  thousandSeparator={true}
-                  slotProps={{
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>
-                            ¥
-                          </Box>
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
-                />
-
-                <Field.Text
-                  name="auctionPrice"
-                  label={translations['AuctionPrice']}
-                  type="number"
-                  thousandSeparator={true}
-                  slotProps={{
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>
-                            ¥
-                          </Box>
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
-                />
-
-                <Field.Text
-                  name="transportPrice"
-                  label={translations['TransportPrice']}
-                  type="number"
-                  thousandSeparator={true}
-                  slotProps={{
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>
-                            ¥
-                          </Box>
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
-                />
-
-                <Field.Text
-                  name="taxAmount"
-                  label={translations['TaxAmount']}
-                  type="number"
-                  thousandSeparator={true}
-                  disabled
-                  slotProps={{
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>
-                            ¥
-                          </Box>
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
-                />
-
-                <Field.Text
-                  name="finalPrice"
-                  label={translations['FinalPrice']}
-                  type="number"
-                  thousandSeparator={true}
-                  disabled
-                  slotProps={{
-                    input: {
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>
-                            ¥
-                          </Box>
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
-                />
-
-                <FieldGroup
-                  title={translations['Insurance']}
-                  sx={{ marginTop: 8, gridColumn: { sx: 'span 1', sm: 'span 2' } }}
-                />
-                <Stack direction={'row'} alignItems={'center'}>
-                  <Typography variant="subtitle2" color="gray">
-                    {translations['HasInsurance']}
-                  </Typography>
-                  <Switch
-                    name="hasInsurance"
-                    checked={methods.getValues('hasInsurance')}
-                    onChange={(e) => {
-                      const value = e.target.checked;
-                      setValue('hasInsurance', value);
-                      if (purchaseDate && value == true) {
-                        const date = new Date(purchaseDate);
-                        date.setDate(date.getDate() + 10);
-                        setValue('plateRevokedDate', date.toLocaleDateString());
-                      }
-                    }}
-                  />
-                </Stack>
-
-                {hasInsurance && (
-                  <>
-                    <LocalizationProvider>
-                      <Field.DatePicker
-                        name="insuranceEndDate"
-                        label={translations['InsuranceEndDate']}
-                      />
-                    </LocalizationProvider>
-
-                    <FieldGroup
-                      title={translations['PlateRevoking']}
-                      sx={{ marginTop: 8, gridColumn: { sx: 'span 1', sm: 'span 2' } }}
-                    />
-                    <LocalizationProvider>
-                      <Field.DatePicker
-                        name="plateRevokedDeadLine"
-                        label={translations['PlateRevokedDeadLine']}
-                      />
-                    </LocalizationProvider>
-                    <Stack direction={'row'} alignItems={'center'}>
-                      <Typography variant="subtitle2" color="gray">
-                        {translations['PlateRevoked']}
-                      </Typography>
-                      <Field.Switch name="plateRevoked" label="" />
-                    </Stack>
-                    <LocalizationProvider>
-                      <Field.DatePicker
-                        name="plateRevokedDate"
-                        label={translations['PlateRevokedDate']}
-                      />
-                    </LocalizationProvider>
-                  </>
-                )}
-
-                <FieldGroup
-                  title={translations['Deed']}
-                  sx={{ marginTop: 8, gridColumn: { sx: 'span 1', sm: 'span 2' } }}
-                />
-                <LocalizationProvider>
-                  <Field.DatePicker
-                    name="deedRequestedDate"
-                    label={translations['DeedRequestedDate']}
-                  />
-                </LocalizationProvider>
-
-                <LocalizationProvider>
-                  <Field.DatePicker
-                    name="deedIssuedDate"
-                    label={translations['DeedIssuedDate']}
-                  />
-                </LocalizationProvider>
-
-                <LocalizationProvider>
-                  <Field.DatePicker
-                    name="plateRegisteredDate"
-                    label={translations['PlateRegisteredDate']}
-                  />
-                </LocalizationProvider>
-
-                <FieldGroup
-                  title={translations['PoliceCertificate']}
-                  sx={{ marginTop: 8, gridColumn: { sx: 'span 1', sm: 'span 2' } }}
-                />
-                <Field.Select name="forSale" label={translations['ForSale']}>
-                  {FORSALEITEMS.map((x) => (
-                    <MenuItem key={x.value} value={x.value}>
-                      {x.title}
-                    </MenuItem>
-                  ))}
-                </Field.Select>
-
-                {forSale == 1 && (
-                  <>
-                    <Stack direction={'row'} alignItems={'center'}>
-                      <Typography variant="subtitle2" color="gray">
-                        {translations['NeedsPoliceCertificate']}
-                      </Typography>
-                      <Switch
-                        name="needsPoliceCertificate"
-                        checked={methods.getValues('needsPoliceCertificate')}
-                        onChange={(e) => {
-                          const value = e.target.checked;
-                          setValue('needsPoliceCertificate', value);
-                          if (purchaseDate && value == true) {
-                            const date = new Date(purchaseDate);
-                            date.setMonth(date.getMonth() + 1);
-                            const dateNextMonth = date.toLocaleDateString();
-
-                            setValue('policeCertificateRequestedDate', dateNextMonth);
-                            setValue('deedRequestedDate', dateNextMonth);
-                            setValue('plateRegisteredDate', dateNextMonth);
-                          }
-                        }}
-                      />
-                    </Stack>
-
-                    {needsPolice && (
-                      <>
-                        <LocalizationProvider>
-                          <Field.DatePicker
-                            name="policeCertificateRequestedDate"
-                            label={translations['PoliceCertificateRequestedDate']}
-                          />
-                        </LocalizationProvider>
-
-                        <Field.Text
-                          name="policeCertificateNumber"
-                          label={translations['PoliceCertificateNumber']}
-                          type="number"
-                        />
-
-                        <LocalizationProvider>
-                          <Field.DatePicker
-                            name="policeCertificateReceivedDate"
-                            label={translations['PoliceCertificateReceivedDate']}
-                          />
-                        </LocalizationProvider>
-                      </>
-                    )}
-
-                    {plateRegisteredDate && (
-                      <>
-                        <Field.Select name="plateType" label={translations['PlateType']}>
-                          {PLATETYPES.map((x) => (
-                            <MenuItem key={x.value} value={x.value}>
-                              {x.title}
-                            </MenuItem>
-                          ))}
-                        </Field.Select>
-
-                        <Field.Text
-                          name="plateNumber"
-                          label={translations['PlateNumber']}
-                        />
-                      </>
-                    )}
-                  </>
-                )}
-
-                <FieldGroup
-                  title={translations['Transport']}
-                  sx={{ marginTop: 8, gridColumn: { sx: 'span 1', sm: 'span 2' } }}
-                />
-                <Field.Select name="transportFrom" label={translations['TransportFrom']}>
-                  {TRANSPORTFROM.map((x) => (
-                    <MenuItem key={x.value} value={x.value}>
-                      {x.title}
-                    </MenuItem>
-                  ))}
-                </Field.Select>
-
-                <Field.Select name="transportTo" label={translations['TransportTo']}>
-                  {TRANSPORTTO.map((x) => (
-                    <MenuItem key={x.value} value={x.value}>
-                      {x.title}
-                    </MenuItem>
-                  ))}
-                </Field.Select>
-
-                <LocalizationProvider>
-                  <Field.DatePicker
-                    name="transportDate"
-                    label={translations['TransportDate']}
-                  />
-                </LocalizationProvider>
-                <LocalizationProvider>
-                  <Field.DatePicker
-                    name="transportDateReceived"
-                    label={translations['TransportDateReceived']}
-                  />
-                </LocalizationProvider>
-                <Stack direction={'row'} alignItems={'center'}>
-                  <Typography variant="subtitle2" color="gray">
-                    {translations['TransportConfirm']}
-                  </Typography>
-                  <Field.Switch name="transportConfirm" label="" />
-                </Stack>
-                <Field.Select
-                  name="transportConfirmUserId"
-                  label={translations['TransportConfirmUserId']}
-                >
-                  {USERS.map((x) => (
-                    <MenuItem key={`user_${x.value}`} value={x.value}>
-                      {x.label}
-                    </MenuItem>
-                  ))}
-                </Field.Select>
-
-                {Number(enginVolume) > 0 && Number(enginVolume) < 1000 && (
-                  <>
-                    <FieldGroup
-                      title={translations['SentToMunicipality']}
-                      sx={{ marginTop: 8, gridColumn: { sx: 'span 1', sm: 'span 2' } }}
-                    />
-                    <LocalizationProvider>
-                      <Field.DatePicker
-                        name="municipalityDeadlineDate"
-                        label={translations['MunicipalityDeadlineDate']}
-                      />
-                    </LocalizationProvider>
-                    <Stack direction={'row'} alignItems={'center'}>
-                      <Typography variant="subtitle2" color="gray">
-                        {translations['SentToMunicipality']}
-                      </Typography>
-                      <Field.Switch name="sentToMunicipality" label="" />
-                    </Stack>
-                    {sentToMunicipality && (
-                      <>
-                        <LocalizationProvider>
-                          <Field.DatePicker
-                            name="municipalitySentDate"
-                            label={translations['MunicipalitySentDate']}
-                          />
-                        </LocalizationProvider>
-                        <Field.Text
-                          name="municipalitySentToPerson"
-                          label={translations['MunicipalitySentToPerson']}
-                        />
-                      </>
-                    )}
-                  </>
-                )}
-
-                <FieldGroup
-                  title={translations['SentToAction']}
-                  sx={{ marginTop: 8, gridColumn: { sx: 'span 1', sm: 'span 2' } }}
-                />
-                <LocalizationProvider>
-                  <Field.DatePicker
-                    name="actionDeadlineDate"
-                    label={translations['ActionDeadlineDate']}
-                  />
-                </LocalizationProvider>
-                <Stack direction={'row'} alignItems={'center'}>
-                  <Typography variant="subtitle2" color="gray">
-                    {translations['SentToAction']}
-                  </Typography>
-                  <Field.Switch name="sentToAuction" label="" />
-                </Stack>
-                {sentToAuction && (
-                  <>
-                    <LocalizationProvider>
-                      <Field.DatePicker
-                        name="auctionSentDate"
-                        label={translations['ActionSentDate']}
-                      />
-                    </LocalizationProvider>
-                    <Field.Text
-                      name="auctionSentToPerson"
-                      label={translations['ActionSentToPerson']}
-                    />
-                  </>
-                )}
-
-                <Box sx={{ gridColumn: { xs: 'span 1', sm: 'span 2' } }}>
-                  <Field.Upload
-                    multiple
-                    name="images"
-                    maxSize={3145728}
-                    onRemove={(inputFile) =>
-                      setValue(
-                        'images',
-                        methods.getValues('images')!.filter((file) => file !== inputFile),
-                        { shouldValidate: true }
-                      )
-                    }
-                    onRemoveAll={() => setValue('images', [], { shouldValidate: true })}
-                  />
-                </Box>
-              </Box>
-
-              <Stack sx={{ mt: 3, alignItems: 'flex-end' }}>
-                <Button type="submit" variant="contained" loading={isSubmitting}>
-                  {!currentCar
-                    ? `${tCommon('create')} ${tCommon('car.car')}`
-                    : tCommon('save')}
-                </Button>
-              </Stack>
-            </Card>
-          </Grid>
-        </Grid>
-      </Form>
-      {renderPrintDialog()}
-    </>
+        <Button variant="contained" onClick={handleNext}>
+          {tabs.value !== 'sale' && tabs.value !== 'sentAction'
+            ? tCommon('next')
+            : tCommon('save2')}
+        </Button>
+      </Box>
+    </Form>
   );
 }

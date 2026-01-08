@@ -18,7 +18,11 @@ export function FlagIcon({ code, className, sx, ...other }: FlagIconProps) {
   }
 
   return (
-    <FlagRoot className={mergeClasses([flagIconClasses.root, className])} sx={sx} {...other}>
+    <FlagRoot
+      className={mergeClasses([flagIconClasses.root, className])}
+      sx={sx}
+      {...other}
+    >
       <FlagImg
         loading="lazy"
         alt={code}

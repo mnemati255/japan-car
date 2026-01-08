@@ -222,7 +222,7 @@ export function DashboardLayout({
         {
           [`& .${layoutClasses.sidebarContainer}`]: {
             [theme.breakpoints.up(layoutQuery)]: {
-              pl: isNavMini
+              paddingInlineStart: isNavMini
                 ? 'var(--layout-nav-mini-width)'
                 : 'var(--layout-nav-vertical-width)',
               transition: theme.transitions.create(['padding-left'], {

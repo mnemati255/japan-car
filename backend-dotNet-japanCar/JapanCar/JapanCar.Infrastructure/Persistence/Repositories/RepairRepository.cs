@@ -177,5 +177,46 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
 
             return result;
         }
+
+
+        public async Task<List<RepairEntity>> GetRepairDetailsOfCar(int languageId, int carId)
+        {
+            var query = from repair in _context.CarRepairHistories.Where(x => x.CarId == carId).AsNoTracking()
+
+                        join carPart in _context.CarParts.AsNoTracking()
+                        on repair.RepairId equals carPart.CarRepairHistoryId into carPartGp
+                        from carPart in carPartGp.DefaultIfEmpty()
+
+                        join part in _context.Parts.AsNoTracking()
+                        on carPart.PartId equals part.PartId into partGp
+                        from part in partGp.DefaultIfEmpty()
+
+                        join mechanic in _context.Mechanics.AsNoTracking()
+                        on carPart.MechanicId equals mechanic.MechanicId into mechanicGp
+                        from mechanic in mechanicGp.DefaultIfEmpty()
+
+                        select new
+                        {
+                            repair,
+                            carPart,
+                            part,
+                            mechanic
+                        };
+
+            var result = await query.GroupBy(x => x.repair.RepairId)
+                .Select(x => new RepairEntity
+                {
+                    RepairDate = x.First().repair.RepairDate,
+                    Parts = x.Where(y => y.carPart != null).Select(y => new CarPartEntity
+                    {
+                        PartName = y.carPart.Part.PartTranslations.Where(t => t.LanguageId == languageId).First().PartName,
+                        PartCost = y.carPart.PartCost,
+                        PartCount = y.carPart.PartCount,
+                        MechanicName = y.mechanic.MechanicName
+                    }).ToList()
+                }).ToListAsync();
+
+            return result;
+        }
     }
 }

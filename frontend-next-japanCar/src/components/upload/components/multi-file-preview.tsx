@@ -72,12 +72,12 @@ export function MultiFilePreview({
               ]}
               slotProps={{
                 icon: { sx: { width: 36, height: 36 } },
-                img: {
-                  onClick: (e: React.MouseEvent) => {
-                    e.stopPropagation();
-                    if (previewUrl) window.open(previewUrl, '_blank');
-                  },
-                },
+                // img: {
+                //   onClick: (e: React.MouseEvent) => {
+                //     e.stopPropagation();
+                //     if (previewUrl) window.open(previewUrl, '_blank');
+                //   },
+                // },
                 ...thumbnailProps?.slotProps,
               }}
             />

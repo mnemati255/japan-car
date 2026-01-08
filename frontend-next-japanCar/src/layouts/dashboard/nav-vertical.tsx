@@ -118,7 +118,7 @@ const NavRoot = styled('div', {
 })<Pick<NavVerticalProps, 'isNavMini' | 'layoutQuery'>>(
   ({ isNavMini, layoutQuery = 'md', theme }) => ({
     top: 0,
-    left: 0,
+    insetInlineStart: 0,
     height: '100%',
     display: 'none',
     position: 'fixed',

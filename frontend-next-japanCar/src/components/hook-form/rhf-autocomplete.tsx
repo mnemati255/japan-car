@@ -48,8 +48,11 @@ export function RHFAutocomplete({
       render={({ field, fieldState: { error } }) => (
         <Autocomplete
           {...field}
-          id={`${name}-rhf-autocomplete`}
-          onChange={(event, newValue) => setValue(name, newValue, { shouldValidate: true })}
+          // id={`${name}-rhf-autocomplete`}
+          id={name}
+          onChange={(event, newValue) =>
+            setValue(name, newValue, { shouldValidate: true })
+          }
           renderInput={(params) => (
             <TextField
               {...params}
@@ -63,7 +66,7 @@ export function RHFAutocomplete({
                 htmlInput: {
                   ...params.inputProps,
                   ...textField?.slotProps?.htmlInput,
-                  autoComplete: 'new-password', // Disable autocomplete and autofill
+                  autoComplete: 'off', // Disable autocomplete and autofill
                 },
               }}
             />

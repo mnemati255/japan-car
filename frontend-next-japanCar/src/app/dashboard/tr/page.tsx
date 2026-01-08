@@ -3,15 +3,15 @@ import { ITranslation2 } from '@/types/translation';
 import axios from 'axios';
 
 const data: ITranslation2[] = [
-  // {
-  //   entityName: 'navbar_subheader',
-  //   fieldName: '',
-  //   translatedValue: '',
-  // },
+  {
+    entityName: 'messages',
+    fieldName: 'mes_selectImageType',
+    translatedValue: 'Select image type',
+    category: null,
+  },
 ];
 
 export default async function Page() {
-  console.log(43);
   await axios.post(`${CONFIG.serverUrl}/Translation`, data);
 
   return (

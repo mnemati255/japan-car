@@ -60,6 +60,7 @@ export function RHFSelect({
       render={({ field, fieldState: { error } }) => (
         <TextField
           {...field}
+          id={name}
           select
           fullWidth
           error={!!error}

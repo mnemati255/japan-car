@@ -36,6 +36,8 @@ public partial class Language
 
     public virtual ICollection<CarColorTranslation> CarColorTranslations { get; set; } = new List<CarColorTranslation>();
 
+    public virtual ICollection<CarImageTypeTranslation> CarImageTypeTranslations { get; set; } = new List<CarImageTypeTranslation>();
+
     public virtual ICollection<CarModelTranslation> CarModelTranslations { get; set; } = new List<CarModelTranslation>();
 
     public virtual ICollection<CarRepairHistoryTranslation> CarRepairHistoryTranslations { get; set; } = new List<CarRepairHistoryTranslation>();

@@ -10,7 +10,7 @@ import { Iconify } from '@/components/iconify';
 import { ConfirmDialog } from '@/components/custom-dialog';
 import { paths } from '@/routes/paths';
 import { useState } from 'react';
-import { allLangs, useTranslate } from '@/locales';
+import { allLangs2, useTranslate } from '@/locales';
 import { IRepair } from '@/types/repair';
 import { fDate } from '@/utils/format-time';
 
@@ -58,7 +58,7 @@ export function RepairTableRow({ row, onDeleteRow }: Props) {
 
         <TableCell>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {allLangs
+            {allLangs2
               .filter((x) => x.value !== currentLang.value)
               .map((x, i) => (
                 <Tooltip key={`lng_${i}`} title={x.label} placement="top" arrow>

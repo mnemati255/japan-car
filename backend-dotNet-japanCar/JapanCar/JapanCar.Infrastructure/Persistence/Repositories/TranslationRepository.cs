@@ -49,7 +49,8 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                     LanguageId = 1,
                     EntityName = item.EntityName,
                     FieldName = item.FieldName,
-                    TranslatedValue = item.TranslatedValue
+                    TranslatedValue = item.TranslatedValue,
+                    Category = item.Category,
                 });
 
                 _context.GenericTranslations.Add(new Models.GenericTranslation
@@ -57,7 +58,17 @@ namespace JapanCar.Infrastructure.Persistence.Repositories
                     LanguageId = 2,
                     EntityName = item.EntityName,
                     FieldName = item.FieldName,
-                    TranslatedValue = item.TranslatedValue
+                    TranslatedValue = item.TranslatedValue,
+                    Category = item.Category,
+                });
+
+                _context.GenericTranslations.Add(new Models.GenericTranslation
+                {
+                    LanguageId = 3,
+                    EntityName = item.EntityName,
+                    FieldName = item.FieldName,
+                    TranslatedValue = item.TranslatedValue,
+                    Category = item.Category,
                 });
             }
 

@@ -43,15 +43,6 @@ export function navData(t: TFunction<any, any>): NavSectionProps['data'] {
             },
           ],
         },
-        // {
-        //   title: t('auctions'),
-        //   path: paths.dashboard.auction.root,
-        //   icon: ICONS.folder,
-        //   children: [
-        //     { title: t('list'), path: paths.dashboard.auction.root },
-        //     { title: t('create'), path: paths.dashboard.auction.new },
-        //   ],
-        // },
         {
           title: t('cars'),
           path: paths.dashboard.car.root,

@@ -11,9 +11,9 @@ namespace JapanCar.Application.Interfaces
 {
     public interface ICarRepository
     {
-        Task<PagedResult<CarEntity>> GetCars(int languageId, CarFilterDto filterDto, int? auctionId = null);
+        Task<PagedResult<CarEntity>> GetCars(int languageId, CarFilterDto filterDto);
         Task<CarEntity?> GetById(int id, bool withAuctionDetails, bool withImages);
-        Task<int?> Create(CarEntity car);
+        Task<int> Create(int languageId, CarEntity car);
         Task<int?> Update(int id, CarEntity car);
         Task<bool> Delete(int id);
         Task<bool> ExistsCar(int carId);

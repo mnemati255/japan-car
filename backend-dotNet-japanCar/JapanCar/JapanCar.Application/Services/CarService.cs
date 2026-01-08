@@ -1,11 +1,17 @@
 ﻿using ClosedXML.Excel;
 using Common.Exceptions;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Vml.Office;
 using JapanCar.Application.DTOs;
 using JapanCar.Application.Helpers;
 using JapanCar.Application.Interfaces;
 using JapanCar.Application.Models;
 using JapanCar.Common;
+using JapanCar.Common.Models;
 using JapanCar.Domain.Entities;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 using System.Reflection;
 
 namespace JapanCar.Application.Services
@@ -29,11 +35,11 @@ namespace JapanCar.Application.Services
         }
 
 
-        public async Task<GridDto<CarDto>> GetCars(CarFilterDto filterDto, int? auctionId = null)
+        public async Task<GridDto<CarDto>> GetCars(CarFilterDto filterDto)
         {
             var languageId = await GetLanguageId(_requestContext.Locale);
 
-            var entities = await _unitOfWork.CarRepository.GetCars(languageId, filterDto, auctionId);
+            var entities = await _unitOfWork.CarRepository.GetCars(languageId, filterDto);
 
             var cars = entities.Items.Select(x => new CarDto
             {
@@ -50,7 +56,7 @@ namespace JapanCar.Application.Services
                 AuctionPrice = x.AuctionPrice,
                 Year = x.Year,
                 CreatedAt = x.CreatedDate,
-                Images = x.ImageUrls,
+                Images = x.Images,
                 SukuraNumber = x.SukuraNumber,
                 PurchaseDate = x.PurchaseDate.ToString("yyyy/MM/dd"),
                 ChasisNumber = x.ChassisNumber,
@@ -71,6 +77,8 @@ namespace JapanCar.Application.Services
 
         public async Task<int?> CreateCar(CarDto dto, List<FileData> images, string userName)
         {
+            var languageId = await GetLanguageId(_requestContext.Locale);
+
             var savedNames = await _fileStorage.SaveFilesAsync(images, Constants.CARS_IMAGES_FOLDER);
 
             int? sukuraNumber = null;
@@ -81,15 +89,16 @@ namespace JapanCar.Application.Services
             if (currentUser == null)
                 throw new AppException("User not found", System.Net.HttpStatusCode.NotFound);
 
-            await _unitOfWork.CarRepository.Create(new CarEntity
+            var carId = await _unitOfWork.CarRepository.Create(languageId, new CarEntity
             {
                 AuctionId = dto.AuctionId,
-                ChassisNumber = dto.ChasisNumber,
+                ChassisNumber = dto.ChasisNumber.ToUpper(),
                 ColorId = dto.ColorId,
                 EngineVolume = dto.EngineVolume,
                 FinalPrice = dto.FinalPrice,
                 FuelType = dto.FuelType,
-                ImageUrls = savedNames.ToArray(),
+                Images = savedNames.ToArray(),
+                ImagesWithTypes = images,
                 Mileage = dto.Mileage,
                 PurchasePrice = dto.PurchasePrice,
                 TaxAmount = dto.TaxAmount,
@@ -134,22 +143,36 @@ namespace JapanCar.Application.Services
                 TransportConfirmUserId = dto.TransportConfirmUserId != 0 ? dto.TransportConfirmUserId : null,
                 PoliceCertificateNumber = dto.PoliceCertificateNumber,
                 ActionNumber = dto.ActionNumber,
-                Katashaki = dto.Katashaki,
+                Katashaki = dto.Katashaki?.ToUpper(),
                 ActionDeadlineDate = dto.ActionDeadlineDate.ToDateOnly(),
                 MunicipalityDeadlineDate = dto.MunicipalityDeadlineDate.ToDateOnly(),
-                PlateRevokedDeadLine = dto.PlateRevokedDeadLine.ToDateOnly()
+                PlateRevokedDeadLine = dto.PlateRevokedDeadLine.ToDateOnly(),
+                HasShakend = dto.HasShakend,
+                ThirdPartyInsuranceNumber = dto.ThirdPartyInsuranceNumber,
+                DeedNumber = dto.DeedNumber,
+                CommandType = dto.CommandType,
+                TransportCompanyRequestDate = dto.TransportCompanyRequestDate.ToDateTime(),
+                NewPlateNumber = dto.NewPlateNumber,
+                Description = dto.Description?.ToUpper(),
+                InsuranceCancellationDate = dto.InsuranceCancellationDate.ToDateTime(),
+                IsInsuranceCancelled = dto.IsInsuranceCancelled,
+                IsUnder1000CcdeedCopyUploaded = dto.IsUnder1000CcdeedCopyUploaded,
+                PoliceDeedCertificateDeliveryDate = dto.PoliceDeedCertificateDeliveryDate.ToDateTime(),
+                NewDeedCopySentToBuyerDate = dto.NewDeedCopySentToBuyerDate.ToDateTime(),
+                ThirdPartyInsuranceExpireDate = dto.ThirdPartyInsuranceExpireDate.ToDateTime(),
+                ThirdPartyInsuranceCompany = dto.ThirdPartyInsuranceCompany,
             });
 
-            return sukuraNumber;
+            return carId;
         }
 
 
-        public async Task<int?> UpdateCar(int id, CarDto dto, List<FileData> images, string userName)
+        public async Task<TabState> UpdateCar(int id, CarDto dto, List<FileData> images, string userName)
         {
             var carWithImages = await _unitOfWork.CarRepository.GetById(id, false, true);
 
             if (carWithImages != null)
-                _fileStorage.DeleteFiles(carWithImages.ImageUrls);
+                _fileStorage.DeleteFiles(carWithImages.Images);
 
             var savedNames = await _fileStorage.SaveFilesAsync(images, Constants.CARS_IMAGES_FOLDER);
 
@@ -161,15 +184,16 @@ namespace JapanCar.Application.Services
             if (dto.ForSale == 1)
                 sukuraNumber = await _unitOfWork.CarRepository.GetSukuraNumber();
 
-            var updatedSukuraNumber = await _unitOfWork.CarRepository.Update(id, new CarEntity
+            var carEntity = new CarEntity
             {
                 AuctionId = dto.AuctionId,
-                ChassisNumber = dto.ChasisNumber,
+                ChassisNumber = dto.ChasisNumber.ToUpper(),
                 ColorId = dto.ColorId,
                 EngineVolume = dto.EngineVolume,
                 FinalPrice = dto.FinalPrice,
                 FuelType = dto.FuelType,
-                ImageUrls = savedNames.ToArray(),
+                Images = savedNames.ToArray(),
+                ImagesWithTypes = images,
                 Mileage = dto.Mileage,
                 PurchasePrice = dto.PurchasePrice,
                 TransportPrice = dto.TransportPrice,
@@ -214,13 +238,34 @@ namespace JapanCar.Application.Services
                 TransportConfirmUserId = dto.TransportConfirmUserId != 0 ? dto.TransportConfirmUserId : null,
                 PoliceCertificateNumber = dto.PoliceCertificateNumber,
                 ActionNumber = dto.ActionNumber,
-                Katashaki = dto.Katashaki,
+                Katashaki = dto.Katashaki?.ToUpper(),
                 ActionDeadlineDate = dto.ActionDeadlineDate.ToDateOnly(),
                 MunicipalityDeadlineDate = dto.MunicipalityDeadlineDate.ToDateOnly(),
-                PlateRevokedDeadLine = dto.PlateRevokedDeadLine.ToDateOnly()
-            });
+                PlateRevokedDeadLine = dto.PlateRevokedDeadLine.ToDateOnly(),
+                HasShakend = dto.HasShakend,
+                ThirdPartyInsuranceNumber = dto.ThirdPartyInsuranceNumber,
+                DeedNumber = dto.DeedNumber,
+                CommandType = dto.CommandType,
+                TransportCompanyRequestDate = dto.TransportCompanyRequestDate.ToDateTime(),
+                NewPlateNumber = dto.NewPlateNumber,
+                Description = dto.Description?.ToUpper(),
+                InsuranceCancellationDate = dto.InsuranceCancellationDate.ToDateTime(),
+                IsInsuranceCancelled = dto.IsInsuranceCancelled,
+                IsUnder1000CcdeedCopyUploaded = dto.IsUnder1000CcdeedCopyUploaded,
+                PoliceDeedCertificateDeliveryDate = dto.PoliceDeedCertificateDeliveryDate.ToDateTime(),
+                NewDeedCopySentToBuyerDate = dto.NewDeedCopySentToBuyerDate.ToDateTime(),
+                BuyerId = dto.BuyerId,
+                SaleDate = dto.SaleDate.ToDateOnly(),
+                SalePrice = dto.SalePrice,
+                CreatedBy = currentUser.UserId,
+                ThirdPartyInsuranceExpireDate = dto.ThirdPartyInsuranceExpireDate.ToDateTime(),
+                ThirdPartyInsuranceCompany = dto.ThirdPartyInsuranceCompany,
+            };
+            var updatedSukuraNumber = await _unitOfWork.CarRepository.Update(id, carEntity);
 
-            return updatedSukuraNumber;
+            var tabStats = GetTabsState(dto);
+
+            return tabStats;
         }
 
 
@@ -230,8 +275,8 @@ namespace JapanCar.Application.Services
             if (car == null)
                 throw new AppException("Not found", System.Net.HttpStatusCode.NotFound);
 
-            if (car.ImageUrls.Any())
-                _fileStorage.DeleteFiles(car.ImageUrls);
+            if (car.Images.Any())
+                _fileStorage.DeleteFiles(car.Images);
 
             await _unitOfWork.CarRepository.Delete(id);
         }
@@ -244,7 +289,7 @@ namespace JapanCar.Application.Services
             if (car == null)
                 return null;
 
-            return new CarDto
+            var carDto = new CarDto
             {
                 CarId = car.CarId,
                 AuctionId = car.AuctionId,
@@ -259,7 +304,8 @@ namespace JapanCar.Application.Services
                 AuctionPrice = car.AuctionPrice,
                 Year = car.Year,
                 CreatedAt = car.CreatedDate,
-                Images = car.ImageUrls,
+                Images = car.Images,
+                ImagesWithTypes = car.ImagesWithTypes,
                 ColorId = car.ColorId,
                 ModelId = car.ModelId,
                 ChasisNumber = car.ChassisNumber,
@@ -304,7 +350,39 @@ namespace JapanCar.Application.Services
                 ActionDeadlineDate = car.ActionDeadlineDate.ToString(),
                 MunicipalityDeadlineDate = car.MunicipalityDeadlineDate.ToString(),
                 PlateRevokedDeadLine = car.PlateRevokedDeadLine.ToString(),
+                HasShakend = car.HasShakend,
+                ThirdPartyInsuranceNumber = car.ThirdPartyInsuranceNumber,
+                DeedNumber = car.DeedNumber,
+                CommandType = car.CommandType,
+                TransportCompanyRequestDate = car.TransportCompanyRequestDate.ToString(),
+                NewPlateNumber = car.NewPlateNumber,
+                Description = car.Description,
+                InsuranceCancellationDate = car.InsuranceCancellationDate.ToString(),
+                IsInsuranceCancelled = car.IsInsuranceCancelled,
+                IsUnder1000CcdeedCopyUploaded = car.IsUnder1000CcdeedCopyUploaded,
+                PoliceDeedCertificateDeliveryDate = car.PoliceDeedCertificateDeliveryDate.ToString(),
+                NewDeedCopySentToBuyerDate = car.NewDeedCopySentToBuyerDate.ToString(),
+                BuyerId = car.BuyerId,
+                SaleDate = car.SaleDate.ToString(),
+                SalePrice = car.SalePrice,
+                ThirdPartyInsuranceExpireDate = car.ThirdPartyInsuranceExpireDate.ToString(),
+                ThirdPartyInsuranceCompany = car.ThirdPartyInsuranceCompany,
             };
+
+            return carDto;
+        }
+
+
+        public async Task<TabState?> GetTabsState(int id)
+        {
+            var carDto = await GetCarById(id);
+
+            if (carDto == null)
+                return null;
+
+            var tabStates = GetTabsState(carDto);
+
+            return tabStates;
         }
 
 
@@ -337,13 +415,13 @@ namespace JapanCar.Application.Services
 
             for (int i = 0; i < cars.Count(); i++)
             {
-                worksheet.Cell(i+2,1).Value = cars[i].BrandName;
-                worksheet.Cell(i+2,2).Value = cars[i].ModelName;
-                worksheet.Cell(i+2,3).Value = cars[i].ColorName;
-                worksheet.Cell(i+2,4).Value = cars[i].Year;
-                worksheet.Cell(i+2,5).Value = cars[i].PurchaseDate;
-                worksheet.Cell(i+2,6).Value = cars[i].PurchasePrice;
-                worksheet.Cell(i+2,7).Value = cars[i].SukuraNumber;
+                worksheet.Cell(i + 2, 1).Value = cars[i].BrandName;
+                worksheet.Cell(i + 2, 2).Value = cars[i].ModelName;
+                worksheet.Cell(i + 2, 3).Value = cars[i].ColorName;
+                worksheet.Cell(i + 2, 4).Value = cars[i].Year;
+                worksheet.Cell(i + 2, 5).Value = cars[i].PurchaseDate;
+                worksheet.Cell(i + 2, 6).Value = cars[i].PurchasePrice;
+                worksheet.Cell(i + 2, 7).Value = cars[i].SukuraNumber;
             }
 
             worksheet.Columns().AdjustToContents();
@@ -352,6 +430,137 @@ namespace JapanCar.Application.Services
             workbook.SaveAs(stream);
 
             return stream.ToArray();
+        }
+
+
+        public async Task<byte[]> GetReportPdf(CarFilterDto filterDto)
+        {
+            var languageId = await GetLanguageId(_requestContext.Locale);
+
+            filterDto.Skip = null;
+            filterDto.Take = null;
+
+            var carsItems = await GetCars(filterDto);
+
+            var cars = carsItems.Items.ToList();
+
+            var translations = await _unitOfWork.TranslationRepository.GetAllTranslations(languageId);
+            var dic = translations
+                .GroupBy(x => x.FieldName)
+                .ToDictionary(g => g.Key, g => g.First().TranslatedValue);
+
+            var pdfStream = new MemoryStream();
+            QuestPDF.Settings.License = LicenseType.Community;
+            Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4.Landscape());
+                    page.Margin(10, Unit.Millimetre);
+                    page.Content().Column(column =>
+                    {
+                        column.Item().Table(table =>
+                        {
+                            static IContainer CellStyle(IContainer container) => container.Border(1).Padding(10);
+
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                            });
+
+                            table.Header(header =>
+                            {
+                                header.Cell().Element(CellStyle).Text(dic["BrandName"]);
+                                header.Cell().Element(CellStyle).Text(dic["ModelName"]);
+                                header.Cell().Element(CellStyle).Text(dic["ColorName"]);
+                                header.Cell().Element(CellStyle).Text(dic["Year"]);
+                                header.Cell().Element(CellStyle).Text(dic["PurchaseDate"]);
+                                header.Cell().Element(CellStyle).Text(dic["PurchasePrice"]);
+                                header.Cell().Element(CellStyle).Text(dic["SukuraNumber"]);
+                            });
+
+                            for (int i = 0; i < cars.Count(); i++)
+                            {
+                                table.Cell().Element(CellStyle).Text(cars[i].BrandName);
+                                table.Cell().Element(CellStyle).Text(cars[i].ModelName);
+                                table.Cell().Element(CellStyle).Text(cars[i].ColorName);
+                                table.Cell().Element(CellStyle).Text(cars[i].Year.ToString());
+                                table.Cell().Element(CellStyle).Text(cars[i].PurchaseDate);
+                                table.Cell().Element(CellStyle).Text(cars[i].PurchasePrice.ToString());
+                                table.Cell().Element(CellStyle).Text(cars[i].SukuraNumber?.ToString() ?? "");
+                            }
+                        });
+                    });
+                });
+            }).GeneratePdf(pdfStream);
+
+            pdfStream.Position = 0;
+
+            return pdfStream.ToArray();
+        }
+
+
+        private TabState GetTabsState(CarDto dto)
+        {
+            return new TabState
+            {
+                General = "enabled",
+                Shakend = IsGeneralTabCompleted(dto) ? "enabled" : "disabled",
+                Insurance = IsShakendTabCompleted(dto) ? "enabled" : "disabled",
+                Police = dto.ForSale != 1 && dto.EngineVolume < 1000 && (!dto.HasInsurance || string.IsNullOrEmpty(dto.InsuranceEndDate)) ? "hidden" : IsShakendTabCompleted(dto) && IsInsuranceTabCompleted(dto) && dto.EngineVolume >= 1000 ? "enabled" : "disabled",
+                Deed = IsShakendTabCompleted(dto) && IsInsuranceTabCompleted(dto) ? "enabled" : "disabled",
+                Transport = IsGeneralTabCompleted(dto) ? "enabled" : "disabled",
+                SentMunicipality = string.IsNullOrEmpty(dto.PlateRegisteredDate) || dto.EngineVolume >= 1000 ? "hidden" : "enabled",
+                SentAction = string.IsNullOrEmpty(dto.PlateRegisteredDate) || string.IsNullOrEmpty(dto.DeedNumber) ? "hidden" : "enabled",
+                Sale = "enabled",
+            };
+        }
+
+
+        private bool IsGeneralTabCompleted(CarDto dto)
+        {
+            var result =
+                !string.IsNullOrEmpty(dto.PurchaseDate) &&
+                dto.ModelId > 0 &&
+                dto.EngineVolume != null &&
+                dto.ForSale > 0 &&
+                !string.IsNullOrEmpty(dto.Katashaki) &&
+                !string.IsNullOrEmpty(dto.ChasisNumber) &&
+                dto.Mileage >= 0 &&
+                dto.ColorId > 0 &&
+                dto.Year > 0 &&
+                dto.ManufactureMonth > 0;
+
+            return result;
+        }
+
+
+        private bool IsShakendTabCompleted(CarDto dto)
+        {
+            var result = dto.HasInsurance && !string.IsNullOrEmpty(dto.InsuranceEndDate);
+            return result;
+        }
+
+
+        private bool IsInsuranceTabCompleted(CarDto dto)
+        {
+            var result = dto.HasShakend;
+            return result;
+        }
+
+
+        private bool IsDeedTabCompleted(CarDto dto)
+        {
+            var result = !string.IsNullOrEmpty(dto.PlateRegisteredDate) &&
+                !string.IsNullOrEmpty(dto.DeedNumber) &&
+                (dto.EngineVolume >= 1000 || (dto.EngineVolume < 1000 && dto.IsUnder1000CcdeedCopyUploaded));
+            return result;
         }
     }
 }

@@ -11,6 +11,7 @@ export function useMessage() {
     invalid: () => translations['mes_invalid'],
     minLength6: () => translations['mes_minLength6'],
     minCount3: () => translations['mes_minCount3'],
+    selectType: () => translations['mes_selectImageType'],
     duplicate: () => 'Duplicate image file names are not allowed.',
   };
 

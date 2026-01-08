@@ -1,4 +1,4 @@
-import { FieldNameType, ITranslation } from '@/types/translation';
+import { CategoryType, FieldNameType, ITranslation } from '@/types/translation';
 import { LangCode } from '../locales-config';
 
 const KEY = 'translations';
@@ -13,10 +13,18 @@ function getTranslationsFromLocalStorage(): ITranslation[] {
   return JSON.parse(translations) as ITranslation[];
 }
 
-export function getTranslations(locale: LangCode): Record<FieldNameType, string> {
-  const translations = getTranslationsFromLocalStorage().filter(
-    (x) => x.languageCode == locale
+export function getTranslations(
+  locale: LangCode,
+  category?: CategoryType
+): Record<FieldNameType, string> {
+  let translations = (getTranslationsFromLocalStorage() || []).filter(
+    (x) => x.languageCode === locale
   );
+  if (category) {
+    translations = translations.filter((x) => x.category === category);
+  } else {
+    translations = translations.filter((x) => x.category !== 'Notification');
+  }
 
   const result: Record<FieldNameType, string> = {} as Record<FieldNameType, string>;
 

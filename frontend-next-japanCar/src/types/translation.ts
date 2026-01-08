@@ -4,6 +4,7 @@ export interface ITranslation2 {
   entityName: string;
   fieldName: string;
   translatedValue: string;
+  category: CategoryType | null;
 }
 
 export interface ITranslation {
@@ -11,8 +12,10 @@ export interface ITranslation {
   languageCode: LangCode;
   fieldName: FieldNameType;
   translatedValue?: string;
-  category?: 'FormField' | 'SystemMessage';
+  category?: CategoryType;
 }
+
+export type CategoryType = 'FormField' | 'SystemMessage' | 'Notification' | 'General';
 
 export type FieldNameType =
   | 'Action'
@@ -32,6 +35,7 @@ export type FieldNameType =
   | 'AuctionTranslationId'
   | 'BrandId'
   | 'BrandName'
+  | 'BuyerId'
   | 'CarAuctionId'
   | 'CarBrandTranslationId'
   | 'CarColorId'
@@ -42,11 +46,13 @@ export type FieldNameType =
   | 'CarPartId'
   | 'CarRepairHistoryId'
   | 'CarRepairHistoryTranslationId'
+  | 'CarSaleId'
   | 'Category'
   | 'ChassisNumber'
   | 'Code'
   | 'ColorId'
   | 'ColorName'
+  | 'CommandType'
   | 'Contact'
   | 'create_success'
   | 'CreatedBy'
@@ -57,6 +63,7 @@ export type FieldNameType =
   | 'DashboardReplacerId'
   | 'Deed'
   | 'DeedIssuedDate'
+  | 'DeedNumber'
   | 'DeedRequestedDate'
   | 'definition'
   | 'delete_success'
@@ -76,18 +83,25 @@ export type FieldNameType =
   | 'Grade'
   | 'HasInsurance'
   | 'HasPoliceCertificate'
+  | 'HasShakend'
   | 'Icon'
   | 'ImageId'
+  | 'ImageTypeId'
+  | 'ImageTypeTranslationId'
   | 'ImageUrl'
   | 'Insurance'
+  | 'InsuranceCancellationDate'
   | 'InsuranceEndDate'
   | 'InsuranceExpireDate'
   | 'InsurancePolicyNumber'
   | 'InsuranceStartDate'
+  | 'InsuranceTab'
   | 'IsActive'
+  | 'IsInsuranceCancelled'
   | 'IsPrimary'
   | 'IsResolved'
   | 'IsUnder1000CC'
+  | 'IsUnder1000CCDeedCopyUploaded'
   | 'katashaki'
   | 'LanguageId'
   | 'LastName'
@@ -118,8 +132,10 @@ export type FieldNameType =
   | 'MunicipalitySentDateFrom'
   | 'MunicipalitySentDateTo'
   | 'MunicipalitySentToPerson'
-  | 'Name'
+  | 'name'
   | 'NeedsPoliceCertificate'
+  | 'NewDeedCopySentToBuyerDate'
+  | 'NewPlateNumber'
   | 'NotificationId'
   | 'NotificationType'
   | 'OrderIndex'
@@ -141,6 +157,7 @@ export type FieldNameType =
   | 'PlateRevoked'
   | 'PlateRevokedByUserId'
   | 'PlateRevokedDate'
+  | 'PlateRevokedDeadLine'
   | 'PlateRevoking'
   | 'PlateType'
   | 'PlateType_Temp'
@@ -152,6 +169,7 @@ export type FieldNameType =
   | 'PoliceCertificateReceivedDateFrom'
   | 'PoliceCertificateReceivedDateTo'
   | 'PoliceCertificateRequestedDate'
+  | 'PoliceDeedCertificateDeliveryDate'
   | 'Prices'
   | 'principal_id'
   | 'PrintInfo'
@@ -170,19 +188,29 @@ export type FieldNameType =
   | 'RoleId'
   | 'RoleName'
   | 'RolePermissionId'
+  | 'Sale'
+  | 'SaleDate'
+  | 'SalePrice'
   | 'ScrapCost'
   | 'SentToAction'
   | 'SentToMunicipality'
+  | 'Shakend'
   | 'SteeringReplacer'
   | 'SteeringReplacerId'
   | 'SukuraNumber'
   | 'SystemNotificationId'
   | 'SystemNotificationTranslationId'
   | 'TaxAmount'
+  | 'TechnicalNote'
+  | 'ThirdPartyInsuranceCompany'
+  | 'ThirdPartyInsuranceExpireDate'
+  | 'ThirdPartyInsuranceNumber'
+  | 'Title'
   | 'TranslatedValue'
   | 'TranslationId'
   | 'TransmissionType'
   | 'Transport'
+  | 'TransportCompanyRequestDate'
   | 'TransportConfirm'
   | 'TransportConfirmUserId'
   | 'TransportDate'
@@ -200,4 +228,4 @@ export type FieldNameType =
   | 'Vehicle'
   | 'version'
   | 'Year'
-  | 'PlateRevokedDeadLine';
+  | 'mes_selectImageType';

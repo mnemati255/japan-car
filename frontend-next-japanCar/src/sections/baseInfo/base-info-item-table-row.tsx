@@ -7,7 +7,7 @@ import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import { Iconify } from '@/components/iconify';
 import { ConfirmDialog } from '@/components/custom-dialog';
-import { allLangs, LangCode, useTranslate } from '@/locales';
+import { allLangs2, LangCode, useTranslate } from '@/locales';
 import React from 'react';
 
 type Column<T> = {
@@ -65,7 +65,7 @@ export function BaseInfoItemTableRow<T>({
         <TableCell>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             {multilanguage &&
-              allLangs
+              allLangs2
                 .filter((x) => x.value !== currentLang.value)
                 .map((x, i) => (
                   <Tooltip key={`lng_${i}`} title={x.label} placement="top" arrow>

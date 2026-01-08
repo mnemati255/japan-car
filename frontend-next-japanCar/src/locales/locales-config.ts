@@ -4,7 +4,7 @@ import type { Theme, Components } from '@mui/material/styles';
 import resourcesToBackend from 'i18next-resources-to-backend';
 
 // MUI Core Locales
-import { jaJP as jaJPCore } from '@mui/material/locale';
+import { faIR, jaJP as jaJPCore } from '@mui/material/locale';
 // MUI Date Pickers Locales
 import { enUS as enUSDate, jaJP as jaJPDate } from '@mui/x-date-pickers/locales';
 // MUI Data Grid Locales
@@ -13,7 +13,7 @@ import { enUS as enUSDataGrid, jaJP as jaJPDataGrid } from '@mui/x-data-grid/loc
 // ----------------------------------------------------------------------
 
 // Supported languages
-export const supportedLngs = ['en', 'jp'] as const;
+export const supportedLngs = ['en', 'jp', 'fa'] as const;
 export type LangCode = (typeof supportedLngs)[number];
 
 // Fallback and default namespace
@@ -68,7 +68,21 @@ export const allLangs: LangOption[] = [
       },
     },
   },
+  {
+    value: 'fa',
+    label: 'Persian',
+    countryCode: 'IR',
+    adapterLocale: 'fa',
+    numberFormat: { code: 'fa-IR', currency: 'IRR' },
+    systemValue: {
+      components: {
+        ...faIR.components,
+      },
+    },
+  },
 ];
+
+export const allLangs2 = allLangs.filter((x) => x.countryCode !== 'IR');
 
 // ----------------------------------------------------------------------
 

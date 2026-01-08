@@ -3,6 +3,7 @@ using JapanCar.Api.Filters;
 using JapanCar.Application.DTOs;
 using JapanCar.Application.Models;
 using JapanCar.Application.Services;
+using JapanCar.Common.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,15 +24,15 @@ namespace JapanCar.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllCars(int? auctionId, [FromQuery] CarFilterDto filterDto)
+        public async Task<IActionResult> GetAllCars([FromQuery] CarFilterDto filterDto)
         {
-            var result = await _carService.GetCars(filterDto, auctionId);
+            var result = await _carService.GetCars(filterDto);
             return Ok(result);
         }
 
 
         [HttpGet("report-excel")]
-        public async Task<IActionResult> GetExcelReport([FromQuery] CarFilterDto filterDto)
+        public async Task<IActionResult> GetReportExcel([FromQuery] CarFilterDto filterDto)
         {
             var fileBytes = await _carService.GetReportExcel(filterDto);
             return File(
@@ -39,6 +40,15 @@ namespace JapanCar.Api.Controllers
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 "CarReport.xlsx"
             );
+        }
+
+
+        [AllowAnonymous]
+        [HttpGet("report-pdf")]
+        public async Task<IActionResult> GetReportPdf([FromQuery] CarFilterDto filterDto)
+        {
+            var fileBytes = await _carService.GetReportPdf(filterDto);
+            return File(fileBytes, "application/pdf", "CarReport.pdf");
         }
 
 
@@ -50,6 +60,12 @@ namespace JapanCar.Api.Controllers
         }
 
 
+        [HttpGet("tabs-state/{id}")]
+        public async Task<IActionResult> GetTabsState(int id)
+        {
+            var result = await _carService.GetTabsState(id);
+            return Ok(result);
+        }
 
 
         [HttpPost]
@@ -63,11 +79,12 @@ namespace JapanCar.Api.Controllers
                 foreach (var file in dto.Images)
                 {
                     using var ms = new MemoryStream();
-                    await file.CopyToAsync(ms);
+                    await file.File.CopyToAsync(ms);
 
                     files.Add(new FileData
                     {
-                        FileName = file.FileName,
+                        FileName = file.File.FileName,
+                        FileType = file.Type,
                         Content = ms.ToArray()
                     });
                 }
@@ -99,14 +116,18 @@ namespace JapanCar.Api.Controllers
             {
                 foreach (var file in dto.Images)
                 {
-                    using var ms = new MemoryStream();
-                    await file.CopyToAsync(ms);
-
-                    files.Add(new FileData
+                    if(file.File != null)
                     {
-                        FileName = file.FileName,
-                        Content = ms.ToArray()
-                    });
+                        using var ms = new MemoryStream();
+                        await file.File.CopyToAsync(ms);
+
+                        files.Add(new FileData
+                        {
+                            FileName = file.File.FileName,
+                            FileType = file.Type,
+                            Content = ms.ToArray()
+                        });
+                    }
                 }
             }
 

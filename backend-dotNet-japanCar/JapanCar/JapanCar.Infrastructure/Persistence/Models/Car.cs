@@ -256,6 +256,76 @@ public partial class Car
     /// </summary>
     public DateOnly? PlateRevokedDeadLine { get; set; }
 
+    /// <summary>
+    /// Indicates whether the vehicle has Shaken (technical inspection).
+    /// </summary>
+    public bool HasShakend { get; set; }
+
+    /// <summary>
+    /// Third-party insurance policy number.
+    /// </summary>
+    public string? ThirdPartyInsuranceNumber { get; set; }
+
+    /// <summary>
+    /// Vehicle deed number.
+    /// </summary>
+    public string? DeedNumber { get; set; }
+
+    /// <summary>
+    /// Drive type of the vehicle (e.g. F or S).
+    /// </summary>
+    public string? CommandType { get; set; }
+
+    /// <summary>
+    /// Date when the transport company submitted its request.
+    /// </summary>
+    public DateTime? TransportCompanyRequestDate { get; set; }
+
+    /// <summary>
+    /// New license plate number assigned to the vehicle.
+    /// </summary>
+    public string? NewPlateNumber { get; set; }
+
+    /// <summary>
+    /// Optional description or notes related to the vehicle.
+    /// </summary>
+    public string? Description { get; set; }
+
+    /// <summary>
+    /// Date when the insurance policy was cancelled.
+    /// </summary>
+    public DateTime? InsuranceCancellationDate { get; set; }
+
+    /// <summary>
+    /// Indicates whether the insurance policy has been cancelled.
+    /// </summary>
+    public bool IsInsuranceCancelled { get; set; }
+
+    /// <summary>
+    /// Indicates whether the deed copy for vehicles under 1000cc has been uploaded to the system.
+    /// </summary>
+    public bool IsUnder1000CcdeedCopyUploaded { get; set; }
+
+    /// <summary>
+    /// Date when the deed certificate was delivered to the police.
+    /// </summary>
+    public DateTime? PoliceDeedCertificateDeliveryDate { get; set; }
+
+    /// <summary>
+    /// Date when the new deed copy was sent to the buyer.
+    /// </summary>
+    public DateTime? NewDeedCopySentToBuyerDate { get; set; }
+
+    /// <summary>
+    /// تاریخ انقضای بیمه
+    /// </summary>
+    public DateTime? ThirdPartyInsuranceExpireDate { get; set; }
+
+    /// <summary>
+    /// شرکت صادرکننده بیمه
+    /// </summary>
+    public string? ThirdPartyInsuranceCompany { get; set; }
+
     public virtual Auction? Action { get; set; }
 
     public virtual User? ActionSentByUser { get; set; }
@@ -265,6 +335,8 @@ public partial class Car
     public virtual ICollection<CarImage> CarImages { get; set; } = new List<CarImage>();
 
     public virtual ICollection<CarRepairHistory> CarRepairHistories { get; set; } = new List<CarRepairHistory>();
+
+    public virtual ICollection<CarSale> CarSales { get; set; } = new List<CarSale>();
 
     public virtual CarColor Color { get; set; } = null!;
 

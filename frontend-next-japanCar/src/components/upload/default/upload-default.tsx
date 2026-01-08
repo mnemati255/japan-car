@@ -37,11 +37,12 @@ export function Upload({
   previewOrientation = 'horizontal',
   ...dropzoneOptions
 }: UploadProps) {
-  const { getRootProps, getInputProps, isDragActive, isDragReject, fileRejections } = useDropzone({
-    multiple,
-    disabled,
-    ...dropzoneOptions,
-  });
+  const { getRootProps, getInputProps, isDragActive, isDragReject, fileRejections } =
+    useDropzone({
+      multiple,
+      disabled,
+      ...dropzoneOptions,
+    });
 
   const isSingleFileSelected = !multiple && !!value && !Array.isArray(value);
   const hasMultiFilesSelected = multiple && Array.isArray(value) && value.length > 0;
@@ -56,7 +57,8 @@ export function Upload({
           {multiple ? 'Drop or select files' : 'Drop or select a file'}
         </div>
         <div className={uploadClasses.placeholder.description}>
-          {multiple ? 'Drag files here' : 'Drag a file here'}, or <span>browse</span> your device.
+          {multiple ? 'Drag files here' : 'Drag a file here'}, or <span>browse</span> your
+          device.
         </div>
       </div>
     </PlaceholderContainer>
@@ -72,7 +74,8 @@ export function Upload({
       />
     );
 
-  const renderSingleFilePreview = () => isSingleFileSelected && <SingleFilePreview file={value} />;
+  const renderSingleFilePreview = () =>
+    isSingleFileSelected && <SingleFilePreview file={value} />;
 
   const renderMultiFilesPreview = () =>
     hasMultiFilesSelected && (
@@ -89,7 +92,12 @@ export function Upload({
         {(onRemoveAll || onUpload) && (
           <Box sx={{ gap: 1.5, display: 'flex', justifyContent: 'flex-end' }}>
             {onRemoveAll && (
-              <Button size="small" variant="outlined" color="inherit" onClick={onRemoveAll}>
+              <Button
+                size="small"
+                variant="outlined"
+                color="inherit"
+                onClick={onRemoveAll}
+              >
                 Remove All
               </Button>
             )}
@@ -126,13 +134,19 @@ export function Upload({
       </UploadArea>
 
       {isSingleFileSelected && (
-        <DeleteButton size="small" onClick={onDelete}>
+        <DeleteButton
+          size="small"
+          onClick={onDelete}
+          onMouseDown={(e) => e.preventDefault()}
+        >
           <Iconify icon="mingcute:close-line" width={16} />
         </DeleteButton>
       )}
 
       {helperText && <FormHelperText error={!!error}>{helperText}</FormHelperText>}
-      {showFilesRejected && <RejectedFiles files={fileRejections} {...slotProps?.rejectedFiles} />}
+      {showFilesRejected && (
+        <RejectedFiles files={fileRejections} {...slotProps?.rejectedFiles} />
+      )}
 
       {renderSingleFileLoading()}
       {renderMultiFilesPreview()}

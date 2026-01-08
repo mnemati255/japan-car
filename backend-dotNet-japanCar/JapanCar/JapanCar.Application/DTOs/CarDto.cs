@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using JapanCar.Common.Models;
+using JapanCar.Domain.Entities;
 
 namespace JapanCar.Application.DTOs
 {
@@ -25,6 +27,7 @@ namespace JapanCar.Application.DTOs
         public string? BrandName { get; set; }
         public DateTime? CreatedAt { get; set; }
         public string[] Images { get; set; } = [];
+        public List<FileData> ImagesWithTypes { get; set; } = [];
         public decimal? ScrapCost { get; set; }
         public string PurchaseDate { get; set; } = null!;
         public byte? PlateType { get; set; }
@@ -63,6 +66,23 @@ namespace JapanCar.Application.DTOs
         public string? ActionDeadlineDate { get; set; }
         public string? MunicipalityDeadlineDate { get; set; }
         public string? PlateRevokedDeadLine { get; set; }
+        public bool HasShakend { get; set; }
+        public string? ThirdPartyInsuranceNumber { get; set; }
+        public bool IsInsuranceCancelled { get; set; }
+        public string? InsuranceCancellationDate { get; set; }
+        public string? DeedNumber { get; set; }
+        public string? CommandType { get; set; }
+        public string? TransportCompanyRequestDate { get; set; }
+        public string? NewPlateNumber { get; set; }
+        public string? Description { get; set; }
+        public bool IsUnder1000CcdeedCopyUploaded { get; set; }
+        public string? PoliceDeedCertificateDeliveryDate { get; set; }
+        public string? NewDeedCopySentToBuyerDate { get; set; }
+        public int? BuyerId { get; set; }
+        public string? SaleDate { get; set; }
+        public decimal? SalePrice { get; set; }
+        public string? ThirdPartyInsuranceExpireDate { get; set; }
+        public string? ThirdPartyInsuranceCompany { get; set; }
     }
 
     public class CarDtoValidator : AbstractValidator<CarDto>

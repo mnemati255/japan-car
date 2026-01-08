@@ -37,6 +37,7 @@ export function RHFTextField({
       render={({ field, fieldState: { error } }) => (
         <TextField
           {...field}
+          id={name}
           fullWidth
           type={isNumberType && thousandSeparator ? 'text' : type}
           value={

@@ -1,4 +1,5 @@
 ﻿using JapanCar.Application.Models;
+using JapanCar.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -14,5 +14,7 @@ namespace JapanCar.Domain.Entities
         public decimal PartCost { get; set; }
         public int? MechanicId { get; set; }
         public int? PartCount { get; set; }
+        public string? PartName { get; set; }
+        public string? MechanicName { get; set; }
     }
 }

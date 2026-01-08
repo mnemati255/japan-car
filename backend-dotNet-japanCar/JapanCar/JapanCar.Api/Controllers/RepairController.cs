@@ -36,6 +36,14 @@ namespace JapanCar.Api.Controllers
         }
 
 
+        [HttpGet("details-by-carId/{carId}")]
+        public async Task<IActionResult> GetRepairDetailsOfCar(int carId)
+        {
+            var result = await _repairService.GetRepairDetailsOfCar(carId);
+            return Ok(result);
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> CreateRepair(RepairDto dto)
         {

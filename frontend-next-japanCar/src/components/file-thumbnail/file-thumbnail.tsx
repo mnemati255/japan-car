@@ -59,6 +59,7 @@ export function FileThumbnail({
     <>
       {onRemove && (
         <RemoveButton
+          onMouseDown={(e) => e.preventDefault()}
           onClick={onRemove}
           className={fileThumbnailClasses.removeBtn}
           {...slotProps?.removeBtn}

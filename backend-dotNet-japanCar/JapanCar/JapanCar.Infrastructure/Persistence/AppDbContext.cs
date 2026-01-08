@@ -34,6 +34,10 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<CarImage> CarImages { get; set; }
 
+    public virtual DbSet<CarImageType> CarImageTypes { get; set; }
+
+    public virtual DbSet<CarImageTypeTranslation> CarImageTypeTranslations { get; set; }
+
     public virtual DbSet<CarModel> CarModels { get; set; }
 
     public virtual DbSet<CarModelTranslation> CarModelTranslations { get; set; }
@@ -43,6 +47,8 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<CarRepairHistory> CarRepairHistories { get; set; }
 
     public virtual DbSet<CarRepairHistoryTranslation> CarRepairHistoryTranslations { get; set; }
+
+    public virtual DbSet<CarSale> CarSales { get; set; }
 
     public virtual DbSet<Customer> Customers { get; set; }
 
@@ -143,6 +149,9 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(100)
                 .HasComment("شماره شاسی");
             entity.Property(e => e.ColorId).HasComment("شناسه رنگ خودرو");
+            entity.Property(e => e.CommandType)
+                .HasMaxLength(10)
+                .HasComment("Drive type of the vehicle (e.g. F or S).");
             entity.Property(e => e.CreatedBy).HasComment("ایجاد شده توسط");
             entity.Property(e => e.CreatedDate)
                 .HasDefaultValueSql("(getdate())")
@@ -151,9 +160,13 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.DeedIssuedDate)
                 .HasComment("Deed Issued Date")
                 .HasColumnType("datetime");
+            entity.Property(e => e.DeedNumber)
+                .HasMaxLength(100)
+                .HasComment("Vehicle deed number.");
             entity.Property(e => e.DeedRequestedDate)
                 .HasComment("Deed Requested Date")
                 .HasColumnType("datetime");
+            entity.Property(e => e.Description).HasComment("Optional description or notes related to the vehicle.");
             entity.Property(e => e.EngineVolume).HasComment("حجم موتور");
             entity.Property(e => e.ForSale).HasComment("For Sale");
             entity.Property(e => e.FuelType)
@@ -163,9 +176,17 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(50)
                 .HasComment("Car grade or classification level (e.g., Standard, Premium, Luxury, etc.)");
             entity.Property(e => e.HasInsurance).HasComment("وضعیت داشتن بیمه‌نامه (1 = دارد، 0 = ندارد)");
+            entity.Property(e => e.HasShakend).HasComment("Indicates whether the vehicle has Shaken (technical inspection).");
+            entity.Property(e => e.InsuranceCancellationDate)
+                .HasComment("Date when the insurance policy was cancelled.")
+                .HasColumnType("datetime");
             entity.Property(e => e.InsuranceExpireDate)
                 .HasComment("تاریخ انقضای بیمه خودرو")
                 .HasColumnType("datetime");
+            entity.Property(e => e.IsInsuranceCancelled).HasComment("Indicates whether the insurance policy has been cancelled.");
+            entity.Property(e => e.IsUnder1000CcdeedCopyUploaded)
+                .HasComment("Indicates whether the deed copy for vehicles under 1000cc has been uploaded to the system.")
+                .HasColumnName("IsUnder1000CCDeedCopyUploaded");
             entity.Property(e => e.Katashaki)
                 .HasMaxLength(255)
                 .HasComment("katashaki")
@@ -188,6 +209,12 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.NeedsPoliceCertificate)
                 .HasDefaultValue(false)
                 .HasComment("Needs Police Certificate");
+            entity.Property(e => e.NewDeedCopySentToBuyerDate)
+                .HasComment("Date when the new deed copy was sent to the buyer.")
+                .HasColumnType("datetime");
+            entity.Property(e => e.NewPlateNumber)
+                .HasMaxLength(50)
+                .HasComment("New license plate number assigned to the vehicle.");
             entity.Property(e => e.PlateNumber)
                 .HasMaxLength(50)
                 .HasComment("Vehicle plate number (may include letters and numbers)");
@@ -210,12 +237,27 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.PoliceCertificateRequestedDate)
                 .HasComment("Police Certificate Requested Date")
                 .HasColumnType("datetime");
+            entity.Property(e => e.PoliceDeedCertificateDeliveryDate)
+                .HasComment("Date when the deed certificate was delivered to the police.")
+                .HasColumnType("datetime");
             entity.Property(e => e.SentToAction).HasComment("SentToAction");
             entity.Property(e => e.SentToMunicipality).HasComment("SentToMunicipality");
             entity.Property(e => e.SukuraNumber).HasComment("Sukura Number");
+            entity.Property(e => e.ThirdPartyInsuranceCompany)
+                .HasMaxLength(150)
+                .HasComment("شرکت صادرکننده بیمه");
+            entity.Property(e => e.ThirdPartyInsuranceExpireDate)
+                .HasComment("تاریخ انقضای بیمه")
+                .HasColumnType("datetime");
+            entity.Property(e => e.ThirdPartyInsuranceNumber)
+                .HasMaxLength(100)
+                .HasComment("Third-party insurance policy number.");
             entity.Property(e => e.TransmissionType)
                 .HasMaxLength(50)
                 .HasComment("نوع گیربکس خودرو (اتوماتیک، دستی، CVT و ...)");
+            entity.Property(e => e.TransportCompanyRequestDate)
+                .HasComment("Date when the transport company submitted its request.")
+                .HasColumnType("datetime");
             entity.Property(e => e.TransportConfirm).HasComment("Transport Confirm");
             entity.Property(e => e.TransportDate)
                 .HasComment("Transport Date")
@@ -407,6 +449,7 @@ public partial class AppDbContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasComment("تاریخ ایجاد")
                 .HasColumnType("datetime");
+            entity.Property(e => e.ImageTypeId).HasComment("Type of the car image.");
             entity.Property(e => e.ImageUrl)
                 .HasMaxLength(1000)
                 .HasComment("آدرس تصویر");
@@ -427,9 +470,43 @@ public partial class AppDbContext : DbContext
                 .HasForeignKey(d => d.CreatedBy)
                 .HasConstraintName("FK_CarImages_CreatedBy");
 
+            entity.HasOne(d => d.ImageType).WithMany(p => p.CarImages)
+                .HasForeignKey(d => d.ImageTypeId)
+                .HasConstraintName("FK_CarImages_ImageType");
+
             entity.HasOne(d => d.ModifiedByNavigation).WithMany(p => p.CarImageModifiedByNavigations)
                 .HasForeignKey(d => d.ModifiedBy)
                 .HasConstraintName("FK_CarImages_ModifiedBy");
+        });
+
+        modelBuilder.Entity<CarImageType>(entity =>
+        {
+            entity.HasKey(e => e.ImageTypeId);
+
+            entity.Property(e => e.ImageTypeId).HasComment("Car image type identifier (auto increment).");
+        });
+
+        modelBuilder.Entity<CarImageTypeTranslation>(entity =>
+        {
+            entity.HasKey(e => e.ImageTypeTranslationId).HasName("PK_ImageTypeTranslation");
+
+            entity.ToTable("CarImageTypeTranslation", tb => tb.HasComment("Translation table for car image types based on language."));
+
+            entity.Property(e => e.ImageTypeTranslationId).HasComment("Primary key of the car image type translation record.");
+            entity.Property(e => e.LanguageId).HasComment("Language identifier of the translation.");
+            entity.Property(e => e.Title)
+                .HasMaxLength(50)
+                .HasComment("Translated title of the car image type.");
+
+            entity.HasOne(d => d.ImageType).WithMany(p => p.CarImageTypeTranslations)
+                .HasForeignKey(d => d.ImageTypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ImageTypeTranslation_CarImageTypes");
+
+            entity.HasOne(d => d.Language).WithMany(p => p.CarImageTypeTranslations)
+                .HasForeignKey(d => d.LanguageId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ImageTypeTranslation_Languages");
         });
 
         modelBuilder.Entity<CarModel>(entity =>
@@ -573,6 +650,44 @@ public partial class AppDbContext : DbContext
                 .HasForeignKey(d => d.RepairId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_CarRepairHistoryTranslation_CarRepairHistory");
+        });
+
+        modelBuilder.Entity<CarSale>(entity =>
+        {
+            entity.HasKey(e => e.CarSaleId).HasName("PK__CarSales__2EC4666AD173E588");
+
+            entity.ToTable(tb => tb.HasComment("Records car sale transactions and sale history"));
+
+            entity.Property(e => e.CarSaleId).HasComment("Primary key identifier for the car sale record");
+            entity.Property(e => e.BuyerId).HasComment("Reference to the buyer (person or customer)");
+            entity.Property(e => e.CarId).HasComment("Reference to the sold car");
+            entity.Property(e => e.CreatedBy).HasComment("User or system that created the sale record");
+            entity.Property(e => e.CreatedDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasComment("Date and time when the sale record was created")
+                .HasColumnType("datetime");
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true)
+                .HasComment("Indicates whether the sale record is active (used for soft delete or cancellation)");
+            entity.Property(e => e.SaleDate).HasComment("Date when the car was sold");
+            entity.Property(e => e.SalePrice)
+                .HasComment("Final sale price of the car")
+                .HasColumnType("decimal(18, 2)");
+
+            entity.HasOne(d => d.Buyer).WithMany(p => p.CarSales)
+                .HasForeignKey(d => d.BuyerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CarSales_Customers");
+
+            entity.HasOne(d => d.Car).WithMany(p => p.CarSales)
+                .HasForeignKey(d => d.CarId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CarSales_Cars");
+
+            entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.CarSales)
+                .HasForeignKey(d => d.CreatedBy)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CarSales_Users");
         });
 
         modelBuilder.Entity<Customer>(entity =>

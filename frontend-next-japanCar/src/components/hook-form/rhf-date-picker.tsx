@@ -27,6 +27,7 @@ function normalizeDateValue(value: DateInput): Dayjs | null {
 type PickerProps<T extends DatePickerProps | TimePickerProps | DateTimePickerProps> =
   T & {
     name: string;
+    id?: string;
     slotProps?: T['slotProps'] & {
       textField?: Partial<PickersTextFieldProps>;
     };
@@ -61,6 +62,7 @@ export function RHFDatePicker({
             ...slotProps,
             textField: {
               ...slotProps?.textField,
+              id: name,
               error: !!error,
               helperText: error?.message ?? slotProps?.textField?.helperText,
             },

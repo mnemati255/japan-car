@@ -7,13 +7,14 @@ import { useEffect, useState } from 'react';
 import { IBrand, ICar, IColor } from '@/types/car';
 import { convertUrlToFile } from '@/utils/convert-url-to-file';
 import { CONFIG } from '@/global-config';
-import { CreateEditCarForm } from '../car-create-edit-form';
 import { useTranslate, useTranslateFromServer } from '@/locales';
 import { getItemById, getItems } from '@/actions/base-action';
 import { IGrid } from '@/types/common';
 import { endpoints } from '@/lib/axios';
 import { IAuction } from '@/types/auction';
 import { IUser } from '@/types/user';
+import CarCreateEditForm from '../car-create-edit-form';
+import { ICustomer } from '@/types/customer';
 
 // ----------------------------------------------------------------------
 
@@ -27,24 +28,28 @@ export function CarEditView({ carId }: Props) {
   const [brands, setBrands] = useState<IBrand[]>([]);
   const [auctions, setAuctions] = useState<IAuction[]>([]);
   const [users, setUsers] = useState<IUser[]>([]);
+  const [customers, setCustomers] = useState<ICustomer[]>([]);
   const [files, setFiles] = useState<File[]>([]);
   const { t: tCommon } = useTranslate('commo');
   const { translations: formFields } = useTranslateFromServer();
 
   useEffect(() => {
     (async () => {
-      const [brandsRes, colorsRes, auctionsRes, usersRes, carRes] = await Promise.all([
-        getItems<IGrid<IBrand>>(endpoints.baseInfo.brand),
-        getItems<IGrid<IColor>>(endpoints.baseInfo.color),
-        getItems<IGrid<IAuction>>(endpoints.baseInfo.auction),
-        getItems<IUser[]>(endpoints.user),
-        getItemById<ICar>(endpoints.car, carId),
-      ]);
+      const [brandsRes, colorsRes, auctionsRes, usersRes, carRes, customersRes] =
+        await Promise.all([
+          getItems<IGrid<IBrand>>(endpoints.baseInfo.brand),
+          getItems<IGrid<IColor>>(endpoints.baseInfo.color),
+          getItems<IGrid<IAuction>>(endpoints.baseInfo.auction),
+          getItems<IUser[]>(endpoints.user),
+          getItemById<ICar>(endpoints.car, carId),
+          getItems<IGrid<ICustomer>>(endpoints.customer),
+        ]);
       if (brandsRes.status == 200) setBrands(brandsRes.data.items);
       if (colorsRes.status == 200) setColors(colorsRes.data.items);
       if (auctionsRes.status === 200) setAuctions(auctionsRes.data.items);
       if (usersRes.status === 200) setUsers(usersRes.data);
       if (carRes.status == 200) setCurrentCar(carRes.data);
+      if (customersRes.status === 200) setCustomers(customersRes.data.items);
     })();
   }, [carId]);
 
@@ -77,14 +82,24 @@ export function CarEditView({ carId }: Props) {
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <CreateEditCarForm
+      <CarCreateEditForm
+        auctions={auctions}
+        brands={brands}
+        colors={colors}
+        users={users}
+        files={files}
+        currentCar={currentCar}
+        customers={customers}
+      />
+
+      {/* <CreateEditCarForm2
         currentCar={currentCar}
         colors={colors}
         brands={brands}
         files={files}
         auctions={auctions}
         users={users}
-      />
+      /> */}
     </DashboardContent>
   );
 }

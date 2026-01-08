@@ -60,6 +60,8 @@ public partial class Customer
     /// </summary>
     public int? ModifiedBy { get; set; }
 
+    public virtual ICollection<CarSale> CarSales { get; set; } = new List<CarSale>();
+
     public virtual User? CreatedByNavigation { get; set; }
 
     public virtual User? ModifiedByNavigation { get; set; }

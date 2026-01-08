@@ -41,14 +41,14 @@ export function NotificationTableRow({ row, boxType, onMarkDoneRow }: Props) {
   } else if (diff < 0) {
     bgColor = '#fef9c3'; // yellow (slightly overdue)
   }
-  
+
   let notificationType = '';
   switch (row.notificationType) {
     case 1:
       notificationType = translations['Police'];
       break;
     case 2:
-      notificationType = translations['Action'];
+      notificationType = translations['SentToAction'];
       break;
     case 3:
       notificationType = translations['Deed'];
@@ -60,7 +60,10 @@ export function NotificationTableRow({ row, boxType, onMarkDoneRow }: Props) {
       notificationType = translations['Transport'];
       break;
     case 6:
-      notificationType = translations['Municipality'];
+      notificationType = translations['SentToMunicipality'];
+      break;
+    case 7:
+      notificationType = translations['PlateRevokedDate'];
       break;
   }
 

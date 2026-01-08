@@ -20,5 +20,6 @@ export interface IRepairedPart {
   partCost: number;
   partCount?: number;
   mechanicId?: number;
-  // replaceDate: string;
+  partName?: string;
+  mechanicName?: string;
 }

@@ -15,5 +15,6 @@
         public int CarId { get; set; }
         public decimal? MechanicWorkHours { get; set; }
         public decimal? MechanicLaborCost { get; set; }
+        public List<CarPartEntity> Parts { get; set; } = [];
     }
 }

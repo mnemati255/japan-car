@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JapanCar.Common.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,7 +32,8 @@ namespace JapanCar.Domain.Entities
         public decimal? AuctionPrice { get; set; }
         public decimal? TaxAmount { get; set; }
         public decimal? FinalPrice { get; set; }
-        public string[] ImageUrls { get; set; } = [];
+        public string[] Images { get; set; } = [];
+        public List<FileData> ImagesWithTypes { get; set; } = [];
         public decimal? ScrapCost { get; set; }
         public DateTime PurchaseDate { get; set; }
         public byte? PlateType { get; set; }
@@ -73,5 +75,22 @@ namespace JapanCar.Domain.Entities
         public DateOnly? ActionDeadlineDate { get; set; }
         public DateOnly? MunicipalityDeadlineDate { get; set; }
         public DateOnly? PlateRevokedDeadLine { get; set; }
+        public bool HasShakend { get; set; }
+        public string? ThirdPartyInsuranceNumber { get; set; }
+        public string? DeedNumber { get; set; }
+        public string? CommandType { get; set; }
+        public DateTime? TransportCompanyRequestDate { get; set; }
+        public string? NewPlateNumber { get; set; }
+        public string? Description { get; set; }
+        public DateTime? InsuranceCancellationDate { get; set; }
+        public bool IsInsuranceCancelled { get; set; }
+        public bool IsUnder1000CcdeedCopyUploaded { get; set; }
+        public DateTime? PoliceDeedCertificateDeliveryDate { get; set; }
+        public DateTime? NewDeedCopySentToBuyerDate { get; set; }
+        public int? BuyerId { get; set; }
+        public DateOnly? SaleDate { get; set; }
+        public decimal? SalePrice { get; set; }
+        public DateTime? ThirdPartyInsuranceExpireDate { get; set; }
+        public string? ThirdPartyInsuranceCompany { get; set; }
     }
 }

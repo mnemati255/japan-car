@@ -1,0 +1,23 @@
+{
+  "subheader": "مدیریت",
+  "notification": {
+    "notifications": "اعلان‌ها",
+    "inbox": "صندوق ورودی",
+    "resolved": "حل شده"
+  },
+  "auctions": "حراج‌ها",
+  "cars": "خودروها",
+  "customers": "مشتریان",
+  "users": "کاربران",
+  "roles": "نقش‌ها",
+  "reports": "گزارش‌ها",
+  "baseInfo": {
+    "title": "اطلاعات پایه",
+    "brands": "برندها",
+    "models": "مدل‌ها",
+    "colors": "رنگ‌ها",
+    "parts": "قطعات"
+  },
+  "list": "لیست",
+  "create": "ایجاد"
+}

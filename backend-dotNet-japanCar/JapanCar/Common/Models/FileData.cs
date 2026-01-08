@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JapanCar.Application.Models
+namespace JapanCar.Common.Models
 {
     public class FileData
     {
         public string FileName { get; set; } = null!;
+        public string? FileType { get; set; } = null!;
         public byte[] Content { get; set; } = [];
     }
-
 }
